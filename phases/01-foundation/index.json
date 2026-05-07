@@ -21,7 +21,10 @@
     {
       "step": 2,
       "name": "web-button",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-07T14:56:24+0900",
+      "summary": "@wonik/web Button 컴포넌트 추가. 5 variants × 3 sizes. TDD로 작성, WONIK BLUE 적용, 토큰 import. dist 산출 + 테스트 통과. 다음 step에서 apps/web-sandbox로 시각 검증.",
+      "completed_at": "2026-05-07T15:00:45+0900"
     },
     {
       "step": 3,
