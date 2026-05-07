@@ -1,0 +1,26 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "03-form-primitives",
+  "steps": [
+    {
+      "step": 0,
+      "name": "input-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 1,
+      "name": "textarea-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "sandbox-input-matrix",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-form-example",
+      "status": "pending"
+    }
+  ]
+}
