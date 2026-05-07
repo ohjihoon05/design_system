@@ -5,7 +5,9 @@
     {
       "step": 0,
       "name": "checkbox-primitive",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-08T07:15:16+0900",
+      "summary": "@wonik/web Checkbox atom 추가. native <input type=checkbox> + accent-color로 토큰화된 체크 색. controlled/uncontrolled 지원, forwardRef, 3 size(16/20/24), invalid·disabled state. 풀 커스텀(:checked mask) 시각은 후속 polish로 보류 — 1단계 단순성 우선. 테스트 15건 추가, 총 106 passed."
     },
     {
       "step": 1,
@@ -22,5 +24,6 @@
       "name": "sandbox-form-atoms-2",
       "status": "pending"
     }
-  ]
+  ],
+  "created_at": "2026-05-08T07:15:16+0900"
 }
