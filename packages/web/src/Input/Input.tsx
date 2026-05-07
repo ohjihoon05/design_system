@@ -1,0 +1,96 @@
+import { forwardRef } from 'react';
+import type { CSSProperties } from 'react';
+import {
+  surfaces,
+  text,
+  statusTokens,
+  borders,
+  space,
+  radius,
+  fontSize,
+  fontFamily,
+  fontWeight,
+} from '@wonik/tokens';
+import type { InputProps, InputSize } from './types';
+
+const SIZE_STYLES: Record<InputSize, CSSProperties> = {
+  sm: { height: '24px', padding: `0 ${space[3]}`, fontSize: fontSize.labelSm },
+  md: { height: '32px', padding: `0 ${space[5]}`, fontSize: fontSize.label },
+  lg: { height: '40px', padding: `0 ${space[6]}`, fontSize: fontSize.titleSm },
+};
+
+const BASE_STYLE: CSSProperties = {
+  fontFamily: fontFamily.base,
+  fontWeight: fontWeight.regular,
+  color: text.dark,
+  background: surfaces.surfaceWhite,
+  border: `1px solid ${borders.mid}`,
+  borderRadius: radius.sm,
+  outline: 'none',
+  width: '100%',
+  boxSizing: 'border-box',
+  transition: 'border-color 0.12s ease, box-shadow 0.12s ease',
+};
+
+const INVALID_STYLE: CSSProperties = {
+  borderColor: statusTokens.alarm.text,
+};
+
+const DISABLED_STYLE: CSSProperties = {
+  background: surfaces.surfaceSubtle,
+  color: text.dim,
+  cursor: 'not-allowed',
+  opacity: 0.6,
+};
+
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    size = 'md',
+    invalid = false,
+    leftAddon,
+    rightAddon,
+    disabled,
+    style,
+    onChange,
+    ...rest
+  },
+  ref
+) {
+  const inputStyle: CSSProperties = {
+    ...BASE_STYLE,
+    ...SIZE_STYLES[size],
+    ...(invalid && INVALID_STYLE),
+    ...(disabled && DISABLED_STYLE),
+    ...style,
+  };
+
+  const inputEl = (
+    <input
+      {...rest}
+      ref={ref}
+      disabled={disabled}
+      onChange={disabled ? undefined : onChange}
+      aria-invalid={invalid || undefined}
+      style={inputStyle}
+    />
+  );
+
+  if (!leftAddon && !rightAddon) {
+    return inputEl;
+  }
+
+  const wrapperStyle: CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: space[3],
+    width: '100%',
+  };
+
+  return (
+    <span style={wrapperStyle}>
+      {leftAddon}
+      {inputEl}
+      {rightAddon}
+    </span>
+  );
+});

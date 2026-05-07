@@ -1,21 +1,38 @@
-import { Button, Box, Stack, Text } from '@wonik/web';
-import type { ButtonVariant, ButtonSize, TextVariant, TextWeight } from '@wonik/web';
+import { useState } from 'react';
+import { Button, Box, Stack, Text, Input, Textarea } from '@wonik/web';
+import type { ButtonVariant, ButtonSize, TextVariant, TextWeight, InputSize } from '@wonik/web';
+
+// Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
+// 컴포넌트 내부에서 ...rest로 그대로 spread되어 native label로 전달된다.
+// sandbox에서 `<Text as="label" htmlFor="...">` 패턴을 type-safe하게 쓰기 위한 augmentation.
+// 진짜 type-safe label 합성은 다음 phase의 FormField에서 다룬다.
+declare module '@wonik/web' {
+  interface TextProps {
+    htmlFor?: string;
+  }
+}
 
 const variants: ButtonVariant[] = ['primary', 'secondary', 'text', 'outline', 'danger'];
 const sizes: ButtonSize[] = ['sm', 'md', 'lg'];
+const inputSizes: InputSize[] = ['sm', 'md', 'lg'];
 
 export function App() {
   return (
     <Stack as="main" direction="column" gap={8}>
       <Stack as="header" direction="column" gap={3}>
         <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
-        <Text color="secondary">Button + layout primitives (Box / Stack / Text) 시각 검증.</Text>
+        <Text color="secondary">
+          Button + layout primitives + form atoms + form 합성 예시.
+        </Text>
       </Stack>
 
       <ButtonSection />
       <BoxSection />
       <StackSection />
       <TextSection />
+      <InputMatrixSection />
+      <TextareaMatrixSection />
+      <FormExampleSection />
       <BeforeAfterSection />
     </Stack>
   );
@@ -153,6 +170,279 @@ function TextSection() {
           <Text truncate>한 줄로 자르는 매우 매우 매우 매우 매우 긴 문장입니다 — ellipsis가 보여야 합니다.</Text>
         </Box>
       </Stack>
+    </Stack>
+  );
+}
+
+function InputMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Input</Text>
+      <Text color="secondary">
+        5 state(default / focus / invalid / disabled / readOnly) × 3 size(sm / md / lg).
+        브라우저에서 마우스를 올리거나 클릭해 hover · focus 상태를 직접 확인하세요.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">default</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} placeholder={`${s} placeholder`} />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">focus (md, autoFocus)</Text>
+        <Box style={{ width: 200 }}>
+          <Input size="md" defaultValue="autofocus" autoFocus />
+        </Box>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} invalid defaultValue="잘못된 값" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">disabled</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} disabled defaultValue="disabled" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">readOnly</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} readOnly defaultValue="readonly" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">leftAddon / rightAddon</Text>
+        <Stack direction="row" gap={5} wrap>
+          <Box style={{ width: 220 }}>
+            <Input
+              leftAddon={<Text color="dim">$</Text>}
+              placeholder="amount"
+            />
+          </Box>
+          <Box style={{ width: 220 }}>
+            <Input
+              rightAddon={<Text color="dim">kg</Text>}
+              placeholder="weight"
+            />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Input
+              leftAddon={<Text>🔍</Text>}
+              rightAddon={<Text color="dim">⌘K</Text>}
+              placeholder="검색..."
+            />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">type 다양성 (text / email / number / password)</Text>
+        <Stack direction="row" gap={5} wrap>
+          <Box style={{ width: 220 }}><Input placeholder="text" /></Box>
+          <Box style={{ width: 220 }}><Input type="email" placeholder="email" /></Box>
+          <Box style={{ width: 220 }}><Input type="number" placeholder="number" /></Box>
+          <Box style={{ width: 220 }}><Input type="password" placeholder="password" /></Box>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function TextareaMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Textarea</Text>
+      <Text color="secondary">
+        rows 비교(2 / 4 / 8) + invalid + disabled. 사용자는 textarea 모서리에서 vertical 방향으로 크기 조절 가능.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">rows</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=2</Text>
+            <Textarea rows={2} placeholder="짧은 메모..." />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=4 (default)</Text>
+            <Textarea placeholder="기본 4줄..." />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=8</Text>
+            <Textarea rows={8} placeholder="긴 메모..." />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid / disabled</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>invalid</Text>
+            <Textarea invalid defaultValue={'잘못된\n입력입니다.'} rows={3} />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>disabled</Text>
+            <Textarea disabled defaultValue={'disabled\nstate'} rows={3} />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">size 비교 (sm / md / lg)</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Textarea size="sm" rows={3} placeholder="sm" />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Textarea size="md" rows={3} placeholder="md" />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Textarea size="lg" rows={3} placeholder="lg" />
+          </Box>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function FormExampleSection() {
+  const [name, setName]     = useState('');
+  const [model, setModel]   = useState('');
+  const [serial, setSerial] = useState('');
+  const [memo, setMemo]     = useState('');
+  const [submitted, setSubmitted] = useState<null | { name: string; model: string; serial: string; memo: string }>(null);
+
+  const nameInvalid = submitted !== null && name.trim() === '';
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (name.trim() === '') {
+      setSubmitted({ name, model, serial, memo });
+      return;
+    }
+    alert(JSON.stringify({ name, model, serial, memo }, null, 2));
+    setSubmitted({ name, model, serial, memo });
+  }
+
+  function handleReset() {
+    setName('');
+    setModel('');
+    setSerial('');
+    setMemo('');
+    setSubmitted(null);
+  }
+
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Form 합성 예시 — atom만으로</Text>
+      <Text color="secondary">
+        Button + Stack + Text(as="label") + Input + Textarea만으로 짠 "장비 등록" 폼.
+        FormField 같은 composition 컴포넌트 없이, atom 5개로 실제 사용 가능한 폼이 만들어집니다.
+        여기서 label·error 메시지를 매번 손으로 묶어야 한다는 것을 느꼈다면 — 그게 다음 phase의 FormField 동기입니다.
+      </Text>
+
+      <Box
+        as="form"
+        onSubmit={handleSubmit}
+        p={7}
+        bg="surface"
+        border="mid"
+        rounded="md"
+        style={{ maxWidth: 480 }}
+      >
+        <Stack direction="column" gap={5}>
+          {/* name 필드 — invalid 데모 */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-name">
+              장비 이름 <Text as="span" color="brand">*</Text>
+            </Text>
+            <Input
+              id="eq-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              invalid={nameInvalid}
+              placeholder="예: ATM-3000"
+            />
+            {nameInvalid && (
+              <Text variant="labelSm" color="brand" weight="medium" style={{ color: '#CC0000' }}>
+                장비 이름은 필수입니다.
+              </Text>
+            )}
+          </Stack>
+
+          {/* model 필드 */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-model">모델</Text>
+            <Input
+              id="eq-model"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              placeholder="예: PE-CVD"
+            />
+          </Stack>
+
+          {/* serial 필드 — leftAddon으로 prefix */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-serial">시리얼 번호</Text>
+            <Input
+              id="eq-serial"
+              value={serial}
+              onChange={(e) => setSerial(e.target.value)}
+              leftAddon={<Text color="dim">SN-</Text>}
+              placeholder="000000"
+            />
+          </Stack>
+
+          {/* memo — Textarea */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-memo">메모</Text>
+            <Textarea
+              id="eq-memo"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              rows={3}
+              placeholder="설치 위치, 특이 사항 등"
+            />
+          </Stack>
+
+          {/* 액션 버튼 */}
+          <Stack direction="row" justify="end" gap={3}>
+            <Button variant="text" onClick={handleReset} type="button">취소</Button>
+            <Button variant="primary" type="submit">등록</Button>
+          </Stack>
+        </Stack>
+      </Box>
+
+      {submitted && !nameInvalid && (
+        <Text color="secondary" variant="labelSm">
+          ✓ 마지막 제출: {submitted.name} / {submitted.model || '-'} / {submitted.serial || '-'}
+        </Text>
+      )}
     </Stack>
   );
 }
