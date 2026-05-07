@@ -1,21 +1,26 @@
-import { Button, Box, Stack, Text } from '@wonik/web';
-import type { ButtonVariant, ButtonSize, TextVariant, TextWeight } from '@wonik/web';
+import { Button, Box, Stack, Text, Input, Textarea } from '@wonik/web';
+import type { ButtonVariant, ButtonSize, TextVariant, TextWeight, InputSize } from '@wonik/web';
 
 const variants: ButtonVariant[] = ['primary', 'secondary', 'text', 'outline', 'danger'];
 const sizes: ButtonSize[] = ['sm', 'md', 'lg'];
+const inputSizes: InputSize[] = ['sm', 'md', 'lg'];
 
 export function App() {
   return (
     <Stack as="main" direction="column" gap={8}>
       <Stack as="header" direction="column" gap={3}>
         <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
-        <Text color="secondary">Button + layout primitives (Box / Stack / Text) 시각 검증.</Text>
+        <Text color="secondary">
+          Button + layout primitives (Box / Stack / Text) + form atoms (Input / Textarea) 시각 검증.
+        </Text>
       </Stack>
 
       <ButtonSection />
       <BoxSection />
       <StackSection />
       <TextSection />
+      <InputMatrixSection />
+      <TextareaMatrixSection />
       <BeforeAfterSection />
     </Stack>
   );
@@ -152,6 +157,162 @@ function TextSection() {
         <Box p={3} bg="surface" border="mid" rounded="sm" style={{ maxWidth: 240 }}>
           <Text truncate>한 줄로 자르는 매우 매우 매우 매우 매우 긴 문장입니다 — ellipsis가 보여야 합니다.</Text>
         </Box>
+      </Stack>
+    </Stack>
+  );
+}
+
+function InputMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Input</Text>
+      <Text color="secondary">
+        5 state(default / focus / invalid / disabled / readOnly) × 3 size(sm / md / lg).
+        브라우저에서 마우스를 올리거나 클릭해 hover · focus 상태를 직접 확인하세요.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">default</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} placeholder={`${s} placeholder`} />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">focus (md, autoFocus)</Text>
+        <Box style={{ width: 200 }}>
+          <Input size="md" defaultValue="autofocus" autoFocus />
+        </Box>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} invalid defaultValue="잘못된 값" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">disabled</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} disabled defaultValue="disabled" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">readOnly</Text>
+        <Stack direction="row" gap={5} align="center" wrap>
+          {inputSizes.map((s) => (
+            <Box key={s} style={{ width: 200 }}>
+              <Input size={s} readOnly defaultValue="readonly" />
+            </Box>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">leftAddon / rightAddon</Text>
+        <Stack direction="row" gap={5} wrap>
+          <Box style={{ width: 220 }}>
+            <Input
+              leftAddon={<Text color="dim">$</Text>}
+              placeholder="amount"
+            />
+          </Box>
+          <Box style={{ width: 220 }}>
+            <Input
+              rightAddon={<Text color="dim">kg</Text>}
+              placeholder="weight"
+            />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Input
+              leftAddon={<Text>🔍</Text>}
+              rightAddon={<Text color="dim">⌘K</Text>}
+              placeholder="검색..."
+            />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">type 다양성 (text / email / number / password)</Text>
+        <Stack direction="row" gap={5} wrap>
+          <Box style={{ width: 220 }}><Input placeholder="text" /></Box>
+          <Box style={{ width: 220 }}><Input type="email" placeholder="email" /></Box>
+          <Box style={{ width: 220 }}><Input type="number" placeholder="number" /></Box>
+          <Box style={{ width: 220 }}><Input type="password" placeholder="password" /></Box>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function TextareaMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Textarea</Text>
+      <Text color="secondary">
+        rows 비교(2 / 4 / 8) + invalid + disabled. 사용자는 textarea 모서리에서 vertical 방향으로 크기 조절 가능.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">rows</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=2</Text>
+            <Textarea rows={2} placeholder="짧은 메모..." />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=4 (default)</Text>
+            <Textarea placeholder="기본 4줄..." />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>rows=8</Text>
+            <Textarea rows={8} placeholder="긴 메모..." />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid / disabled</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>invalid</Text>
+            <Textarea invalid defaultValue={'잘못된\n입력입니다.'} rows={3} />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Text variant="labelSm" color="dim" style={{ marginBottom: 4 }}>disabled</Text>
+            <Textarea disabled defaultValue={'disabled\nstate'} rows={3} />
+          </Box>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">size 비교 (sm / md / lg)</Text>
+        <Stack direction="row" gap={5} align="start" wrap>
+          <Box style={{ width: 240 }}>
+            <Textarea size="sm" rows={3} placeholder="sm" />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Textarea size="md" rows={3} placeholder="md" />
+          </Box>
+          <Box style={{ width: 240 }}>
+            <Textarea size="lg" rows={3} placeholder="lg" />
+          </Box>
+        </Stack>
       </Stack>
     </Stack>
   );

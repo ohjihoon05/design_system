@@ -21,7 +21,10 @@
     {
       "step": 2,
       "name": "sandbox-input-matrix",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-07T16:49:43+0900",
+      "summary": "apps/web-sandbox에 Input·Textarea 시각 매트릭스 추가. 5 state × 3 size + addon · type · rows 데모. 자동 검증 통과. 다음 step에서 실제 form 예시(Stack + Text + Input + Button)로 atom들이 어떻게 합쳐지는지 시각화.",
+      "completed_at": "2026-05-07T16:52:37+0900"
     },
     {
       "step": 3,
