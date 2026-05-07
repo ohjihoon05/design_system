@@ -7,7 +7,8 @@
       "name": "input-primitive",
       "status": "completed",
       "started_at": "2026-05-07T16:41:48+0900",
-      "summary": "@wonik/web Input atom 추가. 5 state(default/hover/focus/invalid/disabled) × 3 size. controlled/uncontrolled 둘 다 지원. forwardRef로 native input 노출. leftAddon/rightAddon으로 icon·prefix·suffix 패턴 미리 지원. 다음 step에서 Textarea가 동일 패턴으로 multi-line."
+      "summary": "@wonik/web Input atom 추가. 5 state(default/hover/focus/invalid/disabled) × 3 size. controlled/uncontrolled 둘 다 지원. forwardRef로 native input 노출. leftAddon/rightAddon으로 icon·prefix·suffix 패턴 미리 지원. 다음 step에서 Textarea가 동일 패턴으로 multi-line.",
+      "completed_at": "2026-05-07T16:46:24+0900"
     },
     {
       "step": 1,
