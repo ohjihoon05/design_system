@@ -36,3 +36,10 @@ export type { InputProps, InputOwnProps, InputSize } from './Input/types';
 
 export { Textarea } from './Textarea';
 export type { TextareaProps, TextareaOwnProps, TextareaSize } from './Textarea/types';
+
+export { ThemeProvider, useTheme } from './ThemeProvider';
+export type {
+  ThemeProviderProps,
+  ThemeMode,
+  ThemeContextValue,
+} from './ThemeProvider/types';

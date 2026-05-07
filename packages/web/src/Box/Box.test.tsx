@@ -54,15 +54,16 @@ describe('Box', () => {
 
   it('applies bg via surfaces token', () => {
     render(<Box bg="surface" data-testid="b" />);
-    // surfaces.surface === '#FEFEFE'
-    expect(screen.getByTestId('b')).toHaveStyle({ background: '#FEFEFE' });
+    // surfaces.surface === 'var(--color-surface)' (CSS variable reference)
+    expect(screen.getByTestId('b')).toHaveStyle({ background: 'var(--color-surface)' });
   });
 
   it('applies border with 1px solid via borders token', () => {
     render(<Box border="mid" data-testid="b" />);
-    const styles = window.getComputedStyle(screen.getByTestId('b'));
-    expect(styles.borderStyle).toBe('solid');
-    expect(styles.borderWidth).toBe('1px');
+    // jsdom does not parse var() inside the border shorthand into longhands,
+    // so assert the inline style string instead.
+    const el = screen.getByTestId('b') as HTMLElement;
+    expect(el.style.border).toMatch(/1px\s+solid/);
   });
 
   it('applies rounded via radius token', () => {

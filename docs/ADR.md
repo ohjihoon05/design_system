@@ -39,10 +39,12 @@
 
 ---
 
-### ADR-005: 1단계는 light-mode 전용, 모바일·반응형 미지원
-**결정**: 첫 단계의 모든 컴포넌트는 light mode + 데스크톱 해상도(WARP 1920×1080 고정, Web 1280px+ 우선). 다크 모드와 모바일 반응형은 1단계 범위 외.
+### ADR-005: ~~1단계는 light-mode 전용~~ → ADR-009로 일부 변경
+**결정 (초기)**: 첫 단계의 모든 컴포넌트는 light mode + 데스크톱 해상도(WARP 1920×1080 고정, Web 1280px+ 우선). 다크 모드와 모바일 반응형은 1단계 범위 외.
 **이유**: (a) 첫 customer(ppt, WARP) 둘 다 데스크톱 web. 모바일 needs가 현재 0. (b) light/dark 두 테마를 1단계부터 만들면 토큰 수가 2배가 되고, 1인 운영에서 sustaining 비용이 부담. (c) 다크 모드는 industry standard로 자리잡았지만, 만들어두고 안 쓰는 것보다 첫 모바일/다크 needs가 명확해진 후 추가하는 게 sustainable.
 **트레이드오프**: 향후 다크 모드 추가 시 토큰 architecture 리팩토링 비용 발생 (semantic naming은 미리 잡아둘 수 있도록 ADR-006).
+
+**갱신 (2026-05-08, ADR-009로 일부 supersede)**: ppt(다크 모드 + indigo primary)를 dogfood로 분석한 결과 ppt는 우리 light-mode 시스템과 정면 충돌이고, "ppt를 light로 마이그레이션"보다 "우리가 dark theme도 지원"이 PRD 장기 비전과 일치한다. 다크 모드는 **1단계 범위 외 → 1단계 핵심**으로 승격(ADR-009). 모바일·반응형은 본 ADR-005 그대로 1단계 외 유지.
 
 ---
 
@@ -64,3 +66,32 @@
 **결정**: 모든 컴포넌트 패키지(현재 `@wonik/web`, 향후 추가될 패키지 포함)의 React peer는 `"^18.0.0 || ^19.0.0"`. 한 패키지가 React 18·19 환경 모두에서 import해 작동. 개발·테스트 환경은 React 19로 통일.
 **이유**: (a) **토스 OSS 표준** — `@suspensive/react`(v3.21.0, 2026 활발 운영) 등 토스 신규 라이브러리들이 동일 정책(`peerDependencies: "react": "^18 || ^19"`, devDeps는 React 19) 채택. 토스급을 지향하는 본 시스템도 같은 표준. (b) **Figma Make Kit 호환** — Figma Make는 React 18 호환을 요구한다. dual peer로 디자이너가 Figma Make에서 `@wonik/web`을 Make Kit으로 등록 가능 → 디자이너 → 코드 path 단축. (c) **ppt(React 19) 그대로 작동** — peer가 19도 포함하므로 ppt에서 import 시 다운그레이드 불필요. (d) **미래 사내 web service 대응** — 18 또는 19 어느 쪽이든 마이그레이션 비용 0. (e) **부담 없음** — 1단계 컴포넌트(Button부터 시작)는 plain React API(`useState`/`onClick` 수준)만 사용해 18·19 자연 호환.
 **트레이드오프**: (1) 컴포넌트 코드에서 React 19-only API(`useFormStatus`/`useOptimistic`/`use()`/React Compiler 자동 메모 등) 사용 금지 — 진짜 필요해지면 conditional 또는 별도 변형으로 대응. 1단계 영향 없음. (2) 18 호환 검증을 위해 추후 CI matrix(React 18·19 양쪽 install + 빌드·테스트) 추가 필요 — 1단계 외, ppt와 web-sandbox 검증으로 19는 충분히 확인되고 18은 Figma Make Kit 등록 시 검증.
+
+---
+
+### ADR-009: 다크 모드를 1단계 핵심으로 승격 (ADR-005 일부 supersede)
+
+**결정**: 다크 모드를 **1단계 핵심**으로 승격한다. `@wonik/tokens`은 light + dark 두 테마를 동시에 정의하고, `@wonik/web` 컴포넌트는 두 테마 모두에서 자동 동작한다. 테마 전환은 `<html data-theme="light|dark">` 속성 + CSS 변수 reference로 구현 — 컴포넌트 코드는 테마를 의식하지 않는다 (산업 표준: Radix Themes / Chakra v3 / Toss SLASH 동일).
+
+**이유**: 
+
+1. **첫 dogfood(ppt) 분석 결과 ppt는 다크 모드 전용** — `--color-bg: #0f172a` (slate-900), `--color-primary: #6366f1` (indigo). 우리 단일 light 시스템으로는 dogfood가 본질적으로 불가능. ppt를 light로 마이그레이션하는 것도 가능하지만, ppt 사용자(사내 팀원)의 시각 경험을 갈아엎는 부담.
+
+2. **"결국 다크모드는 만들어야 한다"** — 원익IPS는 24시간 fab 운영 환경. 미래 등장할 사내 web service(monitoring·alarm·night shift 도구)는 다크 모드를 요구할 가능성이 높다. retrofit으로 미루면 모든 미래 컴포넌트가 single-mode 가정으로 짜여 retrofit 비용이 시간에 따라 비대화.
+
+3. **지금이 가장 작은 refactor surface** — 현재 atom 6개 × 토큰 reference ~25곳. phase 04~07에 form-atoms-2 + composition + Card·Modal 추가하면 컴포넌트 12-15개 × reference ~100곳. 지금 박는 비용 ≪ 미래 retrofit 비용.
+
+4. **PRD 장기 비전(사내판 앱인토스)과 일치** — 사내 팀이 자유롭게 frontend를 만들려면 다크 모드는 기본 옵션. 토스 SLASH도 동일.
+
+**구현 방향**:
+- **CSS 변수 + `data-theme` 속성** 표준 패턴 (Radix Themes / Chakra v3 / Toss SLASH 동일).
+- `tokens.css`에 `[data-theme="light"]` + `[data-theme="dark"]` 두 블록. `:root`에 `data-theme` 미설정 시 light 기본값.
+- TypeScript 토큰은 hex 리터럴 대신 `var(--color-...)` reference 반환. 컴포넌트 코드는 그대로 — `style={{background: primary.base}}`이 `style={{background: 'var(--color-primary)'}}`로 컴파일됨.
+- `<ThemeProvider>` + `useTheme()` 제공 (`<html data-theme="...">` 토글, localStorage 기억).
+
+**트레이드오프**:
+
+1. **Phase 04를 visible 컴포넌트 진척이 0인 infra phase로 사용** — Box/Stack 같은 컴포넌트 추가 없음. 대신 이후 모든 phase는 자동 dark 대응.
+2. **기존 79개 테스트의 hex assertion 일부 갱신 필요** — `toHaveStyle({background: '#273E82'})`가 jsdom의 CSS 변수 해상도에 따라 그대로 살거나 `var(...)` literal 어선션으로 갱신. phase 04 step 1에서 결정.
+3. **다크 모드 색상 결정** — base hex(text·border·surface)를 새로 정해야 함. 본 ADR은 결정 위임 — phase 04 step 0이 명시적으로 정의. 시작점은 ppt의 slate-900 계열 + WONIK BLUE를 dark 모드용으로 조정한 값.
+4. **ADR-005 일부 supersede** — light-only 결정만 갱신. 모바일·반응형 미지원 부분은 ADR-005 그대로 유지.

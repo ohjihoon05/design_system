@@ -6,4 +6,8 @@ export default defineConfig({
   dts: true,
   clean: true,
   external: ['react', 'react-dom'],
+  // Inline @wonik/tokens so the JS export carries the resolved var(--color-...)
+  // strings directly. Consumers still install @wonik/tokens separately for the
+  // CSS variable definitions (`@wonik/tokens/tokens.css`).
+  noExternal: ['@wonik/tokens'],
 });

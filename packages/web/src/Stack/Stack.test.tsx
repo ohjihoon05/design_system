@@ -51,9 +51,9 @@ describe('Stack', () => {
   it('passes through Box props (p, bg, rounded)', () => {
     render(<Stack p={6} bg="surface" rounded="md" data-testid="s" />);
     const el = screen.getByTestId('s');
-    // space[6] === '16px', surfaces.surface === '#FEFEFE', radius.md === '10px'
+    // space[6] === '16px', surfaces.surface === 'var(--color-surface)', radius.md === '10px'
     expect(el).toHaveStyle({ padding: '16px' });
-    expect(el).toHaveStyle({ background: '#FEFEFE' });
+    expect(el).toHaveStyle({ background: 'var(--color-surface)' });
     expect(el).toHaveStyle({ borderRadius: '10px' });
   });
 

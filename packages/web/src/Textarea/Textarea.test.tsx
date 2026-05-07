@@ -37,10 +37,10 @@ describe('Textarea', () => {
     expect(screen.getByTestId('t')).toHaveAttribute('aria-invalid', 'true');
   });
 
-  it('invalid=true applies alarm border (#CC0000)', () => {
+  it('invalid=true applies alarm border via status token', () => {
     render(<Textarea invalid data-testid="t" />);
-    const styles = window.getComputedStyle(screen.getByTestId('t'));
-    expect(styles.borderColor.toLowerCase()).toMatch(/cc0000|rgb\(204, 0, 0\)/i);
+    const el = screen.getByTestId('t') as HTMLTextAreaElement;
+    expect(el.style.borderColor).toBe('var(--color-status-alarm-text)');
   });
 
   it('passes through rows native attribute', () => {

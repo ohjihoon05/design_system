@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Box, Stack, Text, Input, Textarea } from '@wonik/web';
+import { Button, Box, Stack, Text, Input, Textarea, useTheme } from '@wonik/web';
 import type { ButtonVariant, ButtonSize, TextVariant, TextWeight, InputSize } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -16,14 +16,26 @@ const variants: ButtonVariant[] = ['primary', 'secondary', 'text', 'outline', 'd
 const sizes: ButtonSize[] = ['sm', 'md', 'lg'];
 const inputSizes: InputSize[] = ['sm', 'md', 'lg'];
 
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <Button variant="secondary" size="sm" onClick={toggleTheme}>
+      {theme === 'light' ? '🌙 dark' : '☀️ light'}
+    </Button>
+  );
+}
+
 export function App() {
   return (
     <Stack as="main" direction="column" gap={8}>
-      <Stack as="header" direction="column" gap={3}>
-        <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
-        <Text color="secondary">
-          Button + layout primitives + form atoms + form 합성 예시.
-        </Text>
+      <Stack as="header" direction="row" justify="between" align="start" gap={5}>
+        <Stack direction="column" gap={3} style={{ flex: 1 }}>
+          <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
+          <Text color="secondary">
+            6 atoms (Button / Box / Stack / Text / Input / Textarea) + form 합성 + light/dark 테마.
+          </Text>
+        </Stack>
+        <ThemeToggle />
       </Stack>
 
       <ButtonSection />

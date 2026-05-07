@@ -26,10 +26,10 @@ describe('Button', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('applies WONIK BLUE (#273E82) as primary variant background', () => {
+  it('applies WONIK BLUE primary token as primary variant background', () => {
     render(<Button variant="primary">Primary</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveStyle({ background: '#273E82' });
+    expect(btn).toHaveStyle({ background: 'var(--color-primary)' });
   });
 
   it('text variant has no background', () => {
@@ -39,17 +39,18 @@ describe('Button', () => {
     expect(bg === '' || bg.includes('transparent') || bg.includes('rgba(0, 0, 0, 0)')).toBe(true);
   });
 
-  it('outline variant has border', () => {
+  it('outline variant has 1px solid border', () => {
     render(<Button variant="outline">Outline</Button>);
     const btn = screen.getByRole('button');
-    const styles = window.getComputedStyle(btn);
-    expect(styles.borderStyle).toBe('solid');
+    // jsdom does not parse var() inside the `border` shorthand into
+    // borderStyle/borderWidth longhands, so assert the inline style instead.
+    expect(btn.style.border).toMatch(/1px\s+solid/);
   });
 
-  it('danger variant uses red color', () => {
+  it('danger variant uses alarm status token as background', () => {
     render(<Button variant="danger">Delete</Button>);
     const btn = screen.getByRole('button');
-    expect(btn).toHaveStyle({ background: '#CC0000' });
+    expect(btn).toHaveStyle({ background: 'var(--color-status-alarm-text)' });
   });
 
   it('size sm renders smaller padding than md', () => {

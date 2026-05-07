@@ -1,0 +1,40 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "04-theme-tokens",
+  "steps": [
+    {
+      "step": 0,
+      "name": "theme-css-infra",
+      "status": "completed",
+      "started_at": "2026-05-07T18:06:44+0900",
+      "summary": "@wonik/tokens에 light/dark 양 테마 CSS 인프라 추가. theme-light.ts/theme-dark.ts source-of-truth, build-css.ts가 :root[data-theme=light/dark] 두 블록 emit (light 57 + dark 57 키 1:1, shared 27). 컴포넌트 회귀 0 (TS 토큰 reference 변경은 step 1).",
+      "completed_at": "2026-05-07T18:12:10+0900"
+    },
+    {
+      "step": 1,
+      "name": "ts-tokens-as-css-vars",
+      "status": "completed",
+      "started_at": "2026-05-07T18:12:10+0900",
+      "summary": "TS 토큰 export(colors.ts·status.ts)를 var(--color-...) reference로 전환. theme-light.ts가 hex source-of-truth로 분리(이전엔 colors.ts 재export)되어 build-css.ts는 그대로 light/dark 두 블록 emit (tokens.css byte-identical to step 0). web/dist/index.js에 var(--color-primary) 등 reference 포함, hex 직접 사용 0. vitest.setup.ts가 tokens.css를 jsdom에 inject (jsdom25는 var() resolve 못해 inline-style assertion으로 갱신, 향후 jsdom upgrade 시 자동 호환). 79개 테스트 통과. 다음 step에서 ThemeProvider/useTheme로 data-theme 토글 인프라.",
+      "completed_at": "2026-05-07T18:21:32+0900"
+    },
+    {
+      "step": 2,
+      "name": "theme-provider-react",
+      "status": "completed",
+      "started_at": "2026-05-07T18:21:33+0900",
+      "summary": "@wonik/web ThemeProvider + useTheme 추가. controlled/uncontrolled, scope=html|self, localStorage persist 지원. <html data-theme> 토글로 step 0/1 인프라 활성화. 12개 신규 테스트 추가 (총 91개 통과). 다음 step에서 sandbox에 토글 UI 붙여 6 atom × 2 theme 시각 검증.",
+      "completed_at": "2026-05-07T18:25:11+0900"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-theme-toggle",
+      "status": "completed",
+      "started_at": "2026-05-07T18:25:12+0900",
+      "summary": "apps/web-sandbox 헤더에 light/dark 테마 토글 추가. main.tsx에서 ThemeProvider wrap, App.tsx에서 useTheme 활용. localStorage persist로 새로고침 후에도 마지막 선택 유지. 6 atom × 2 theme 시각 검증 가능. Phase 04 종료 — 이후 모든 phase의 atom·composition은 자동 dark 대응.",
+      "completed_at": "2026-05-07T18:28:10+0900"
+    }
+  ],
+  "created_at": "2026-05-07T18:06:44+0900",
+  "completed_at": "2026-05-07T18:28:10+0900"
+}
