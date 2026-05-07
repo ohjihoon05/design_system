@@ -24,7 +24,7 @@
       "status": "completed",
       "started_at": "2026-05-07T16:10:11+0900",
       "summary": "@wonik/web Text primitive 추가. typography 토큰을 prop(variant/weight/color)으로 노출. polymorphic as. gradient text 금지. 다음 step에서 sandbox before/after 데모로 layout primitive 가치를 시각화.",
-      "completed_at": "2026-05-07T16:12:00+0900"
+      "completed_at": "2026-05-07T16:12:47+0900"
     },
     {
       "step": 3,
