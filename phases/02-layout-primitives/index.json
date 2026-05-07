@@ -1,0 +1,26 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "02-layout-primitives",
+  "steps": [
+    {
+      "step": 0,
+      "name": "box-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 1,
+      "name": "stack-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "text-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-layout-demo",
+      "status": "pending"
+    }
+  ]
+}
