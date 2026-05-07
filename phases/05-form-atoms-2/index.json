@@ -1,0 +1,40 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "05-form-atoms-2",
+  "steps": [
+    {
+      "step": 0,
+      "name": "checkbox-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T07:15:16+0900",
+      "summary": "@wonik/web Checkbox atom 추가. native <input type=checkbox> + accent-color로 토큰화된 체크 색. controlled/uncontrolled 지원, forwardRef, 3 size(16/20/24), invalid·disabled state. 풀 커스텀(:checked mask) 시각은 후속 polish로 보류 — 1단계 단순성 우선. 테스트 15건 추가, 총 106 passed.",
+      "completed_at": "2026-05-08T07:23:04+0900"
+    },
+    {
+      "step": 1,
+      "name": "switch-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T07:23:06+0900",
+      "summary": "@wonik/web Switch atom 추가. native checkbox + role=switch + label wrapper + visual track/thumb. :checked 분기를 위한 scoped CSS 1회 inject (토큰 reference). controlled/uncontrolled, forwardRef, 3 size, invalid·disabled. 다음 step에서 Radio가 native name 그룹으로.",
+      "completed_at": "2026-05-08T07:27:50+0900"
+    },
+    {
+      "step": 2,
+      "name": "radio-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T07:27:51+0900",
+      "summary": "@wonik/web Radio atom 추가. native input type=radio + name 속성 그룹화. accent-color로 토큰화. controlled/uncontrolled, forwardRef, 3 size, invalid·disabled. RadioGroup composition은 후속 phase. 다음 step에서 sandbox에 Checkbox·Switch·Radio 시각 매트릭스 + 폼 데모.",
+      "completed_at": "2026-05-08T07:31:32+0900"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-form-atoms-2",
+      "status": "completed",
+      "started_at": "2026-05-08T07:31:34+0900",
+      "summary": "apps/web-sandbox에 Checkbox·Switch·Radio 매트릭스 + 알림 설정 폼 데모 추가. atom 9종(Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio)이 light·dark 양 테마에서 작동. form layer atom 완성. Phase 05 종료 — 다음 phase는 display atoms 또는 composition.",
+      "completed_at": "2026-05-08T07:37:38+0900"
+    }
+  ],
+  "created_at": "2026-05-08T07:15:16+0900",
+  "completed_at": "2026-05-08T07:37:39+0900"
+}

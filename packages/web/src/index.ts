@@ -37,6 +37,15 @@ export type { InputProps, InputOwnProps, InputSize } from './Input/types';
 export { Textarea } from './Textarea';
 export type { TextareaProps, TextareaOwnProps, TextareaSize } from './Textarea/types';
 
+export { Checkbox } from './Checkbox';
+export type { CheckboxProps, CheckboxOwnProps, CheckboxSize } from './Checkbox/types';
+
+export { Switch } from './Switch';
+export type { SwitchProps, SwitchOwnProps, SwitchSize } from './Switch/types';
+
+export { Radio } from './Radio';
+export type { RadioProps, RadioOwnProps, RadioSize } from './Radio/types';
+
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export type {
   ThemeProviderProps,

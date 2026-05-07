@@ -20,6 +20,11 @@
       "dir": "04-theme-tokens",
       "status": "completed",
       "completed_at": "2026-05-07T18:28:10+0900"
+    },
+    {
+      "dir": "05-form-atoms-2",
+      "status": "completed",
+      "completed_at": "2026-05-08T07:37:39+0900"
     }
   ]
 }
