@@ -1,0 +1,26 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "04-theme-tokens",
+  "steps": [
+    {
+      "step": 0,
+      "name": "theme-css-infra",
+      "status": "pending"
+    },
+    {
+      "step": 1,
+      "name": "ts-tokens-as-css-vars",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "theme-provider-react",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-theme-toggle",
+      "status": "pending"
+    }
+  ]
+}

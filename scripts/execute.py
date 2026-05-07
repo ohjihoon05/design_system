@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         try:
-            _stream.reconfigure(encoding="utf-8", errors="replace")
+            _stream.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
         except Exception:
             pass
 
