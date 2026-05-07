@@ -7,12 +7,16 @@
       "name": "monorepo-setup",
       "status": "completed",
       "started_at": "2026-05-07T14:45:38+0900",
-      "summary": "pnpm 워크스페이스 + @wonik/tokens·@wonik/web placeholder 패키지 + Changesets(restricted) 초기화 완료. 다음 step에서 packages/tokens 실제 토큰 작성."
+      "summary": "pnpm 워크스페이스 + @wonik/tokens·@wonik/web placeholder 패키지 + Changesets(restricted) 초기화 완료. 다음 step에서 packages/tokens 실제 토큰 작성.",
+      "completed_at": "2026-05-07T14:50:05+0900"
     },
     {
       "step": 1,
       "name": "tokens-base",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-07T14:51:17+0900",
+      "summary": "@wonik/tokens 빌드 완료. dist/{index.{js,mjs,d.ts}, tokens.css} 산출. WONIK BLUE #273E82 + WONIK GRAY #ACACAC 적용. 다음 step에서 @wonik/web의 첫 컴포넌트(Button)가 이 토큰을 import.",
+      "completed_at": "2026-05-07T14:55:35+0900"
     },
     {
       "step": 2,
