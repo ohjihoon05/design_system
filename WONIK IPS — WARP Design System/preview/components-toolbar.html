@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #E8E8EA; padding: 0; font-family: 'Segoe UI', 'Inter', sans-serif; }
+  .toolbar { height: 67px; background: #F4F5F5; border-bottom: 1px solid #E1E1E4; display: flex; align-items: center; gap: 4px; padding: 5px 6px; overflow: hidden; }
+  .panel { background: #FEFEFE; border: 1px solid #E1E1E4; border-radius: 10px; height: 57px; display: flex; align-items: center; padding: 0 10px; gap: 6px; flex-shrink: 0; }
+  .btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 3px 8px; cursor: pointer; min-width: 48px; }
+  .btn__icon { display: flex; align-items: center; justify-content: center; }
+  .btn__label { font-size: 9px; line-height: 1; color: #5C5C66; white-space: nowrap; font-family: 'Segoe UI', 'Inter', sans-serif; }
+  .btn--active .btn__label { color: #273D7F; }
+  .sep { width: 1px; height: 40px; background: #E1E1E4; margin: 0 4px; flex-shrink: 0; }
+</style>
+</head><body>
+<div class="toolbar">
+
+  <!-- Logo panel -->
+  <div class="panel" style="padding:0 12px; min-width:160px;">
+    <img src="../assets/logo-wonik-ips.png" style="height:22px; object-fit:contain;">
+  </div>
+
+  <!-- User/module panel -->
+  <div class="panel" style="min-width:150px; gap:8px;">
+    <div style="width:36px;height:36px;border-radius:5px;background:#EEF0F8;border:1px solid #A8B4D8;display:flex;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#273D7F"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px;">
+      <span style="font-size:14px;color:#5C5C66;line-height:1;font-family:'Segoe UI','Inter',sans-serif;">WARP</span>
+      <span style="font-size:10px;color:#273D7F;line-height:1;display:flex;align-items:center;gap:3px;font-family:'Segoe UI','Inter',sans-serif;">
+        <svg width="9" height="11" viewBox="0 0 10 12" fill="#273D7F"><path d="M9.333 5.333C9.56 5.333 9.78 5.36 10 5.393L10 2.18 5 0 0 2.18 0 5.453C0 8.48 2.133 11.313 5 12c.367-.087.72-.213 1.067-.367C5.607 10.98 5.333 10.187 5.333 9.333 5.333 7.127 7.127 5.333 9.333 5.333Z"/></svg>
+        ADMIN
+      </span>
+    </div>
+    <span style="font-size:10px;color:#D4D4D8;margin-left:auto;">→</span>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- Run controls -->
+  <div class="panel" style="gap:4px;">
+    <div class="btn">
+      <div class="btn__icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="#5C5C66"><path d="M3 1l10 6L3 13z"/></svg></div>
+      <span class="btn__label">PLAY</span>
+    </div>
+    <div class="btn">
+      <div class="btn__icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="#5C5C66"><rect width="14" height="14" rx="1"/></svg></div>
+      <span class="btn__label">STOP</span>
+    </div>
+    <div class="btn">
+      <div class="btn__icon"><svg width="14" height="14" viewBox="0 0 14 14" stroke="#5C5C66" stroke-width="2" fill="none"><path d="M2 2l10 10M12 2L2 12"/></svg></div>
+      <span class="btn__label">CLOSE</span>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <!-- Active function button (SCD WAFER) -->
+  <div class="panel btn--active" style="background:#EEF0F8; border-color:#A8B4D8;">
+    <div class="btn btn--active">
+      <div class="btn__icon">
+        <svg width="22" height="18" viewBox="0 0 22 18" fill="#273D7F"><rect x="0" y="0" width="22" height="13" rx="1"/><rect x="7" y="14" width="8" height="2" rx="1"/><rect x="4" y="15" width="14" height="2" rx="1"/></svg>
+      </div>
+      <span class="btn__label">SCD WAFER</span>
+    </div>
+  </div>
+
+  <!-- Inactive function buttons -->
+  <div class="panel" style="gap:2px;">
+    <div class="btn">
+      <div class="btn__icon"><svg width="22" height="18" viewBox="0 0 22 18" fill="#D4D4D8"><path d="M1 1h20v14H1zm2 2v10h16V3zm3 2l5 4-5 4z"/></svg></div>
+      <span class="btn__label">PLAYBACK</span>
+    </div>
+    <div class="btn">
+      <div class="btn__icon"><svg width="22" height="18" viewBox="0 0 22 18" fill="#D4D4D8"><path d="M1 1h20v14H1zm2 2v10h16V3zm1 2h4v2H4zm0 3h7v2H4zm0 3h10v2H4z"/></svg></div>
+      <span class="btn__label">TERMINAL</span>
+    </div>
+    <div class="btn">
+      <div class="btn__icon"><svg width="22" height="18" viewBox="0 0 22 18" fill="#D4D4D8"><path d="M1 1h20v14H1zm4 11h12v2H5zm0-4h8v2H5zm0-4h6v2H5z"/></svg></div>
+      <span class="btn__label">SYS'INIT</span>
+    </div>
+    <div class="btn">
+      <div class="btn__icon"><svg width="22" height="18" viewBox="0 0 22 18" fill="#D4D4D8"><path d="M11 1L2 17h18L11 1zm0 4l6 11H5l6-11zm-1 4h2v4h-2zm0 5h2v2h-2z"/></svg></div>
+      <span class="btn__label">ALARM</span>
+    </div>
+  </div>
+
+</div>
+</body></html>

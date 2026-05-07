@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #E8E8EA; padding: 16px; font-family: 'Inter', sans-serif; }
+  .grid { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+  .group { display: flex; flex-direction: column; gap: 6px; }
+  .group-label { font-size: 8px; color: #999; text-transform: uppercase; letter-spacing: .04em; }
+
+  /* dot + label */
+  .si { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 1; }
+  .si--sm { font-size: 10px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; }
+  .dot--sm { width: 4px; height: 4px; }
+
+  /* chips */
+  .chip { display: inline-flex; align-items: center; justify-content: center; height: 17px; padding: 0 6px; font-size: 10px; line-height: 1; border: 1px solid; white-space: nowrap; }
+</style>
+</head><body>
+<div class="grid">
+
+  <div class="group">
+    <div class="group-label">Dot Indicator (12px)</div>
+    <span class="si"><span class="dot" style="background:#2B7FFF"></span><span style="color:#D9D9DC">PMC1</span></span>
+    <span class="si"><span class="dot" style="background:#2B7FFF"></span><span style="color:#D9D9DC">VTM1</span></span>
+    <span class="si"><span class="dot" style="background:#2B7FFF"></span><span style="color:#D9D9DC">LPT2</span></span>
+  </div>
+
+  <div class="group">
+    <div class="group-label">Status Label (10px)</div>
+    <span class="si si--sm"><span class="dot dot--sm" style="background:#07895E"></span><span style="color:#00D492">Ready</span></span>
+    <span class="si si--sm"><span class="dot dot--sm" style="background:#FE9A00"></span><span style="color:#D09804">Manual</span></span>
+    <span class="si si--sm"><span class="dot dot--sm" style="background:#2B7FFF"></span><span style="color:#2B7FFF">Auto</span></span>
+  </div>
+
+  <div class="group">
+    <div class="group-label">State Chips</div>
+    <span class="chip" style="background:#FFFFAC;border-color:#5C5C5C;color:#5C5C66">Init</span>
+    <span class="chip" style="background:#FEFEFE;border:2px solid #415BC6;color:#5C5C66">Auto</span>
+    <span class="chip" style="background:#FEFEFE;border-color:#D4D4D8;color:#5C5C66">Manual</span>
+    <span class="chip" style="background:#FEFEFE;border-color:#D4D4D8;color:#5C5C66">Maint</span>
+  </div>
+
+  <div class="group">
+    <div class="group-label">Wafer Slot States</div>
+    <div style="display:flex;gap:2px">
+      <div style="width:14px;height:14px;background:#FEFEFE;border:1px solid #E1E1E4;font-size:8px;display:flex;align-items:center;justify-content:center;color:#71717B">1</div>
+      <div style="width:14px;height:14px;background:#DBEAFe;border:1px solid #BBDCff;font-size:8px;display:flex;align-items:center;justify-content:center;color:#2B7FFF">2</div>
+      <div style="width:14px;height:14px;background:#FFE2E2;border:1px solid #FFCACA;font-size:8px;display:flex;align-items:center;justify-content:center;color:#C00">3</div>
+      <div style="width:14px;height:14px;background:#F3E8FF;border:1px solid #E9D1FF;font-size:8px;display:flex;align-items:center;justify-content:center;color:#7C3AED">4</div>
+      <div style="width:14px;height:14px;background:#E9D1FF;border:1px solid #E9D1FF;font-size:8px;display:flex;align-items:center;justify-content:center;color:#7C3AED">5</div>
+      <div style="width:14px;height:14px;background:#E7E7E7;border:1px solid #D4D4D8;font-size:8px;display:flex;align-items:center;justify-content:center;color:#71717B">6</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">
+      <span style="display:flex;align-items:center;gap:3px;font-size:8px;color:#888"><span style="width:8px;height:8px;background:#FEFEFE;border:1px solid #E1E1E4;display:inline-block"></span>Empty</span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:8px;color:#888"><span style="width:8px;height:8px;background:#DBEAFe;border:1px solid #BBDCff;display:inline-block"></span>Occupied</span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:8px;color:#888"><span style="width:8px;height:8px;background:#FFE2E2;border:1px solid #FFCACA;display:inline-block"></span>Alarm</span>
+      <span style="display:flex;align-items:center;gap:3px;font-size:8px;color:#888"><span style="width:8px;height:8px;background:#F3E8FF;border:1px solid #E9D1FF;display:inline-block"></span>Processed</span>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-label">Chamber State List</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div class="chip" style="background:#FFFFAC;border-color:#5C5C5C;color:#5C5C66;width:80px;justify-content:center">Init</div>
+      <div class="chip" style="background:#FEFEFE;border-color:#D4D4D8;color:#00D492;width:80px;justify-content:center">Ready</div>
+      <div class="chip" style="background:#DBEAFe;border-color:#BBDCff;color:#2B7FFF;width:80px;justify-content:center">Run</div>
+      <div class="chip" style="background:#E8F9F3;border-color:#07895E;color:#07895E;width:80px;justify-content:center">Process End</div>
+      <div class="chip" style="background:#EAF3FF;border-color:#BBDCff;color:#2B7FFF;width:80px;justify-content:center">Access Ready</div>
+      <div class="chip" style="background:#FFE2E2;border-color:#FFCACA;color:#C00;width:80px;justify-content:center">Alarm</div>
+      <div class="chip" style="background:#FFCACA;border-color:#FFCACA;color:#C00;width:80px;justify-content:center">Abort</div>
+    </div>
+  </div>
+
+</div>
+</body></html>

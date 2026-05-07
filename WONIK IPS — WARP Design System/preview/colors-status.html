@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #F0F0F2; padding: 16px; font-family: 'Segoe UI','Inter',sans-serif; }
+  .grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .state { display: flex; flex-direction: column; width: 128px; gap: 4px; }
+  .chip {
+    height: 32px; border-radius: 4px; border: 1px solid;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; font-size: 10px; font-family: 'Segoe UI','Inter',sans-serif; line-height: 1;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .meta { font-size: 8px; color: #999; font-family: monospace; }
+  .section-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: .06em; width: 100%; margin: 8px 0 2px; }
+</style>
+</head><body>
+<div class="grid">
+  <div class="section-label">Idle / Neutral</div>
+
+  <div class="state">
+    <div class="chip" style="background:#F4F5F5; border-color:#D4D4D8; color:#71717B;">
+      <span class="dot" style="background:#D4D4D8"></span> Idle
+    </div>
+    <div class="meta">#F4F5F5 · #71717B</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#FFFFAC; border-color:#D4C800; color:#7A6E00;">
+      <span class="dot" style="background:#D4C800"></span> Init
+    </div>
+    <div class="meta">#FFFFAC · #7A6E00</div>
+  </div>
+
+  <div class="section-label">Active / Progress</div>
+
+  <div class="state">
+    <div class="chip" style="background:#E6FAF4; border-color:#07895E; color:#00A876;">
+      <span class="dot" style="background:#07895E"></span> Ready
+    </div>
+    <div class="meta">#E6FAF4 · #00A876</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#EEF0F8; border-color:#A8B4D8; color:#273D7F;">
+      <span class="dot" style="background:#273D7F"></span> Run
+    </div>
+    <div class="meta">#EEF0F8 · #273D7F</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#EEF0F8; border-color:#A8B4D8; color:#273D7F;">
+      <span class="dot" style="background:#273D7F"></span> Access Ready
+    </div>
+    <div class="meta">#EEF0F8 · #273D7F</div>
+  </div>
+
+  <div class="section-label">Completed</div>
+
+  <div class="state">
+    <div class="chip" style="background:#D6F0E6; border-color:#07895E; color:#07895E;">
+      <span class="dot" style="background:#07895E"></span> Process End
+    </div>
+    <div class="meta">#D6F0E6 · #07895E</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#F3E8FF; border-color:#C4A8E8; color:#7C3AED;">
+      <span class="dot" style="background:#7C3AED"></span> Processed
+    </div>
+    <div class="meta">#F3E8FF · #7C3AED</div>
+  </div>
+
+  <div class="section-label">Warning / Fault</div>
+
+  <div class="state">
+    <div class="chip" style="background:#FFF4DC; border-color:#FE9A00; color:#D09804;">
+      <span class="dot" style="background:#FE9A00"></span> Manual
+    </div>
+    <div class="meta">#FFF4DC · #D09804</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#FFE2E2; border-color:#FFCACA; color:#CC0000;">
+      <span class="dot" style="background:#CC0000"></span> Alarm
+    </div>
+    <div class="meta">#FFE2E2 · #CC0000</div>
+  </div>
+
+  <div class="state">
+    <div class="chip" style="background:#FFCACA; border-color:#FF9999; color:#CC0000;">
+      <span class="dot" style="background:#CC0000"></span> Abort
+    </div>
+    <div class="meta">#FFCACA · #CC0000</div>
+  </div>
+
+</div>
+</body></html>

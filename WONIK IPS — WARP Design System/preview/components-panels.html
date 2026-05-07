@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #E8E8EA; padding: 16px; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; gap: 12px; }
+
+  /* Light panel */
+  .panel { background: #FEFEFE; border: 1px solid #E1E1E4; border-radius: 10px; overflow: hidden; width: 320px; }
+  .panel-hdr { background: #F4F5F5; border-bottom: 1px solid #E1E1E4; height: 40px; display: flex; align-items: center; padding: 0 13px; }
+  .panel-hdr span { font-size: 10px; color: #71717B; line-height: 1; }
+  .panel-body { padding: 0; }
+  .row { display: flex; height: 20px; border-bottom: 1px solid #E1E1E4; }
+  .row:last-child { border-bottom: none; }
+  .cell { flex: 1; display: flex; align-items: center; padding: 0 6px; border-right: 1px solid #E1E1E4; font-size: 10px; color: #71717B; line-height: 1; }
+  .cell:last-child { border-right: none; }
+  .cell--label { background: #FEFEFE; flex: 0 0 108px; }
+
+  /* Dark panel */
+  .dark-panel { background: #1E1E21; border: 1px solid #52525C; border-radius: 10px; overflow: hidden; width: 320px; }
+  .dark-hdr { background: #252528; border-bottom: 1px solid #52525C; border-radius: 10px 10px 0 0; height: 40px; display: flex; align-items: center; padding: 0 13px; }
+  .dark-hdr span { font-size: 10px; color: #D9D9DC; line-height: 1; }
+</style>
+</head><body>
+
+<!-- Light panel with table rows -->
+<div class="panel">
+  <div class="panel-hdr"><span>Load Port Information</span></div>
+  <div class="panel-body">
+    <div class="row"><div class="cell cell--label">LPT1</div><div class="cell"></div></div>
+    <div class="row"><div class="cell cell--label" style="padding-left:14px">Carrier ID</div><div class="cell"></div></div>
+    <div class="row">
+      <div class="cell cell--label" style="padding-left:14px">Status</div>
+      <div class="cell"><span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#00D492"><span style="width:4px;height:4px;border-radius:50%;background:#07895E;display:inline-block"></span>Ready</span></div>
+      <div class="cell" style="font-size:10px;color:#71717B">Acess Mode</div>
+      <div class="cell"><span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#D09804"><span style="width:4px;height:4px;border-radius:50%;background:#FE9A00;display:inline-block"></span>Manual</span></div>
+    </div>
+    <div class="row"><div class="cell cell--label">LPT2</div><div class="cell"></div></div>
+    <div class="row"><div class="cell cell--label" style="padding-left:14px">Carrier ID</div><div class="cell"></div></div>
+    <div class="row">
+      <div class="cell cell--label" style="padding-left:14px">Status</div>
+      <div class="cell"><span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#00D492"><span style="width:4px;height:4px;border-radius:50%;background:#07895E;display:inline-block"></span>Ready</span></div>
+      <div class="cell" style="font-size:10px;color:#71717B">Acess Mode</div>
+      <div class="cell"><span style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:#D09804"><span style="width:4px;height:4px;border-radius:50%;background:#FE9A00;display:inline-block"></span>Manual</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Dark panel (Frame69 style) -->
+<div class="dark-panel">
+  <div class="dark-hdr"><span>● Process Chamber Information</span></div>
+  <div style="padding: 10px 13px; display: flex; flex-direction: column; gap: 6px;">
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#D9D9DC"><span>Recipe Name</span><span style="color:#E0E0E3">ㅡㅡ</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#D9D9DC"><span>Step Name</span><span style="color:#E0E0E3">0 / 0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#D9D9DC"><span>Recipe Time</span><span style="color:#E0E0E3">0.00 / 0.00</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#D9D9DC"><span>Thickness</span><span style="color:#E0E0E3">5500 / 10000</span></div>
+  </div>
+</div>
+
+</body></html>

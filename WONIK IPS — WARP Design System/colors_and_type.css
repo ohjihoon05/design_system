@@ -1,0 +1,347 @@
+/*
+ * WONIK IPS — WARP Design System
+ * colors_and_type.css
+ * Source: Lightmode.fig (1 page, Frame 264, 1920×1080)
+ * Font: Inter (Google Fonts)
+ */
+
+@font-face {
+  font-family: 'Segoe UI';
+  src: url('fonts/segoeui.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Fallback: Inter for weights not covered by the uploaded file */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* ─────────────────────────────────────────
+   BASE COLOR TOKENS
+   ───────────────────────────────────────── */
+
+:root {
+  /* Surfaces */
+  --color-canvas:            #E8E8EA;   /* rgb(236,236,238) — main screen bg */
+  --color-surface:           #FEFEFE;   /* rgb(254,254,254) — panel / card bg */
+  --color-surface-subtle:    #F4F5F5;   /* rgb(244,245,245) — panel header strip */
+  --color-surface-inset:     #F5F5F5;   /* rgb(245,245,245) — nested panel tint */
+  --color-surface-mid:       #E7E7E7;   /* rgb(231,231,231) — equipment canvas area */
+  --color-surface-white:     #FFFFFF;   /* pure white accents */
+
+  /* Dark surfaces (top toolbar) */
+  --color-dark-base:         #1E1E21;   /* rgb(30,30,33)  — toolbar bg */
+  --color-dark-header:       #252528;   /* rgb(37,37,40)  — dark panel header */
+  --color-dark-hover:        #2D2D31;   /* interpolated   — hover state */
+
+  /* Borders */
+  --color-border:            #E1E1E4;   /* rgb(225,225,228) — light panel border */
+  --color-border-mid:        #D4D4D8;   /* rgb(212,212,216) — mid border */
+  --color-border-dark:       #5C5C5C;   /* rgb(92,92,92)   — dark chip border */
+  --color-border-panel-dark: #52525C;   /* rgb(82,82,92)   — dark toolbar border */
+
+  /* Primary blue */
+  --color-primary:           #273D7F;   /* brand primary — active, links, dots */
+  --color-primary-bg:        #D6DCF0;   /* primary light tint bg */
+  --color-primary-stroke:    #A8B4D8;   /* primary light border */
+  --color-primary-pale:      #EEF0F8;   /* very pale primary */
+  --color-primary-selected:  #1C2E60;   /* selected mode border (darker) */
+
+  /* Text — light panels */
+  --color-text-primary:      #71717B;   /* rgb(113,113,123) — main label text */
+  --color-text-secondary:    #5C5C66;   /* rgb(92,92,102)  — secondary / values */
+  --color-text-dim:          #52525C;   /* rgb(82,82,92)   — dim / tertiary */
+  --color-text-dark:         #303030;   /* rgb(48,48,48)   — darkest text */
+
+  /* Text — dark toolbar */
+  --color-text-on-dark:      #D9D9DC;   /* rgb(217,217,220) — labels on dark */
+  --color-text-on-dark-val:  #E0E0E3;   /* rgb(224,224,227) — values on dark */
+  --color-text-on-dark-dim:  #D1D1D4;   /* slightly dimmer */
+
+  /* Status — state-driven semantic colors */
+  /* Principle: each state has unambiguous hue — green=ok, blue=active, yellow=init, orange=warn, red=critical, purple=complete */
+  --color-status-idle-bg:     #F4F5F5;   /* Idle/Standby — neutral gray */
+  --color-status-idle-border: #D4D4D8;
+  --color-status-idle-text:   #71717B;
+
+  --color-status-init-bg:     #FFFFAC;   /* Init — yellow (starting up) */
+  --color-status-init-border: #D4C800;
+  --color-status-init-text:   #7A6E00;
+
+  --color-status-ready-bg:    #E6FAF4;   /* Ready — green (go) */
+  --color-status-ready-dot:   #07895E;
+  --color-status-ready-text:  #00A876;
+
+  --color-status-run-bg:      #EEF0F8;   /* Run — primary blue (active) */
+  --color-status-run-border:  #A8B4D8;
+  --color-status-run-dot:     #273D7F;
+  --color-status-run-text:    #273D7F;
+
+  --color-status-processend-bg:   #D6F0E6; /* Process End — deep green (done) */
+  --color-status-processend-text: #07895E;
+
+  --color-status-access-bg:   #EEF0F8;   /* Access Ready — light primary */
+  --color-status-access-text: #273D7F;
+
+  --color-status-warn-dot:    #FE9A00;   /* Warning/Manual — amber */
+  --color-status-warn-text:   #D09804;
+  --color-status-warn-bg:     #FFF4DC;
+
+  --color-status-alarm-bg:    #FFE2E2;   /* Alarm — red (critical attention) */
+  --color-status-alarm-border:#FFCACA;
+  --color-status-alarm-text:  #CC0000;
+
+  --color-status-abort-bg:    #FFCACA;   /* Abort — deep red (fault) */
+  --color-status-abort-text:  #CC0000;
+
+  --color-status-processed-bg:   #F3E8FF; /* Processed — purple (result recorded) */
+  --color-status-processed-text: #7C3AED;
+
+  --color-status-ok-dot:     #07895E;   /* generic ok dot */
+  --color-status-ok-text:    #00D492;
+
+  /* ─────────────────────────────────────────
+     SEMANTIC TOKENS
+     ───────────────────────────────────────── */
+
+  /* Backgrounds */
+  --bg-screen:        var(--color-canvas);
+  --bg-panel:         var(--color-surface);
+  --bg-panel-header:  var(--color-surface-subtle);
+  --bg-toolbar:       var(--color-dark-base);
+  --bg-toolbar-item-active: var(--color-dark-header);
+
+  /* Text roles */
+  --text-label:       var(--color-text-primary);
+  --text-value:       var(--color-text-secondary);
+  --text-dim:         var(--color-text-dim);
+  --text-toolbar:     var(--color-text-on-dark);
+  --text-active:      var(--color-primary);
+
+  /* Borders */
+  --border-panel:     1px solid var(--color-border);
+  --border-mid:       1px solid var(--color-border-mid);
+  --border-dark:      1px solid var(--color-border-panel-dark);
+  --border-selected:  2px solid var(--color-primary-selected);
+
+  /* ─────────────────────────────────────────
+     SPACING TOKENS
+     ───────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  6px;
+  --space-3:  8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 22px;
+  --space-8: 32px;
+
+  /* ─────────────────────────────────────────
+     BORDER RADIUS
+     ───────────────────────────────────────── */
+  --radius-sm:    5px;   /* toolbar icon buttons */
+  --radius-md:   10px;   /* panels, cards, chips */
+  --radius-full: 50%;    /* status dots */
+
+  /* Panel header: top corners only */
+  --radius-panel-header: 10px 10px 0 0;
+
+  /* ─────────────────────────────────────────
+     TYPOGRAPHY SCALE
+     ───────────────────────────────────────── */
+  --font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --line-height: 1;          /* 100% — tight industrial */
+
+  --font-size-micro:    8px;   /* sensor readouts, tiny status */
+  --font-size-label-sm: 10px;  /* icon captions, sub-labels */
+  --font-size-label:    12px;  /* primary labels, values, status text */
+  --font-size-title-sm: 14px;  /* section/module names (WARP, etc.) */
+
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;  /* use sparingly — not heavily present in source */
+
+  /* ─────────────────────────────────────────
+     COMPONENT TOKENS
+     ───────────────────────────────────────── */
+  --panel-padding-x:   13px;
+  --panel-header-h:    40px;
+  --toolbar-h:         67px;
+  --table-cell-h:      20px;
+  --status-chip-h:     17px;
+  --status-dot-size:   4px;
+  --toolbar-icon-size: 36px;
+}
+
+/* ─────────────────────────────────────────
+   BASE RESETS FOR WARP INTERFACES
+   ───────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height);
+  color: var(--color-text-primary);
+  background: var(--color-canvas);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─────────────────────────────────────────
+   SEMANTIC ELEMENT STYLES
+   ───────────────────────────────────────── */
+
+/* Panel card */
+.panel {
+  background: var(--bg-panel);
+  border: var(--border-panel);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.panel-header {
+  background: var(--bg-panel-header);
+  border-bottom: var(--border-panel);
+  border-radius: var(--radius-panel-header);
+  height: var(--panel-header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--panel-padding-x);
+}
+
+.panel-header-dark {
+  background: var(--color-dark-header);
+  border-bottom: var(--border-dark);
+  border-radius: var(--radius-panel-header);
+  height: var(--panel-header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--panel-padding-x);
+}
+
+/* Panel label (header title) */
+.panel-title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-label);
+  line-height: var(--line-height);
+}
+
+/* Status dot + label */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height);
+}
+
+.status-dot {
+  width: var(--status-dot-size);
+  height: var(--status-dot-size);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.status-dot--ok   { background: var(--color-status-ok-dot); }
+.status-dot--warn { background: var(--color-status-warn-dot); }
+.status-dot--blue { background: var(--color-primary); }
+
+.status-text--ok   { color: var(--color-status-ok-text); }
+.status-text--warn { color: var(--color-status-warn-text); }
+.status-text--blue { color: var(--color-primary); }
+
+/* Status chips (rectangular bg) */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm);
+  line-height: var(--line-height);
+  border: 1px solid;
+  font-weight: var(--font-weight-regular);
+}
+
+.status-chip--init      { background: var(--color-status-init-bg);      border-color: var(--color-border-dark); color: var(--color-text-secondary); }
+.status-chip--alarm     { background: var(--color-status-alarm-bg);     border-color: var(--color-status-abort-stroke); color: #C00; }
+.status-chip--abort     { background: var(--color-status-abort-bg);     border-color: var(--color-status-abort-stroke); color: #C00; }
+.status-chip--processed { background: var(--color-status-processed-bg); border-color: var(--color-status-aborted-stroke); color: #7C3AED; }
+.status-chip--selected  { background: var(--bg-panel); border: var(--border-selected); color: var(--color-text-secondary); }
+
+/* Macro value text */
+.macro-value {
+  font-family: var(--font-family);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height);
+  color: var(--color-text-on-dark-val);
+}
+
+/* Table cell */
+.table-cell {
+  height: var(--table-cell-h);
+  border: 1px solid var(--color-border);
+  background: var(--bg-panel);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm);
+  color: var(--text-label);
+  line-height: var(--line-height);
+}
+
+/* Toolbar */
+.toolbar {
+  background: var(--bg-toolbar);
+  height: var(--toolbar-h);
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-panel {
+  background: var(--color-dark-base);
+  border: 1px solid var(--color-border-panel-dark);
+  border-radius: var(--radius-md);
+  height: var(--toolbar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.toolbar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--color-text-on-dark);
+}
+
+.toolbar-btn--active {
+  color: var(--color-primary);
+}
+
+.toolbar-btn__icon {
+  color: var(--color-border-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-btn--active .toolbar-btn__icon {
+  color: var(--color-primary);
+}
+
+.toolbar-btn__label {
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-sm);
+  line-height: var(--line-height);
+  color: inherit;
+}
