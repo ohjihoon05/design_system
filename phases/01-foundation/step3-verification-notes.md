@@ -15,20 +15,20 @@
 ## 시각 체크리스트 (사용자가 브라우저에서 직접 확인 후 체크)
 > `pnpm -F web-sandbox dev` 실행 → http://localhost:5174 접속 → 각 항목 확인.
 
-- [ ] **Primary variant**: 짙은 navy(`#273E82`, WONIK BLUE) 배경 + 흰 글자
-- [ ] **Secondary variant**: 흰 배경 + 회색 border + 회색 글자
-- [ ] **Text variant**: 배경 없음, 회색 글자만
-- [ ] **Outline variant**: 흰 배경 + WONIK BLUE border + WONIK BLUE 글자
-- [ ] **Danger variant**: 빨강 배경(`#CC0000`) + 흰 글자
-- [ ] **Sizes**: sm < md < lg 높이 차이가 시각적으로 분명한가? (24/32/40px)
-- [ ] **Disabled**: opacity 0.5 + cursor `not-allowed` 적용?
-- [ ] **Click handler**: "Click me" 클릭 시 alert 뜨는가?
-- [ ] **AI 슬롭 anti-pattern**: gradient text·glass effect·glow shadow 없는가?
-- [ ] **컴파일 에러**: 브라우저 콘솔에 에러 없는가?
+- [x] **Primary variant**: 짙은 navy(`#273E82`, WONIK BLUE) 배경 + 흰 글자
+- [x] **Secondary variant**: 흰 배경 + 회색 border + 회색 글자
+- [x] **Text variant**: 배경 없음, 회색 글자만
+- [x] **Outline variant**: 흰 배경 + WONIK BLUE border + WONIK BLUE 글자
+- [x] **Danger variant**: 빨강 배경(`#CC0000`) + 흰 글자
+- [x] **Sizes**: sm < md < lg 높이 차이가 시각적으로 분명한가? (24/32/40px)
+- [x] **Disabled**: opacity 0.5 + cursor `not-allowed` 적용?
+- [x] **Click handler**: "Click me" 클릭 시 alert 뜨는가?
+- [x] **AI 슬롭 anti-pattern**: gradient text·glass effect·glow shadow 없는가?
+- [x] **컴파일 에러**: 브라우저 콘솔에 에러 없는가?
 
 ## 발견 사항
-- (사용자 시각 검증 후 기록 — 예: "outline border 너무 얇음", "lg가 ppt hero에는 작아 보일 수 있음")
-- (이슈 없으면 "이슈 없음")
+- 이슈 없음 (사용자 시각 검증 통과, 2026-05-08).
+- 참고: `tokens/status.ts`의 `processed` semantic status가 보라(`#7C3AED`) 사용 — brand color 아닌 status 전용으로 의도적 유지.
 
 ## 다음 액션
 - 시각 검증 통과 시: `phases/01-foundation/index.json` step 3을 `"status": "completed"`로 변경.
