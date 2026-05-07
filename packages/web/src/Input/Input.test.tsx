@@ -44,10 +44,10 @@ describe('Input', () => {
     expect(ai === null || ai === 'false').toBe(true);
   });
 
-  it('invalid=true applies alarm border color (#CC0000)', () => {
+  it('invalid=true applies alarm border color via status token', () => {
     render(<Input invalid data-testid="i" />);
-    const styles = window.getComputedStyle(screen.getByTestId('i'));
-    expect(styles.borderColor.toLowerCase()).toMatch(/cc0000|rgb\(204, 0, 0\)/i);
+    const el = screen.getByTestId('i') as HTMLInputElement;
+    expect(el.style.borderColor).toBe('var(--color-status-alarm-text)');
   });
 
   it('size="sm" renders height 24px', () => {

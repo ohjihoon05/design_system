@@ -1,7 +1,7 @@
 // Dark theme source-of-truth (ADR-009).
 // Starting point: ppt's slate-900 family + WONIK BLUE adjusted for dark surfaces.
 // Refinable by designer later — but the key set MUST stay 1:1 with theme-light.
-import { statusTokens } from './status';
+import { statusTokensLight } from './theme-light';
 
 export const surfacesDark = {
   canvas: '#0F141C',
@@ -48,7 +48,7 @@ export const textDark = {
 
 // Status semantic colors are intentionally shared with light for now.
 // Contrast issues, if found, get a separate phase.
-export const statusTokensDark = statusTokens;
+export const statusTokensDark = statusTokensLight;
 
 export const themeDark = {
   surfaces: surfacesDark,

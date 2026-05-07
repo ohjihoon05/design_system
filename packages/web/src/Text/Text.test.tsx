@@ -45,22 +45,22 @@ describe('Text', () => {
     expect(screen.getByTestId('t')).toHaveStyle({ fontWeight: '500' });
   });
 
-  it('applies color via text token (color="dark" -> #303030)', () => {
+  it('applies color via text token (color="dark" -> text-dark var)', () => {
     render(
       <Text color="dark" data-testid="t">
         x
       </Text>,
     );
-    expect(screen.getByTestId('t')).toHaveStyle({ color: '#303030' });
+    expect(screen.getByTestId('t')).toHaveStyle({ color: 'var(--color-text-dark)' });
   });
 
-  it('color="brand" applies WONIK BLUE (#273E82)', () => {
+  it('color="brand" applies WONIK BLUE primary token', () => {
     render(
       <Text color="brand" data-testid="t">
         x
       </Text>,
     );
-    expect(screen.getByTestId('t')).toHaveStyle({ color: '#273E82' });
+    expect(screen.getByTestId('t')).toHaveStyle({ color: 'var(--color-primary)' });
   });
 
   it('applies text-align', () => {
