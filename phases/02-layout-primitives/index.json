@@ -13,7 +13,10 @@
     {
       "step": 1,
       "name": "stack-primitive",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-07T16:07:31+0900",
+      "summary": "@wonik/web Stack primitive 추가. Box 위에 layer로 flex(direction/gap/align/justify/wrap) 제공. token-indexed gap. 다음 step에서 Text가 typography 토큰을 wrap.",
+      "completed_at": "2026-05-07T16:09:00+0900"
     },
     {
       "step": 2,
