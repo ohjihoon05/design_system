@@ -1,0 +1,26 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "05-form-atoms-2",
+  "steps": [
+    {
+      "step": 0,
+      "name": "checkbox-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 1,
+      "name": "switch-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "radio-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-form-atoms-2",
+      "status": "pending"
+    }
+  ]
+}
