@@ -184,6 +184,7 @@
   },
   "active": "e869e97acec56caf",
   "lastOpenFiles": [
+    "phases/03-form-primitives/step3-output.json",
     "packages/web/dist/index.d.ts",
     "packages/web/dist/index.d.mts",
     "packages/tokens/dist/tokens.css",
@@ -194,7 +195,6 @@
     "apps/web-sandbox/dist/assets/index-DopEtiJi.js",
     "packages/web/src/Textarea/index.ts",
     "packages/web/src/Textarea/Textarea.tsx",
-    "packages/web/src/Textarea/Textarea.test.tsx",
     "phases/03-form-primitives/step3.md",
     "phases/03-form-primitives/step2.md",
     "phases/03-form-primitives/step1.md",
