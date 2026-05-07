@@ -1,0 +1,29 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "01-foundation",
+  "steps": [
+    {
+      "step": 0,
+      "name": "monorepo-setup",
+      "status": "completed",
+      "started_at": "2026-05-07T14:45:38+0900",
+      "summary": "pnpm 워크스페이스 + @wonik/tokens·@wonik/web placeholder 패키지 + Changesets(restricted) 초기화 완료. 다음 step에서 packages/tokens 실제 토큰 작성."
+    },
+    {
+      "step": 1,
+      "name": "tokens-base",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "web-button",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "web-sandbox-verify",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-05-07T14:45:38+0900"
+}
