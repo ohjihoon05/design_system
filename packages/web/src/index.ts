@@ -43,6 +43,9 @@ export type { CheckboxProps, CheckboxOwnProps, CheckboxSize } from './Checkbox/t
 export { Switch } from './Switch';
 export type { SwitchProps, SwitchOwnProps, SwitchSize } from './Switch/types';
 
+export { Radio } from './Radio';
+export type { RadioProps, RadioOwnProps, RadioSize } from './Radio/types';
+
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export type {
   ThemeProviderProps,

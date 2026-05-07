@@ -21,7 +21,10 @@
     {
       "step": 2,
       "name": "radio-primitive",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-08T07:27:51+0900",
+      "summary": "@wonik/web Radio atom 추가. native input type=radio + name 속성 그룹화. accent-color로 토큰화. controlled/uncontrolled, forwardRef, 3 size, invalid·disabled. RadioGroup composition은 후속 phase. 다음 step에서 sandbox에 Checkbox·Switch·Radio 시각 매트릭스 + 폼 데모.",
+      "completed_at": "2026-05-08T07:30:00+0900"
     },
     {
       "step": 3,
