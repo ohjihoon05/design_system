@@ -184,6 +184,8 @@
   },
   "active": "e869e97acec56caf",
   "lastOpenFiles": [
+    "apps/web-sandbox/dist/assets/index-BR-9cBfT.js",
+    "phases/03-form-primitives/step1-output.json",
     "apps/web-sandbox/dist/assets/index-DopEtiJi.js",
     "packages/web/dist/index.d.ts",
     "packages/web/dist/index.d.mts",
@@ -193,8 +195,6 @@
     "packages/web/src/Textarea/Textarea.test.tsx",
     "packages/web/src/Textarea/types.ts",
     "packages/web/src/Textarea",
-    "phases/03-form-primitives/step0-output.json",
-    "apps/web-sandbox/dist/assets/index-iCcK2eU3.js",
     "phases/03-form-primitives/step3.md",
     "phases/03-form-primitives/step2.md",
     "phases/03-form-primitives/step1.md",
