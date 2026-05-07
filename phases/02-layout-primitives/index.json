@@ -1,0 +1,40 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "02-layout-primitives",
+  "steps": [
+    {
+      "step": 0,
+      "name": "box-primitive",
+      "status": "completed",
+      "started_at": "2026-05-07T16:02:55+0900",
+      "summary": "@wonik/web Box primitive 추가. polymorphic (as prop), token-indexed padding/margin/bg/border/rounded. AI 슬롭 0. 다음 step에서 Stack이 이 위에 올라감.",
+      "completed_at": "2026-05-07T16:07:30+0900"
+    },
+    {
+      "step": 1,
+      "name": "stack-primitive",
+      "status": "completed",
+      "started_at": "2026-05-07T16:07:31+0900",
+      "summary": "@wonik/web Stack primitive 추가. Box 위에 layer로 flex(direction/gap/align/justify/wrap) 제공. token-indexed gap. 다음 step에서 Text가 typography 토큰을 wrap.",
+      "completed_at": "2026-05-07T16:10:11+0900"
+    },
+    {
+      "step": 2,
+      "name": "text-primitive",
+      "status": "completed",
+      "started_at": "2026-05-07T16:10:11+0900",
+      "summary": "@wonik/web Text primitive 추가. typography 토큰을 prop(variant/weight/color)으로 노출. polymorphic as. gradient text 금지. 다음 step에서 sandbox before/after 데모로 layout primitive 가치를 시각화.",
+      "completed_at": "2026-05-07T16:12:47+0900"
+    },
+    {
+      "step": 3,
+      "name": "sandbox-layout-demo",
+      "status": "completed",
+      "started_at": "2026-05-07T16:12:48+0900",
+      "summary": "apps/web-sandbox에 Box·Stack·Text 데모 + Before/After 비교 추가. layout primitive의 가치(token-driven spacing·color)가 시각적으로 입증됨. Phase 02 종료.",
+      "completed_at": "2026-05-07T16:16:53+0900"
+    }
+  ],
+  "created_at": "2026-05-07T16:02:55+0900",
+  "completed_at": "2026-05-07T16:16:54+0900"
+}
