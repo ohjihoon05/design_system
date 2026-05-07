@@ -21,6 +21,15 @@ from typing import Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 
+# Windows의 기본 콘솔 인코딩(cp949)이 한글·em-dash 등 비-ASCII 문자를 처리하지 못해
+# print() 호출이 UnicodeEncodeError로 죽는 것을 방지한다.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
 
 @contextlib.contextmanager
 def progress_indicator(label: str):
@@ -108,7 +117,10 @@ class StepExecutor:
 
     def _run_git(self, *args) -> subprocess.CompletedProcess:
         cmd = ["git"] + list(args)
-        return subprocess.run(cmd, cwd=self._root, capture_output=True, text=True)
+        return subprocess.run(
+            cmd, cwd=self._root, capture_output=True, text=True,
+            encoding="utf-8", errors="replace",
+        )
 
     def _checkout_branch(self):
         branch = f"feat-{self._phase_name}"
