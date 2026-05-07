@@ -16,7 +16,7 @@
       "status": "completed",
       "started_at": "2026-05-07T18:12:10+0900",
       "summary": "TS 토큰 export(colors.ts·status.ts)를 var(--color-...) reference로 전환. theme-light.ts가 hex source-of-truth로 분리(이전엔 colors.ts 재export)되어 build-css.ts는 그대로 light/dark 두 블록 emit (tokens.css byte-identical to step 0). web/dist/index.js에 var(--color-primary) 등 reference 포함, hex 직접 사용 0. vitest.setup.ts가 tokens.css를 jsdom에 inject (jsdom25는 var() resolve 못해 inline-style assertion으로 갱신, 향후 jsdom upgrade 시 자동 호환). 79개 테스트 통과. 다음 step에서 ThemeProvider/useTheme로 data-theme 토글 인프라.",
-      "completed_at": "2026-05-07T18:20:30+0900"
+      "completed_at": "2026-05-07T18:21:32+0900"
     },
     {
       "step": 2,
