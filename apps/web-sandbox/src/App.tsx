@@ -1,5 +1,16 @@
+import { useState } from 'react';
 import { Button, Box, Stack, Text, Input, Textarea } from '@wonik/web';
 import type { ButtonVariant, ButtonSize, TextVariant, TextWeight, InputSize } from '@wonik/web';
+
+// Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
+// 컴포넌트 내부에서 ...rest로 그대로 spread되어 native label로 전달된다.
+// sandbox에서 `<Text as="label" htmlFor="...">` 패턴을 type-safe하게 쓰기 위한 augmentation.
+// 진짜 type-safe label 합성은 다음 phase의 FormField에서 다룬다.
+declare module '@wonik/web' {
+  interface TextProps {
+    htmlFor?: string;
+  }
+}
 
 const variants: ButtonVariant[] = ['primary', 'secondary', 'text', 'outline', 'danger'];
 const sizes: ButtonSize[] = ['sm', 'md', 'lg'];
@@ -11,7 +22,7 @@ export function App() {
       <Stack as="header" direction="column" gap={3}>
         <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
         <Text color="secondary">
-          Button + layout primitives (Box / Stack / Text) + form atoms (Input / Textarea) 시각 검증.
+          Button + layout primitives + form atoms + form 합성 예시.
         </Text>
       </Stack>
 
@@ -21,6 +32,7 @@ export function App() {
       <TextSection />
       <InputMatrixSection />
       <TextareaMatrixSection />
+      <FormExampleSection />
       <BeforeAfterSection />
     </Stack>
   );
@@ -314,6 +326,123 @@ function TextareaMatrixSection() {
           </Box>
         </Stack>
       </Stack>
+    </Stack>
+  );
+}
+
+function FormExampleSection() {
+  const [name, setName]     = useState('');
+  const [model, setModel]   = useState('');
+  const [serial, setSerial] = useState('');
+  const [memo, setMemo]     = useState('');
+  const [submitted, setSubmitted] = useState<null | { name: string; model: string; serial: string; memo: string }>(null);
+
+  const nameInvalid = submitted !== null && name.trim() === '';
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (name.trim() === '') {
+      setSubmitted({ name, model, serial, memo });
+      return;
+    }
+    alert(JSON.stringify({ name, model, serial, memo }, null, 2));
+    setSubmitted({ name, model, serial, memo });
+  }
+
+  function handleReset() {
+    setName('');
+    setModel('');
+    setSerial('');
+    setMemo('');
+    setSubmitted(null);
+  }
+
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Form 합성 예시 — atom만으로</Text>
+      <Text color="secondary">
+        Button + Stack + Text(as="label") + Input + Textarea만으로 짠 "장비 등록" 폼.
+        FormField 같은 composition 컴포넌트 없이, atom 5개로 실제 사용 가능한 폼이 만들어집니다.
+        여기서 label·error 메시지를 매번 손으로 묶어야 한다는 것을 느꼈다면 — 그게 다음 phase의 FormField 동기입니다.
+      </Text>
+
+      <Box
+        as="form"
+        onSubmit={handleSubmit}
+        p={7}
+        bg="surface"
+        border="mid"
+        rounded="md"
+        style={{ maxWidth: 480 }}
+      >
+        <Stack direction="column" gap={5}>
+          {/* name 필드 — invalid 데모 */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-name">
+              장비 이름 <Text as="span" color="brand">*</Text>
+            </Text>
+            <Input
+              id="eq-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              invalid={nameInvalid}
+              placeholder="예: ATM-3000"
+            />
+            {nameInvalid && (
+              <Text variant="labelSm" color="brand" weight="medium" style={{ color: '#CC0000' }}>
+                장비 이름은 필수입니다.
+              </Text>
+            )}
+          </Stack>
+
+          {/* model 필드 */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-model">모델</Text>
+            <Input
+              id="eq-model"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              placeholder="예: PE-CVD"
+            />
+          </Stack>
+
+          {/* serial 필드 — leftAddon으로 prefix */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-serial">시리얼 번호</Text>
+            <Input
+              id="eq-serial"
+              value={serial}
+              onChange={(e) => setSerial(e.target.value)}
+              leftAddon={<Text color="dim">SN-</Text>}
+              placeholder="000000"
+            />
+          </Stack>
+
+          {/* memo — Textarea */}
+          <Stack direction="column" gap={2}>
+            <Text variant="label" weight="medium" as="label" htmlFor="eq-memo">메모</Text>
+            <Textarea
+              id="eq-memo"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              rows={3}
+              placeholder="설치 위치, 특이 사항 등"
+            />
+          </Stack>
+
+          {/* 액션 버튼 */}
+          <Stack direction="row" justify="end" gap={3}>
+            <Button variant="text" onClick={handleReset} type="button">취소</Button>
+            <Button variant="primary" type="submit">등록</Button>
+          </Stack>
+        </Stack>
+      </Box>
+
+      {submitted && !nameInvalid && (
+        <Text color="secondary" variant="labelSm">
+          ✓ 마지막 제출: {submitted.name} / {submitted.model || '-'} / {submitted.serial || '-'}
+        </Text>
+      )}
     </Stack>
   );
 }
