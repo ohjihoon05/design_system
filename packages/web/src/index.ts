@@ -30,3 +30,6 @@ export type {
   TextAlign,
   TextAs,
 } from './Text/types';
+
+export { Input } from './Input';
+export type { InputProps, InputOwnProps, InputSize } from './Input/types';
