@@ -7,7 +7,8 @@
       "name": "box-primitive",
       "status": "completed",
       "started_at": "2026-05-07T16:02:55+0900",
-      "summary": "@wonik/web Box primitive 추가. polymorphic (as prop), token-indexed padding/margin/bg/border/rounded. AI 슬롭 0. 다음 step에서 Stack이 이 위에 올라감."
+      "summary": "@wonik/web Box primitive 추가. polymorphic (as prop), token-indexed padding/margin/bg/border/rounded. AI 슬롭 0. 다음 step에서 Stack이 이 위에 올라감.",
+      "completed_at": "2026-05-07T16:07:30+0900"
     },
     {
       "step": 1,
