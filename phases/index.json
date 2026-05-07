@@ -18,7 +18,8 @@
     },
     {
       "dir": "04-theme-tokens",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-07T18:28:10+0900"
     }
   ]
 }
