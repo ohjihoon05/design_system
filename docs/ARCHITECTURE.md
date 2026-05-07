@@ -1,24 +1,100 @@
 # 아키텍처
 
 ## 디렉토리 구조
+
 ```
-src/
-├── app/               # 페이지 + API 라우트
-├── components/        # UI 컴포넌트
-├── types/             # TypeScript 타입 정의
-├── lib/               # 유틸리티 + 헬퍼
-└── services/          # 외부 API 래퍼
+design_system/                          # 모노레포 루트 (이미 git init 완료)
+├── packages/
+│   ├── tokens/                         # @wonik/tokens — 공통 토큰 base
+│   │   ├── src/
+│   │   │   ├── colors.ts               # 색 토큰 (TypeScript 정의)
+│   │   │   ├── typography.ts           # 타이포 scale
+│   │   │   ├── spacing.ts              # spacing/radius/border
+│   │   │   ├── status.ts               # status semantic 토큰 (ok/warn/alarm/init/processed)
+│   │   │   └── index.ts                # public API
+│   │   ├── dist/                       # 빌드 산출물 (CSS variables + JS exports)
+│   │   └── package.json
+│   │
+│   └── web/                            # @wonik/web — Web 컴포넌트 (1단계)
+│       ├── src/
+│       │   ├── Button/                 # 1단계 첫 컴포넌트
+│       │   ├── Input/                  # Input + Textarea (후속)
+│       │   ├── Card/                   # (후속)
+│       │   ├── Modal/                  # (후속)
+│       │   ├── Toast/                  # (후속)
+│       │   ├── Spinner/                # Spinner + Skeleton (후속)
+│       │   ├── Tabs/                   # (후속)
+│       │   ├── Dropdown/               # Dropdown + Select (후속)
+│       │   ├── SortableList/           # ppt에서 도출 (후속)
+│       │   ├── InlineEditableText/     # ppt에서 도출 (후속)
+│       │   └── index.ts
+│       └── package.json
+│
+│   # 다른 form factor용 패키지(@wonik/app, @wonik/warp 등)는 진짜 product 등장 시
+│   # 형태(별도 패키지 vs 컴포넌트 variant)를 보고 결정. 미리 박지 않는다.
+│
+├── apps/
+│   ├── web-sandbox/                    # @wonik/web 시각 검증용 minimal Vite app (1단계)
+│   └── docs-site/                      # (미래) docs.wonik.com — 토스 TDS docs 같은 사이트
+│
+├── docs/                               # 본 디자인 시스템의 결정·가이드 문서
+│   ├── PRD.md
+│   ├── ARCHITECTURE.md                 # 이 문서
+│   ├── ADR.md
+│   └── UI_GUIDE.md
+│
+├── WONIK IPS — WARP Design System/     # 디자인 시안 (concept reference) — production 자산 아님
+│   ├── colors_and_type.css             # 토큰 베이스의 영감 source — packages/tokens/src/* 가 여기서 추출됨
+│   ├── ui_kits/warp/*.jsx              # 산업용 컴포넌트 시안 — 진짜 HMI product 등장 시 참조
+│   ├── preview/*.html                  # 시각 reference — 그대로 보존
+│   └── assets/                         # 산업용 product 자산 (장비 다이어그램 등) — HMI product 등장 시 이전
+│
+├── package.json                        # 모노레포 루트 (pnpm workspaces)
+├── pnpm-workspace.yaml                 # workspace 정의
+└── turbo.json                          # (선택) Turborepo 빌드 캐시 설정
 ```
 
 ## 패턴
-{사용하는 디자인 패턴 (예: Server Components 기본, 인터랙션이 필요한 곳만 Client Component)}
+
+- **패키지 의존성**: `@wonik/web`은 `@wonik/tokens`에만 의존. 향후 다른 form factor용 패키지가 추가되면 동일하게 `@wonik/tokens`에만 의존하고 컴포넌트 패키지끼리는 서로 import하지 않는 게 원칙.
+- **토큰-컴포넌트 분리**: 색·타이포·spacing 같은 raw 값은 토큰 패키지에만 존재. 컴포넌트 패키지는 토큰을 import해서 사용 (하드코딩된 hex/px 값 금지).
+- **CSS 변수 + JS exports**: 토큰은 두 가지 형태로 export — CSS 변수(`--color-primary` 등 런타임 사용)와 TypeScript 상수(타입 안전 import). 두 표현은 동일 source에서 생성.
+- **Headless 우선**: 가능하면 동작과 스타일 분리. Radix UI primitives 같은 unstyled 베이스 위에 토큰을 입히는 패턴 검토.
+- **ppt 적용 패턴**: ppt가 `@wonik/web`을 import하고 컴포넌트를 사용. 부족한 컴포넌트가 발견되면 ppt에서 임시로 만들지 말고 `@wonik/web`에 추가 후 import (incremental dogfood).
+- **시각 검증 — apps/web-sandbox/**: 1단계에서 ppt에 본격 적용 전, minimal Vite app(`apps/web-sandbox`)에서 컴포넌트가 React 19 + Vite + Tailwind v4 환경에서 정상 작동하는지 sandbox 검증. ppt 환경과 stack 동일.
 
 ## 데이터 흐름
+
 ```
-{데이터가 어떻게 흐르는지 (예:
-사용자 입력 → Client Component → API Route → 외부 API → 응답 → UI 업데이트
-)}
+[디자이너 결정]
+     ↓
+docs/UI_GUIDE.md 업데이트 (디자인 원칙·토큰 규칙)
+     ↓
+packages/tokens/src/* 업데이트 (실제 토큰 값)
+     ↓
+[빌드: pnpm -F @wonik/tokens build]
+     ↓
+@wonik/tokens dist/ — CSS 변수 + TS 정의
+     ↓
+packages/warp/, packages/web/ 가 import
+     ↓
+[빌드: pnpm -F @wonik/web build]
+     ↓
+사내 npm 레지스트리 / GitHub Packages 에 publish
+     ↓
+[ppt frontend/package.json] npm install @wonik/web
+     ↓
+ppt UI에서 import & 사용 → 실 사용자(사내 팀원)에게 도달
+     ↓
+[피드백 / 부족 발견] → 디자이너 결정으로 루프
 ```
 
 ## 상태 관리
-{상태 관리 방식 (예: 서버 상태는 Server Components, 클라이언트 상태는 useState/useReducer)}
+
+디자인 시스템에서 "상태 관리"는 일반 앱과 다르게 **버전·변경 propagation**을 의미한다.
+
+- **버전 관리**: 각 패키지는 semver 따름. 토큰 변경(예: primary color 교체)은 minor 또는 major bump. Changesets(`@changesets/cli`)로 변경 이력 관리.
+- **변경 propagation**: 토큰 패키지가 bump되면 warp/web도 새 버전으로 publish하는 게 원칙. 모노레포라서 한 번의 PR에서 모든 패키지 동기화 가능.
+- **Breaking change 정책**: 토큰 이름 변경·삭제는 major bump + ADR 작성. 컴포넌트 prop 변경 동일.
+- **사용처 추적**: 어느 product가 어느 버전을 쓰는지 추적할 수 있도록 publish 후 Slack/사내 게시판에 공지(향후). 1단계에서는 ppt 한 군데뿐이라 수동 관리.
+- **컴포넌트 내부 상태**: 컴포넌트는 가능하면 stateless (props 기반). 필요한 경우(Modal open/close, Tabs active 등)는 controlled + uncontrolled 둘 다 지원하는 React 표준 패턴 사용. 글로벌 state 라이브러리 (Zustand/Redux 등) 의존 금지 — consumer가 자유롭게 선택해야 함.

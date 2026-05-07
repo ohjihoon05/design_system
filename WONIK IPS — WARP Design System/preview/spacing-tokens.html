@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #F0F0F2; padding: 16px; font-family: 'Inter', sans-serif; }
+  .section { margin-bottom: 16px; }
+  .section-title { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .tokens { display: flex; flex-wrap: wrap; gap: 8px; }
+  .token { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .bar { background: #2B7FFF; border-radius: 2px; height: 12px; }
+  .token-label { font-size: 8px; color: #888; white-space: nowrap; }
+  .radii { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .radius-demo { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .radius-box { width: 36px; height: 36px; background: #FEFEFE; border: 1px solid #E1E1E4; }
+  .radius-label { font-size: 8px; color: #888; }
+  .border-row { display: flex; flex-direction: column; gap: 8px; }
+  .border-line { height: 0; display: flex; align-items: center; gap: 8px; }
+  .border-sample { width: 80px; }
+  .border-meta { font-size: 9px; color: #888; font-family: monospace; }
+</style>
+</head><body>
+
+<div class="section">
+  <div class="section-title">Spacing Scale</div>
+  <div class="tokens">
+    <div class="token"><div class="bar" style="width:4px"></div><div class="token-label">4px — space-1</div></div>
+    <div class="token"><div class="bar" style="width:6px"></div><div class="token-label">6px — space-2</div></div>
+    <div class="token"><div class="bar" style="width:8px"></div><div class="token-label">8px — space-3</div></div>
+    <div class="token"><div class="bar" style="width:10px"></div><div class="token-label">10px — space-4</div></div>
+    <div class="token"><div class="bar" style="width:12px"></div><div class="token-label">12px — space-5</div></div>
+    <div class="token"><div class="bar" style="width:16px"></div><div class="token-label">16px — space-6</div></div>
+    <div class="token"><div class="bar" style="width:22px"></div><div class="token-label">22px — space-7</div></div>
+    <div class="token"><div class="bar" style="width:32px"></div><div class="token-label">32px — space-8</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Border Radius</div>
+  <div class="radii">
+    <div class="radius-demo"><div class="radius-box" style="border-radius:0"></div><div class="radius-label">0 — chips</div></div>
+    <div class="radius-demo"><div class="radius-box" style="border-radius:5px"></div><div class="radius-label">5px — icon btns</div></div>
+    <div class="radius-demo"><div class="radius-box" style="border-radius:10px"></div><div class="radius-label">10px — panels</div></div>
+    <div class="radius-demo"><div class="radius-box" style="border-radius:50%;width:36px;height:36px"></div><div class="radius-label">50% — dots</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Borders</div>
+  <div class="border-row">
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:80px;height:0;border-top:1px solid #E1E1E4"></div><span style="font-size:9px;color:#888;font-family:monospace">1px #E1E1E4 — light panel</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:80px;height:0;border-top:1px solid #D4D4D8"></div><span style="font-size:9px;color:#888;font-family:monospace">1px #D4D4D8 — mid</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:80px;height:0;border-top:1px solid #52525C"></div><span style="font-size:9px;color:#888;font-family:monospace">1px #52525C — dark toolbar</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="width:80px;height:0;border-top:2px solid #415BC6"></div><span style="font-size:9px;color:#888;font-family:monospace">2px #415BC6 — selected mode</span></div>
+  </div>
+</div>
+
+</body></html>

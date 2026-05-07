@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; background: #E8E8EA; padding: 16px; font-family: 'Inter', sans-serif; }
+  table { width: 480px; border-collapse: collapse; background: #FEFEFE; border-radius: 10px; overflow: hidden; border: 1px solid #E1E1E4; }
+  .thead { background: #F4F5F5; }
+  th, td { border: 1px solid #E1E1E4; font-size: 10px; color: #71717B; padding: 0 6px; height: 20px; font-weight: 400; text-align: left; }
+  th { font-size: 10px; color: #52525C; }
+  .lbl { background: #FEFEFE; width: 100px; }
+  .chip { display: inline-flex; align-items: center; justify-content: center; height: 13px; padding: 0 4px; font-size: 9px; border: 1px solid; line-height: 1; }
+  .si { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; }
+  .dot { width: 4px; height: 4px; border-radius: 50%; display: inline-block; }
+  caption { text-align: left; font-size: 9px; color: #999; padding: 0 0 4px; caption-side: top; }
+</style>
+</head><body>
+<table>
+  <thead class="thead">
+    <tr><th class="lbl">Module</th><th>Recipe Name</th><th>Step Name</th><th>Cycle</th><th>Clean Count</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="lbl"><span style="background:#1E1E21;color:#FEFEFE;border-radius:4px;padding:1px 6px;font-size:9px;white-space:nowrap">PMC1</span></td>
+      <td></td><td></td>
+      <td style="font-size:10px;color:#71717B">0 / 0</td>
+      <td style="font-size:10px;color:#71717B">16 / 5</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2" style="font-size:10px;color:#71717B">Step Group</td>
+      <td style="font-size:10px;color:#71717B">0 ~ 0</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2" style="font-size:10px;color:#71717B">Recipe Time</td>
+      <td style="font-size:10px;color:#71717B">0.00 / 0.00</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2" style="font-size:10px;color:#71717B">Thickness</td>
+      <td style="font-size:10px;color:#71717B">5500 / 10000</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="lbl"><span style="background:#1E1E21;color:#FEFEFE;border-radius:4px;padding:1px 6px;font-size:9px;white-space:nowrap">PMC2</span></td>
+      <td></td><td></td>
+      <td style="font-size:10px;color:#71717B">0 / 0</td>
+      <td style="font-size:10px;color:#71717B">16 / 5</td>
+    </tr>
+    <tr>
+      <td class="lbl"><span style="background:#1E1E21;color:#FEFEFE;border-radius:4px;padding:1px 6px;font-size:9px;white-space:nowrap">LPT1</span></td>
+      <td></td>
+      <td></td>
+      <td><span class="si"><span class="dot" style="background:#07895E"></span><span style="color:#00D492">Ready</span></span></td>
+      <td><span class="si"><span class="dot" style="background:#FE9A00"></span><span style="color:#D09804">Manual</span></span></td>
+    </tr>
+  </tbody>
+</table>
+</body></html>

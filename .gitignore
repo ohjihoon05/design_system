@@ -4,6 +4,16 @@ out/
 next-env.d.ts
 tsconfig.tsbuildinfo
 
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# pnpm
+.pnpm-store/
+
+# Turbo cache
+.turbo/
+
 # phase execution outputs
 phases/**/phase*-output.json
 phases/**/step*-output.json
