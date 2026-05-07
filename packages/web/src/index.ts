@@ -40,6 +40,9 @@ export type { TextareaProps, TextareaOwnProps, TextareaSize } from './Textarea/t
 export { Checkbox } from './Checkbox';
 export type { CheckboxProps, CheckboxOwnProps, CheckboxSize } from './Checkbox/types';
 
+export { Switch } from './Switch';
+export type { SwitchProps, SwitchOwnProps, SwitchSize } from './Switch/types';
+
 export { ThemeProvider, useTheme } from './ThemeProvider';
 export type {
   ThemeProviderProps,
