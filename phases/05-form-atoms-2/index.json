@@ -29,7 +29,10 @@
     {
       "step": 3,
       "name": "sandbox-form-atoms-2",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-08T07:31:34+0900",
+      "summary": "apps/web-sandbox에 Checkbox·Switch·Radio 매트릭스 + 알림 설정 폼 데모 추가. atom 9종(Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio)이 light·dark 양 테마에서 작동. form layer atom 완성. Phase 05 종료 — 다음 phase는 display atoms 또는 composition.",
+      "completed_at": "2026-05-08T07:36:00+0900"
     }
   ],
   "created_at": "2026-05-08T07:15:16+0900"

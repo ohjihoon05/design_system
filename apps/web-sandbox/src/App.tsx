@@ -1,6 +1,15 @@
 import { useState } from 'react';
-import { Button, Box, Stack, Text, Input, Textarea, useTheme } from '@wonik/web';
-import type { ButtonVariant, ButtonSize, TextVariant, TextWeight, InputSize } from '@wonik/web';
+import {
+  Button, Box, Stack, Text, Input, Textarea,
+  Checkbox, Switch, Radio,
+  useTheme,
+} from '@wonik/web';
+import type {
+  ButtonVariant, ButtonSize,
+  TextVariant, TextWeight,
+  InputSize,
+  CheckboxSize, SwitchSize, RadioSize,
+} from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
 // 컴포넌트 내부에서 ...rest로 그대로 spread되어 native label로 전달된다.
@@ -15,6 +24,9 @@ declare module '@wonik/web' {
 const variants: ButtonVariant[] = ['primary', 'secondary', 'text', 'outline', 'danger'];
 const sizes: ButtonSize[] = ['sm', 'md', 'lg'];
 const inputSizes: InputSize[] = ['sm', 'md', 'lg'];
+const checkboxSizes: CheckboxSize[] = ['sm', 'md', 'lg'];
+const switchSizes: SwitchSize[] = ['sm', 'md', 'lg'];
+const radioSizes: RadioSize[] = ['sm', 'md', 'lg'];
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -32,7 +44,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            6 atoms (Button / Box / Stack / Text / Input / Textarea) + form 합성 + light/dark 테마.
+            9 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -45,6 +57,13 @@ export function App() {
       <InputMatrixSection />
       <TextareaMatrixSection />
       <FormExampleSection />
+
+      {/* phase 05 — form atoms 2 */}
+      <CheckboxMatrixSection />
+      <SwitchMatrixSection />
+      <RadioMatrixSection />
+      <BooleanFormSection />
+
       <BeforeAfterSection />
     </Stack>
   );
@@ -455,6 +474,218 @@ function FormExampleSection() {
           ✓ 마지막 제출: {submitted.name} / {submitted.model || '-'} / {submitted.serial || '-'}
         </Text>
       )}
+    </Stack>
+  );
+}
+
+function CheckboxMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Checkbox</Text>
+      <Text color="secondary">
+        4 state(default / checked / invalid / disabled) × 3 size(sm / md / lg). native input + accent-color로 토큰화.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">default (unchecked)</Text>
+        <Stack direction="row" gap={6} align="center">
+          {checkboxSizes.map((s) => <Checkbox key={s} size={s} />)}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">checked</Text>
+        <Stack direction="row" gap={6} align="center">
+          {checkboxSizes.map((s) => <Checkbox key={s} size={s} defaultChecked />)}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid</Text>
+        <Stack direction="row" gap={6} align="center">
+          {checkboxSizes.map((s) => <Checkbox key={s} size={s} invalid />)}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">disabled</Text>
+        <Stack direction="row" gap={6} align="center">
+          {checkboxSizes.map((s) => <Checkbox key={s} size={s} disabled />)}
+          {checkboxSizes.map((s) => <Checkbox key={`${s}-c`} size={s} disabled defaultChecked />)}
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function SwitchMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Switch</Text>
+      <Text color="secondary">
+        같은 boolean 의미, 다른 시각. label wrapper + visual track/thumb. role="switch" 부착으로 a11y.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">off / on</Text>
+        <Stack direction="row" gap={6} align="center">
+          {switchSizes.map((s) => <Switch key={s} size={s} />)}
+          {switchSizes.map((s) => <Switch key={`${s}-on`} size={s} defaultChecked />)}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid / disabled</Text>
+        <Stack direction="row" gap={6} align="center">
+          <Switch invalid />
+          <Switch invalid defaultChecked />
+          <Switch disabled />
+          <Switch disabled defaultChecked />
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function RadioMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Radio</Text>
+      <Text color="secondary">
+        native name 속성으로 그룹화. 같은 name 안의 라디오 중 1개만 선택. RadioGroup composition은 후속 phase.
+      </Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">default / checked</Text>
+        <Stack direction="row" gap={6} align="center">
+          {radioSizes.map((s) => <Radio key={s} name={`size-${s}`} size={s} />)}
+          {radioSizes.map((s) => <Radio key={`${s}-c`} name={`size-${s}-c`} size={s} defaultChecked />)}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">native name 그룹 (3개 중 1개 선택 — 클릭해보세요)</Text>
+        <Stack direction="row" gap={6} align="center">
+          <Stack direction="row" gap={3} align="center">
+            <Radio name="recipe" value="cvd" defaultChecked id="r-cvd" />
+            <Text as="label" htmlFor="r-cvd">CVD</Text>
+          </Stack>
+          <Stack direction="row" gap={3} align="center">
+            <Radio name="recipe" value="etch" id="r-etch" />
+            <Text as="label" htmlFor="r-etch">Etch</Text>
+          </Stack>
+          <Stack direction="row" gap={3} align="center">
+            <Radio name="recipe" value="depo" id="r-depo" />
+            <Text as="label" htmlFor="r-depo">Deposition</Text>
+          </Stack>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">invalid / disabled</Text>
+        <Stack direction="row" gap={6} align="center">
+          <Radio invalid />
+          <Radio disabled />
+          <Radio disabled defaultChecked />
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function BooleanFormSection() {
+  const [emailNotify, setEmailNotify] = useState(true);
+  const [pushNotify, setPushNotify] = useState(false);
+  const [autoSync, setAutoSync] = useState(true);
+  const [theme, setTheme] = useState<'system' | 'light' | 'dark'>('system');
+  const [submitted, setSubmitted] = useState<unknown>(null);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitted({ emailNotify, pushNotify, autoSync, theme });
+  }
+
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Form 합성 — 알림 설정</Text>
+      <Text color="secondary">
+        Checkbox 2개(email/push) + Switch 1개(auto sync) + Radio group(theme) + Button. atom 4종으로 짠 controlled form.
+      </Text>
+
+      <Box
+        as="form"
+        onSubmit={handleSubmit}
+        p={7}
+        bg="surface"
+        border="mid"
+        rounded="md"
+        style={{ maxWidth: 480 }}
+      >
+        <Stack direction="column" gap={6}>
+          <Stack direction="column" gap={3}>
+            <Text variant="label" weight="medium" as="h3">알림 채널</Text>
+            <Stack direction="column" gap={3}>
+              <Stack direction="row" gap={3} align="center">
+                <Checkbox
+                  id="notif-email"
+                  checked={emailNotify}
+                  onChange={(e) => setEmailNotify(e.target.checked)}
+                />
+                <Text as="label" htmlFor="notif-email">이메일</Text>
+              </Stack>
+              <Stack direction="row" gap={3} align="center">
+                <Checkbox
+                  id="notif-push"
+                  checked={pushNotify}
+                  onChange={(e) => setPushNotify(e.target.checked)}
+                />
+                <Text as="label" htmlFor="notif-push">푸시</Text>
+              </Stack>
+            </Stack>
+          </Stack>
+
+          <Stack direction="row" gap={3} align="center" justify="between">
+            <Stack direction="column" gap={2}>
+              <Text variant="label" weight="medium" as="label" htmlFor="auto-sync">자동 동기화</Text>
+              <Text variant="labelSm" color="dim">백그라운드에서 5분마다 동기화</Text>
+            </Stack>
+            <Switch
+              id="auto-sync"
+              checked={autoSync}
+              onChange={(e) => setAutoSync(e.target.checked)}
+            />
+          </Stack>
+
+          <Stack direction="column" gap={3}>
+            <Text variant="label" weight="medium" as="h3">테마</Text>
+            <Stack direction="row" gap={6}>
+              {(['system', 'light', 'dark'] as const).map((t) => (
+                <Stack key={t} direction="row" gap={3} align="center">
+                  <Radio
+                    id={`theme-${t}`}
+                    name="theme-pref"
+                    value={t}
+                    checked={theme === t}
+                    onChange={() => setTheme(t)}
+                  />
+                  <Text as="label" htmlFor={`theme-${t}`}>{t}</Text>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+
+          <Stack direction="row" justify="end" gap={3}>
+            <Button variant="text" type="button" onClick={() => setSubmitted(null)}>리셋</Button>
+            <Button variant="primary" type="submit">저장</Button>
+          </Stack>
+        </Stack>
+      </Box>
+
+      {submitted ? (
+        <Box as="pre" p={3} bg="surfaceSubtle" rounded="sm" style={{ overflow: 'auto', fontSize: 11, lineHeight: 1.4, margin: 0 }}>
+          {JSON.stringify(submitted, null, 2)}
+        </Box>
+      ) : null}
     </Stack>
   );
 }
