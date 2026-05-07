@@ -7,7 +7,8 @@
       "name": "theme-css-infra",
       "status": "completed",
       "started_at": "2026-05-07T18:06:44+0900",
-      "summary": "@wonik/tokens에 light/dark 양 테마 CSS 인프라 추가. theme-light.ts/theme-dark.ts source-of-truth, build-css.ts가 :root[data-theme=light/dark] 두 블록 emit (light 57 + dark 57 키 1:1, shared 27). 컴포넌트 회귀 0 (TS 토큰 reference 변경은 step 1)."
+      "summary": "@wonik/tokens에 light/dark 양 테마 CSS 인프라 추가. theme-light.ts/theme-dark.ts source-of-truth, build-css.ts가 :root[data-theme=light/dark] 두 블록 emit (light 57 + dark 57 키 1:1, shared 27). 컴포넌트 회귀 0 (TS 토큰 reference 변경은 step 1).",
+      "completed_at": "2026-05-07T18:12:10+0900"
     },
     {
       "step": 1,
