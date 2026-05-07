@@ -16,7 +16,7 @@
       "status": "completed",
       "started_at": "2026-05-07T14:51:17+0900",
       "summary": "@wonik/tokens 빌드 완료. dist/{index.{js,mjs,d.ts}, tokens.css} 산출. WONIK BLUE #273E82 + WONIK GRAY #ACACAC 적용. 다음 step에서 @wonik/web의 첫 컴포넌트(Button)가 이 토큰을 import.",
-      "completed_at": "2026-05-07T14:55:35+0900"
+      "completed_at": "2026-05-07T14:56:23+0900"
     },
     {
       "step": 2,
