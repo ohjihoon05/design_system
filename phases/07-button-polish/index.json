@@ -1,0 +1,16 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "07-button-polish",
+  "steps": [
+    {
+      "step": 0,
+      "name": "button-lg-hero",
+      "status": "completed",
+      "started_at": "2026-05-08T13:16:01+0900",
+      "completed_at": "2026-05-08T13:20:23+0900",
+      "summary": "@wonik/web Button size lg를 hero/CTA 강조 의미로 풍부화. fontWeight medium(500) + radius md(10px) 자동 적용. md/sm 회귀 0, prop signature 변경 0(breaking 0). 토큰 추가 0(이미 있던 medium·md 활용). dogfood trial 2 → phase 07 closed loop의 첫 사례. semibold(600)는 의도적으로 도입 안 함 — UI_GUIDE의 'no bold weights' 정신 보존."
+    }
+  ],
+  "created_at": "2026-05-08T13:16:01+0900",
+  "completed_at": "2026-05-08T13:20:24+0900"
+}

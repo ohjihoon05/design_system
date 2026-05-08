@@ -76,4 +76,28 @@ describe('Button', () => {
     render(<Button variant="primary">x</Button>);
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
+
+  it('size lg uses fontWeight medium for hero emphasis', () => {
+    render(<Button size="lg">Hero</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveStyle({ fontWeight: '500' });
+  });
+
+  it('size lg uses radius.md for hero softness', () => {
+    render(<Button size="lg">Hero</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveStyle({ borderRadius: '10px' });
+  });
+
+  it('size md keeps regular weight (no hero emphasis)', () => {
+    render(<Button size="md">Default</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveStyle({ fontWeight: '400' });
+  });
+
+  it('size sm keeps radius.sm (no hero softness)', () => {
+    render(<Button size="sm">Compact</Button>);
+    const btn = screen.getByRole('button');
+    expect(btn).toHaveStyle({ borderRadius: '5px' });
+  });
 });
