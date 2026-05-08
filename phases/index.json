@@ -33,7 +33,8 @@
     },
     {
       "dir": "07-button-polish",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-08T13:20:24+0900"
     }
   ]
 }
