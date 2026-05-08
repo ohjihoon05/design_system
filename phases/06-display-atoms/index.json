@@ -16,7 +16,7 @@
       "status": "completed",
       "started_at": "2026-05-08T09:50:18+0900",
       "summary": "@wonik/web Skeleton atom 추가. 3 variant(text/rect/circle) + width/height override. opacity pulse animation은 scoped @keyframes inject. surfaces.surfaceMid 토큰 reference로 light/dark 자동. ppt 슬라이드 placeholder의 baseline. 다음 step에서 sandbox 시각 매트릭스.",
-      "completed_at": "2026-05-08T09:52:30+0900"
+      "completed_at": "2026-05-08T09:53:33+0900"
     },
     {
       "step": 2,
