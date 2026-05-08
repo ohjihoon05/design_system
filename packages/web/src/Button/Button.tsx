@@ -44,7 +44,13 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
   sm: { padding: `${space[1]} ${space[3]}`, fontSize: fontSize.labelSm, height: '24px' },
   md: { padding: `${space[3]} ${space[5]}`, fontSize: fontSize.label, height: '32px' },
-  lg: { padding: `${space[3]} ${space[6]}`, fontSize: fontSize.titleSm, height: '40px' },
+  lg: {
+    padding: `${space[3]} ${space[6]}`,
+    fontSize: fontSize.titleSm,
+    height: '40px',
+    fontWeight: fontWeight.medium,
+    borderRadius: radius.md,
+  },
 };
 
 const baseStyle: CSSProperties = {
