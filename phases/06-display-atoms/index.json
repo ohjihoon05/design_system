@@ -1,0 +1,24 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "06-display-atoms",
+  "steps": [
+    {
+      "step": 0,
+      "name": "spinner-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T09:44:31+0900",
+      "summary": "@wonik/web Spinner atom 추가. border trick + scoped @keyframes inject. 3 size(16/24/40), aria-live polite + role status, label prop. ppt 'AI 생성 중' 시나리오 등 로딩 state의 baseline. 다음 step에서 Skeleton."
+    },
+    {
+      "step": 1,
+      "name": "skeleton-primitive",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "sandbox-display-atoms",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-05-08T09:44:31+0900"
+}
