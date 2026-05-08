@@ -21,7 +21,10 @@
     {
       "step": 2,
       "name": "sandbox-display-atoms",
-      "status": "pending"
+      "status": "completed",
+      "started_at": "2026-05-08T09:53:34+0900",
+      "summary": "apps/web-sandbox에 Spinner·Skeleton 매트릭스 + AI 슬라이드 생성 시나리오 데모 추가. atom 11종이 light·dark 양 테마에서 작동. ppt dogfood 시나리오를 atom만으로 그려보는 첫 실험. Phase 06 종료 — 다음 phase는 display atom 확장(Badge·Card 검토) 또는 ppt 첫 적용.",
+      "completed_at": "2026-05-08T09:57:00+0900"
     }
   ],
   "created_at": "2026-05-08T09:44:31+0900"
