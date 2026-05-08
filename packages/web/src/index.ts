@@ -52,3 +52,9 @@ export type {
   ThemeMode,
   ThemeContextValue,
 } from './ThemeProvider/types';
+
+export { Spinner } from './Spinner';
+export type { SpinnerProps, SpinnerOwnProps, SpinnerSize } from './Spinner/types';
+
+export { Skeleton } from './Skeleton';
+export type { SkeletonProps, SkeletonOwnProps, SkeletonVariant } from './Skeleton/types';

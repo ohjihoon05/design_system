@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Button, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
+  Spinner, Skeleton,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -9,6 +10,7 @@ import type {
   TextVariant, TextWeight,
   InputSize,
   CheckboxSize, SwitchSize, RadioSize,
+  SpinnerSize,
 } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -27,6 +29,7 @@ const inputSizes: InputSize[] = ['sm', 'md', 'lg'];
 const checkboxSizes: CheckboxSize[] = ['sm', 'md', 'lg'];
 const switchSizes: SwitchSize[] = ['sm', 'md', 'lg'];
 const radioSizes: RadioSize[] = ['sm', 'md', 'lg'];
+const spinnerSizes: SpinnerSize[] = ['sm', 'md', 'lg'];
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -44,7 +47,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            9 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio) + form 합성 + light/dark 테마.
+            11 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -63,6 +66,11 @@ export function App() {
       <SwitchMatrixSection />
       <RadioMatrixSection />
       <BooleanFormSection />
+
+      {/* phase 06 — display atoms */}
+      <SpinnerMatrixSection />
+      <SkeletonMatrixSection />
+      <LoadingScenarioSection />
 
       <BeforeAfterSection />
     </Stack>
@@ -686,6 +694,141 @@ function BooleanFormSection() {
           {JSON.stringify(submitted, null, 2)}
         </Box>
       ) : null}
+    </Stack>
+  );
+}
+
+function SpinnerMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Spinner</Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">size</Text>
+        <Stack direction="row" align="center" gap={6}>
+          {spinnerSizes.map((size) => (
+            <Stack key={size} direction="column" align="center" gap={2}>
+              <Spinner size={size} label={`Loading ${size}`} />
+              <Text variant="labelSm" color="secondary">{size}</Text>
+            </Stack>
+          ))}
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">color override (style.borderTopColor 외부 제어)</Text>
+        <Stack direction="row" align="center" gap={6}>
+          <Stack direction="column" align="center" gap={2}>
+            <Spinner size="md" />
+            <Text variant="labelSm" color="secondary">default (primary)</Text>
+          </Stack>
+          <Stack direction="column" align="center" gap={2}>
+            <Spinner size="md" style={{ borderTopColor: 'var(--color-status-alarm-text)' }} />
+            <Text variant="labelSm" color="secondary">alarm</Text>
+          </Stack>
+          <Stack direction="column" align="center" gap={2}>
+            <Spinner size="md" style={{ borderTopColor: 'var(--color-text-secondary)' }} />
+            <Text variant="labelSm" color="secondary">muted</Text>
+          </Stack>
+        </Stack>
+      </Stack>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">inline with text</Text>
+        <Stack direction="row" align="center" gap={3}>
+          <Spinner size="sm" label="AI 생성 중" />
+          <Text>AI가 슬라이드를 생성 중입니다…</Text>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function SkeletonMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Skeleton</Text>
+
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">variant</Text>
+
+        <Stack direction="column" gap={2} style={{ width: 320 }}>
+          <Text variant="labelSm" color="secondary">text (default — 1em high, 100% wide)</Text>
+          <Skeleton variant="text" />
+          <Skeleton variant="text" width="80%" />
+          <Skeleton variant="text" width="60%" />
+        </Stack>
+
+        <Stack direction="row" gap={5} align="start">
+          <Stack direction="column" gap={2}>
+            <Text variant="labelSm" color="secondary">rect (200×120)</Text>
+            <Skeleton variant="rect" width={200} height={120} />
+          </Stack>
+
+          <Stack direction="column" gap={2}>
+            <Text variant="labelSm" color="secondary">circle (40×40 — 아바타)</Text>
+            <Skeleton variant="circle" width={40} height={40} />
+          </Stack>
+
+          <Stack direction="column" gap={2}>
+            <Text variant="labelSm" color="secondary">circle (64×64 — 큰 아바타)</Text>
+            <Skeleton variant="circle" width={64} height={64} />
+          </Stack>
+        </Stack>
+      </Stack>
+    </Stack>
+  );
+}
+
+function LoadingScenarioSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">시나리오 — AI 슬라이드 생성 중</Text>
+      <Text variant="labelSm" color="secondary">
+        ppt(첫 dogfood) 시나리오 시뮬레이션. atom 11개만으로 한 화면 흐름이 짜진다.
+      </Text>
+
+      <Box
+        as="section"
+        bg="surface"
+        border="mid"
+        rounded="md"
+        p={6}
+        style={{ width: 480 }}
+      >
+        <Stack direction="column" gap={5}>
+          {/* 헤더: spinner + 진행 텍스트 */}
+          <Stack direction="row" align="center" gap={3}>
+            <Spinner size="md" label="AI 생성 중" />
+            <Stack direction="column" gap={1} style={{ flex: 1 }}>
+              <Text weight="medium">AI가 슬라이드 4 / 12 생성 중…</Text>
+              <Text variant="labelSm" color="secondary">예상 소요 시간 약 30초</Text>
+            </Stack>
+          </Stack>
+
+          {/* placeholder: 본문 텍스트 라인 + 슬라이드 썸네일 영역 */}
+          <Stack direction="column" gap={3}>
+            <Skeleton variant="text" width="70%" />
+            <Skeleton variant="text" width="92%" />
+            <Skeleton variant="text" width="85%" />
+          </Stack>
+
+          <Stack direction="row" gap={3}>
+            <Skeleton variant="rect" width={140} height={80} />
+            <Skeleton variant="rect" width={140} height={80} />
+            <Skeleton variant="rect" width={140} height={80} />
+          </Stack>
+
+          {/* 본문 아바타 placeholder + 작성자 정보 */}
+          <Stack direction="row" align="center" gap={3}>
+            <Skeleton variant="circle" width={40} height={40} />
+            <Stack direction="column" gap={1} style={{ flex: 1 }}>
+              <Skeleton variant="text" width="40%" />
+              <Skeleton variant="text" width="60%" />
+            </Stack>
+          </Stack>
+        </Stack>
+      </Box>
     </Stack>
   );
 }

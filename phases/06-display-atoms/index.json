@@ -1,0 +1,32 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "06-display-atoms",
+  "steps": [
+    {
+      "step": 0,
+      "name": "spinner-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T09:44:31+0900",
+      "summary": "@wonik/web Spinner atom 추가. border trick + scoped @keyframes inject. 3 size(16/24/40), aria-live polite + role status, label prop. ppt 'AI 생성 중' 시나리오 등 로딩 state의 baseline. 다음 step에서 Skeleton.",
+      "completed_at": "2026-05-08T09:50:17+0900"
+    },
+    {
+      "step": 1,
+      "name": "skeleton-primitive",
+      "status": "completed",
+      "started_at": "2026-05-08T09:50:18+0900",
+      "summary": "@wonik/web Skeleton atom 추가. 3 variant(text/rect/circle) + width/height override. opacity pulse animation은 scoped @keyframes inject. surfaces.surfaceMid 토큰 reference로 light/dark 자동. ppt 슬라이드 placeholder의 baseline. 다음 step에서 sandbox 시각 매트릭스.",
+      "completed_at": "2026-05-08T09:53:33+0900"
+    },
+    {
+      "step": 2,
+      "name": "sandbox-display-atoms",
+      "status": "completed",
+      "started_at": "2026-05-08T09:53:34+0900",
+      "summary": "apps/web-sandbox에 Spinner·Skeleton 매트릭스 + AI 슬라이드 생성 시나리오 데모 추가. atom 11종이 light·dark 양 테마에서 작동. ppt dogfood 시나리오를 atom만으로 그려보는 첫 실험. Phase 06 종료 — 다음 phase는 display atom 확장(Badge·Card 검토) 또는 ppt 첫 적용.",
+      "completed_at": "2026-05-08T09:59:46+0900"
+    }
+  ],
+  "created_at": "2026-05-08T09:44:31+0900",
+  "completed_at": "2026-05-08T09:59:47+0900"
+}
