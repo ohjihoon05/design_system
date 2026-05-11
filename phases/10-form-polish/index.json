@@ -1,0 +1,29 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "10-form-polish",
+  "steps": [
+    {
+      "step": 0,
+      "name": "adr-011",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:00:00+0900",
+      "summary": "ADR-011 추가 — form 컨트롤 focus·resize·placeholder·hover 정책. :focus-visible only, outline 2px, --color-focus를 7번째 interface variable로 격상, resize default vertical 유지 + prop 노출, placeholder는 text-muted fallback(YAGNI), hover 1줄 추가. 구현은 ensureCssInjected() 패턴. design_system 코드 변경 0. 후속 step에서 tokens·components·검증."
+    },
+    {
+      "step": 1,
+      "name": "tokens-focus-and-border-strong",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "components-focus-hover-placeholder-resize",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "visual-verification",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-05-11T15:50:00+0900"
+}

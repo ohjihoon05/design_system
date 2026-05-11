@@ -144,3 +144,68 @@ hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 �
 4. **우리 internal token namespace 정리 부수 issue 미해결** — Trial 3가 발견한 부수 issue(`--color-surface-white`가 dark theme에서 dark 색 반환 — 색조 이름이 semantic 위반)는 본 ADR 범위 외. 후속 phase(`Phase 10` 또는 별도 ADR)에서 정리. 본 ADR은 contract 명시화에 집중해 일관성·검증 가능성 보존.
 
 5. **ADR-007의 WONIK BLUE 정체성 보존, 단 host 우선** — ADR-007("Primary = WONIK BLUE #273E82")은 그대로 유효 — 우리 default 색. 단 host가 `--color-primary`로 자기 색을 정의하면 host 우선 (cascade). design_system 정체성은 (a) web-sandbox standalone (b) host 미정의 시 fallback 두 군데서 WONIK BLUE 유지. supersede 아님 — 보완.
+
+---
+
+### ADR-011: form 컨트롤 focus·resize·placeholder·hover 정책
+
+**결정**: `@wonik/web`의 form 컨트롤(Button/Input/Textarea/Checkbox/Radio/Switch)에 다음 7개 정책을 일괄 적용한다.
+
+1. **Focus selector**: `:focus-visible` only — fallback 없음 (Safari 15.4 ship 후 baseline widely available).
+2. **Focus ring**: `outline: 2px solid var(--color-focus, var(--color-primary, var(--color-primary-internal)))` 3-단 cascade.
+3. **Focus offset**: Input/Textarea는 `outline-offset: 0px` (border-통합 dual-cue, Material 3 outlined input 패턴). Button/Checkbox/Radio/Switch는 `outline-offset: 2px` (Switch 기존 패턴 일관 — 컨트롤과 ring 시각 분리).
+4. **Resize default**: Textarea의 `resize: 'vertical'` default 유지. 다만 `resize?: 'none' | 'vertical' | 'both'` prop을 노출해 host별 선택 가능.
+5. **Placeholder color**: `::placeholder { color: var(--color-placeholder, var(--color-text-muted-internal)); opacity: 1; }`. **interface variable 격상 안 함** (1단계 YAGNI).
+6. **Hover state**: Input/Textarea에 `:hover { border-color: var(--color-border-strong, var(--color-border-mid-internal)) }` 1줄 추가.
+7. **구현 방식**: `ensureCssInjected()` 1회-inject pattern (Switch.tsx 참조) — 각 컴포넌트가 자기 module-scope CSS block 정의. pseudo-class·pseudo-element를 inline style로 못 풀기 때문.
+
+**interface variable 격상**: ADR-010이 결정한 6개를 **7개로 확장**.
+- 추가: `--color-focus` (default fallback `--color-primary`) — focus ring 색을 host가 분리 own할 수 있는 hook.
+- 격상 안 함: `--color-placeholder` (1단계 dogfood에 host override needs 없음 — text-muted internal로 fallback 충분).
+
+**이유**:
+
+1. **WCAG 2.1 SC 2.4.7 (AA) 충족 필수** — 키보드 focus indicator visible. 현재 Input/Textarea의 `outline: 'none'`은 a11y regression. SC 1.4.11이 정량 보충 — 비텍스트 3:1 contrast. WONIK BLUE `#273E82` on 흰 surface ≈ 9:1로 안전.
+
+2. **`:focus-visible`이 modern 표준** — 2022-03 Safari 15.4 ship으로 모든 메이저 브라우저에서 baseline widely available ([Igalia](https://blogs.igalia.com/mrego/2022/04/08/focus-visible-is-shipping-in-safari-webkit/), [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible)). 키보드 focus만 indicator 보이고 마우스 click focus는 숨기는 패턴이 a11y + UX 표준. 1단계 dogfood(React 19 + Vite + 최신 Chromium) 환경에서 fallback 불필요.
+
+3. **outline > box-shadow** — Radix Themes가 box-shadow → outline으로 마이그레이션한 명시적 이유 ([Radix discussion](https://github.com/radix-ui/primitives/discussions/3651)): Chrome anti-aliasing 안정, `border-radius` 자동 추적 (Chromium 94+/Safari 16.4+). modern 표준.
+
+4. **`--color-focus`를 7번째 interface variable로 격상 (layer A 정신 일관)** — Primer/Radix Themes/Chakra v3가 모두 별도 focus color token을 둠. 그 이유는 (a) form-heavy product에서 brand-tinted ring이 산만, (b) dark/high-contrast 모드에서 brand와 독립 조정 필요, (c) brand color가 primary action button과 같아 focus와 action 시각 혼동. layer A의 "host가 색을 own" 정신상 host가 분리 override 가능한 hook이 우월. ADR-010 line 142가 이미 future hook으로 언급 — 본 ADR이 실현. default fallback이 primary라 host 미정의 시 회귀 0.
+
+5. **`resize: vertical` default 유지 + prop opt-out** — MDN 권장은 vertical(사용자 자유). 1단계 dogfood ppt가 long-form 설문/리서치 폼이라 vertical 자연. layout-sensitive 산업용(반도체 dashboard) 등 future host는 `resize="none"` 명시. BC 0.
+
+6. **placeholder는 interface variable 격상 안 함 (YAGNI)** — WCAG 1.4.3 적용 대상이지만 1단계 dogfood에 별도 host override needs 없음. `::placeholder` `opacity: 1` 명시는 필수 (Firefox 일부 버전 default <1). dogfood로 needs 등장 시 별도 ADR로 격상.
+
+7. **hover state는 universal pattern, 1줄로 보충** — Material 3·Radix·Chakra 모두 input의 hover 시 border-color 진해짐을 universal pattern으로 채택. 현재 우리 시스템 gap. Phase 10에서 같이 묶음 (별도 phase 분리 시 marginal value, CSS injection 인프라 공유).
+
+**구현 방향** (후속 step):
+
+- **Step 1 (tokens)**: `build-css.ts`에 `--color-focus: var(--color-primary)` alias emit (light/dark 양쪽) + `--color-border-strong: var(--color-border-mid)` alias (hover state internal fallback). `interfaceColors`에 `focus` 추가.
+- **Step 2 (components)**: Button/Input/Textarea/Checkbox/Radio에 `ensureCssInjected()` 추가 — `:focus-visible`·`:hover`·`::placeholder` CSS block. Switch는 이미 패턴 적용됨 (focus만 검토, placeholder 없음). Textarea에 `resize?` prop 추가 (default `vertical`).
+- **Step 3 (검증)**: ppt 또는 sandbox에서 focus·hover·placeholder 시각 캡쳐. focus는 Chrome devtools `:focus-visible` toggle 또는 demo 페이지에서 Tab simulate.
+
+**트레이드오프**:
+
+1. **interface variable 7개로 증가** — ADR-010의 6 set이 7로 확장. tokens.css 추가 emit 1개 (light/dark = 2 lines). host 학습 부담 미미.
+
+2. **CSS injection이 form 컨트롤 8개 중 6개에 추가됨** — 현재 Switch만 inject 중. 5개 컴포넌트에 동일 패턴 추가 → 컴포넌트당 1회 inject. SSR 안전성은 `typeof document === 'undefined'` 가드로 처리(Switch 패턴 그대로).
+
+3. **inline style만 보고 컴포넌트 시각 추론 못 함** — pseudo-class CSS가 외부에 있어 디버깅·snapshot 난이도 증가. 보완: 각 컴포넌트의 CSS block을 컴포넌트 파일 안에 module-scope로 colocate.
+
+4. **`--color-focus` host override 안 하면 primary와 동일** — Trial 2·3 결과와 동일 시각. 분리 token 가치는 host가 명시적 override할 때만 실현. 1단계 dogfood엔 가치 실현 0 — 미래 host product 등장 시 회귀 0인 확장 hook.
+
+5. **AAA (WCAG 2.4.13 Focus Appearance) 미보장** — outline width 2px가 충족 후보지만, perimeter 면적 + 픽셀 3:1 변화 contrast의 정량 검증 안 함. AA(2.4.7 + 1.4.11) 목표 충족.
+
+6. **추가 form polish 영역 미해결** — 1단계 dogfood 범위 외:
+   - `aria-disabled` 대안 패턴 (현재는 native `disabled` 충분).
+   - WebKit autofill 노란 배경 override (`-webkit-box-shadow inset` 트릭).
+   - `readonly` 시각 처리 (Carbon/MD3는 border 옅게 + cursor:default).
+   - Card 컴포넌트 도입 시 focus indicator obscured (WCAG 2.2 SC 2.4.11 — padding ≥ outline-offset).
+   - AAA WCAG 2.4.13 Focus Appearance 정량 검증.
+   
+   각 항목은 dogfood로 needs 등장 시 별도 ADR.
+
+**관계**:
+- **ADR-010 보완** — 7번째 interface variable(`--color-focus`) 추가, layer A 정신 일관. supersede 아님.
+- **ADR-007/008/009**: 영향 없음.
