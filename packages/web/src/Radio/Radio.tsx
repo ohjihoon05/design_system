@@ -3,6 +3,24 @@ import type { CSSProperties } from 'react';
 import { statusTokens, interfaceColors } from '@wonik/tokens';
 import type { RadioProps, RadioSize } from './types';
 
+// ADR-011: keyboard focus indicator. inline style로 pseudo-class 못 풀어서 1회-inject CSS.
+const RADIO_CSS = `
+.wonik-radio:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-primary));
+  outline-offset: 2px;
+}
+`;
+
+let cssInjected = false;
+function ensureCssInjected() {
+  if (cssInjected || typeof document === 'undefined') return;
+  const style = document.createElement('style');
+  style.setAttribute('data-wonik-radio', 'true');
+  style.textContent = RADIO_CSS;
+  document.head.appendChild(style);
+  cssInjected = true;
+}
+
 const SIZE_PX: Record<RadioSize, string> = {
   sm: '16px',
   md: '20px',
@@ -31,9 +49,10 @@ const DISABLED_STYLE: CSSProperties = {
 };
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
-  { size = 'md', invalid = false, disabled, style, onChange, ...rest },
+  { size = 'md', invalid = false, disabled, className, style, onChange, ...rest },
   ref,
 ) {
+  ensureCssInjected();
   const composed: CSSProperties = {
     ...BASE_STYLE,
     width: SIZE_PX[size],
@@ -42,12 +61,14 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
     ...(disabled && DISABLED_STYLE),
     ...style,
   };
+  const mergedClassName = className ? `wonik-radio ${className}` : 'wonik-radio';
 
   return (
     <input
       {...rest}
       ref={ref}
       type="radio"
+      className={mergedClassName}
       disabled={disabled}
       onChange={disabled ? undefined : onChange}
       aria-invalid={invalid || undefined}

@@ -19,7 +19,9 @@
     {
       "step": 2,
       "name": "components-focus-hover-placeholder-resize",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T16:30:00+0900",
+      "summary": "6개 form 컨트롤(Button/Input/Textarea/Checkbox/Radio/Switch)에 ADR-011 정책 적용. Button·Input·Textarea·Checkbox·Radio: ensureCssInjected() 패턴 + className wonik-* + :focus-visible CSS (Input/Textarea는 :hover·::placeholder 추가). Switch: 기존 패턴의 focus color만 var(--color-focus, var(--color-primary))로 갱신, :checked는 var(--color-primary) 유지. Textarea: resize? prop 추가(default vertical, disabled 시 none). 163 tests passing. prop signature 추가만(Textarea resize), breaking 0."
     },
     {
       "step": 3,

@@ -37,7 +37,7 @@ const SIZE_SPEC: Record<SwitchSize, SizeSpec> = {
 };
 
 // :checked 분기는 inline style로 못 풀므로 module-scoped CSS 1회 inject.
-// 토큰 reference 유지 — var(--color-primary) 등.
+// :checked는 brand primary 의미 (selected state), :focus-visible은 ADR-011 focus token 사용.
 const SWITCH_CSS = `
 .wonik-switch__input:checked + .wonik-switch__track {
   background-color: var(--color-primary);
@@ -47,7 +47,7 @@ const SWITCH_CSS = `
   transform: var(--wonik-switch-thumb-translate, translateX(12px));
 }
 .wonik-switch__input:focus-visible + .wonik-switch__track {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus, var(--color-primary));
   outline-offset: 2px;
 }
 `;
