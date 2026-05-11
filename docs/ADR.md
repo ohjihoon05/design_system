@@ -209,3 +209,75 @@ hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 �
 **관계**:
 - **ADR-010 보완** — 7번째 interface variable(`--color-focus`) 추가, layer A 정신 일관. supersede 아님.
 - **ADR-007/008/009**: 영향 없음.
+
+---
+
+### ADR-012: 그래프(시각화) 토큰을 별도 status-driven 도메인으로 분리, brand hex는 의도적으로 재사용
+
+**결정**: `@wonik/tokens`에 plot/chart 색을 위한 **graph 도메인**을 추가한다. 5축 status-driven taxonomy로 분류된 19개 CSS variable(`--color-graph-*`)과 runtime export `graphTokens`를 emit한다. brand hex(WONIK BLUE `#273E82`, WONIK GRAY `#ACACAC`)·text·border·surface와 hex가 일부 일치하지만 **CSS variable layer는 독립**이며, raw hex로 저장한다(alias 아님). Figma side에도 동일 hierarchy(`graph/limit/upper/line`)로 `Graph` collection을 등록(Light/Dark mode).
+
+**5축 taxonomy** (Parameter Description 캡쳐 9장 분석):
+
+| 축 | 의미 | 변수 |
+|---|---|---|
+| `limit` | 스펙 임계 zone (Range/Overshoot·Undershoot/Trim High·Low/Main·Sub Limit) | `upper.{line,surface,label}`, `lower.{line,surface,label}` |
+| `signal` | 플롯 라인 | `primary.{line,surface}`, `tuned.{line,surface}`, `reference.line` |
+| `pass` (status) | 판정 영역 (Spike, Pass Condition zone) | `line`, `surface`, `label` |
+| `action` | 튜닝 가이드 화살표·지시 | `line` |
+| `annotation` | 콜아웃 라벨 (중립) | `fg`, `surface` |
+| `axis` | 축 라벨·그리드 | `label`, `grid` |
+
+**brand hex 재사용**: 다음 graph 토큰은 의도적으로 기존 토큰과 동일 hex를 가진다 (alias 아닌 raw hex 복제):
+- `graph/signal/tuned/line` `#273E82` = `primary.base` (WONIK BLUE)
+- `graph/signal/tuned/surface` `#D6DCF0` = `primary.bg`
+- `graph/signal/reference/line` `#ACACAC` = `secondary.base` (WONIK GRAY)
+- `graph/annotation/fg` `#303030` = `text.dark`
+- `graph/annotation/surface` `#FFFFFF` = `surfaces.surfaceWhite`
+- `graph/axis/label` `#71717B` = `text.primary`
+- `graph/axis/grid` `#E1E1E4` = `borders.light`
+
+**이유**:
+
+1. **graph는 host와 매핑되지 않는 internal 도메인** — ADR-010·011의 interface variable 7개(bg/surface/border/text/textMuted/primary/focus)는 host product가 own하는 컬러. plot 영역의 의미적 색(임계·신호·판정)은 host가 own하지 않고 우리 시스템이 의미·일관성을 own하는 게 자연스럽다. graph는 interface variable이 아닌 자체 domain token으로 둔다.
+
+2. **status-driven taxonomy가 시각화 의미와 1:1** — 캡쳐 9장 전체에서 색이 데이터의 역할(임계 위/아래, 측정/튜닝/기준 신호, 판정 영역, 액션 방향, 주석)로 일관 사용됨. statusTokens(idle/run/alarm/...)와 동일한 2-level 구조(그룹 → property)로 정의해 `build-css.ts` emit loop 재사용. 컴포넌트별 ad-hoc 색이 아닌 의미 축 우선.
+
+3. **brand hex 재사용은 정체성 보존 + 의미 분리 동시 달성** — Tuned 신호가 WONIK BLUE인 것은 brand 정체성 표현(`statusTokens.run.dot`이 `#273E82` 재사용한 선례와 동일 패턴). 단 미래에 graph 가독성 issue로 tuned 색만 미세 조정해야 할 때 brand 토큰을 건드리지 않고 graph 쪽만 변경 가능해야 하므로 **CSS variable layer는 분리**한다. raw hex로 둔 이유: alias(`var(--color-primary)`)로 두면 brand 변경이 graph로 강제 전파되어 분리 가치를 잃음.
+
+4. **Figma side 1:1 mirror로 디자이너 인지 부담 0** — slash hierarchy(`graph/limit/upper/line`)와 CSS variable(`--color-graph-limit-upper-line`) 동형. Figma Variables `Graph` collection의 19개 변수가 코드와 1:1 매칭되어 design ↔ code 토큰 sync 비용 최소. 컴포넌트 코드 변경 시 Figma 측 분리 검토 불필요.
+
+5. **Figma variable scope 좁힘** — `*/line`은 `SHAPE_FILL+STROKE_COLOR`, `*/surface`는 `FRAME_FILL+SHAPE_FILL`, `*/label`·`fg`는 `TEXT_FILL`로만 노출. 디자이너가 Figma에서 변수 picker 열 때 의미에 맞는 변수만 보임. `ALL_SCOPES` 기본값은 모든 property picker를 오염시키므로 회피.
+
+6. **첫 customer 부재 우려 점검** — ADR-001 원칙("첫 customer 없이는 추상화 안 한다") 검토:
+   - Parameter Description 시안의 9장 캡쳐가 **이미 존재하는 시각 언어**이며 추상화의 결과가 아니라 raw value 표준화에 해당.
+   - 추상화 차원의 우려는 *컴포넌트* (예: `<Chart>` 도입)에 적용되며, 본 ADR은 *토큰* 표준화에 한정.
+   - 따라서 customer 0 우려에 해당 안 함. `@wonik/web` chart 컴포넌트 도입은 1단계 외(YAGNI 보존).
+
+**트레이드오프**:
+
+1. **brand hex 자동 추종 안 됨** — host가 `--color-primary`를 override하거나 ADR-007이 미래에 brand color 변경 시 graph 토큰은 따라가지 않는다. **의도된 분리**이며 미래에 brand-following이 더 적합하다고 판단되면 raw hex를 `var(--color-primary)` alias로 전환 (별도 ADR). 1단계 dogfood에 brand override 시나리오 없음(ppt는 자기 indigo primary 사용, graph는 그대로 brand WONIK BLUE).
+
+2. **dark mode는 light와 동일값 미러 상태** — `graphTokensDark = graphTokensLight`로 시작(statusTokens 동일 패턴). surface fill(연한 톤 `#FCE7F3`/`#CCFBF1`/`#EEF0FE`/`#DCFCE7`)의 어두운 배경 위 가독성은 별도 검증 안 됨. 첫 dark host product에서 issue 발견 시 dark 전용 hex 분리(별도 phase). 1단계 dogfood에 graph 컴포넌트 자체가 등장 안 함(`@wonik/web` chart 미정).
+
+3. **action과 limit/upper가 같은 hue `#EC4899`** — 의미는 분리(threshold zone vs tuning direction)이지만 색 동일. 캡쳐 원본도 같은 hue로 사용하는 패턴(magenta 화살표 = "이 방향으로 조정")이라 의도적. 미래에 시각 혼동 issue 발견 시 action 별도 hue 분리(별도 ADR). 분리 시 회귀 영향: `action` 사용하는 컴포넌트(현재 0)만.
+
+4. **`@wonik/web` 컴포넌트에 graph 토큰 import surface 없음** — 1단계 컴포넌트는 form 컨트롤 위주(Button/Input/Textarea/Switch/Checkbox/Radio). chart 컴포넌트는 1단계 외이므로 graph 토큰의 actual consumer는 dogfood product(ppt 후속 view 또는 recharts/visx 사용처)에서 직접 reference. 컴포넌트 prop signature 영향 0.
+
+5. **19개 토큰 신규 추가로 tokens.css 증가** — Light/Dark 각 19 lines → 총 38 lines 증가(이전 60 → 79). 무시 가능 수준. ESM/CJS bundle dts 6.56KB 유지(타입은 var(...) string union이므로 거의 영향 없음).
+
+6. **graph 도메인이 미래에 더 세분화될 가능성** — chart type별(line/bar/area/scatter/pie) 또는 industry별(반도체 dashboard vs 일반 BI)로 분기 needs 등장 가능. 본 ADR은 *의미 축* 5개를 base로 잡고, future variant는 그 위에 layer(예: `graph.bar.fill`, `graph.scatter.point`). base 5축은 어떤 chart type에도 적용 가능하므로 base는 안정적.
+
+**구현 상태** (본 ADR 작성 시점에 이미 완료):
+
+- `packages/tokens/src/graph.ts` — runtime export `graphTokens` (var refs).
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight` hex source.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` (mirror).
+- `packages/tokens/scripts/build-css.ts` — `Graph (semantic)` section emit.
+- `packages/tokens/src/index.ts` — re-export.
+- Figma `UI-UX-Standardization-2.0` 파일에 `Graph` collection 등록(19 vars, Dark/Light modes, scope 좁힘 적용).
+
+**관계**:
+- **ADR-007 일치** — `signal/tuned`·`signal/reference`가 brand color 그대로 사용. 정체성 보존.
+- **ADR-009 패턴 일치** — theme-light/theme-dark의 2-layer source-of-truth, build-css emit 패턴 동일.
+- **ADR-010·011와 분리** — graph는 host-overridable 도메인이 아닌 internal 도메인. interface variable 7개와 별개.
+- **ADR-001/004**: 영향 없음 (토큰 표준화는 추상화 차원 아님).
