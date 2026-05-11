@@ -84,14 +84,16 @@ const colorVarLines = (theme: Theme): string[] => {
     }
   }
 
-  // Interface Variables (ADR-010) — host product와의 contract.
+  // Interface Variables (ADR-010, ADR-011) — host product와의 contract.
   // host(ppt 등)가 같은 이름을 정의하면 cascade로 host 우선.
   // 미정의 시 우리 internal token으로 fallback.
   // --color-surface, --color-border, --color-primary는 위 sections에서 이미 자연 emit됨.
-  section('Interface Variables (ADR-010)');
+  section('Interface Variables (ADR-010, ADR-011)');
   push('--color-bg', 'var(--color-canvas)');
   push('--color-text', 'var(--color-text-dark)');
   push('--color-text-muted', 'var(--color-text-dim)');
+  push('--color-focus', 'var(--color-primary)');           // ADR-011: focus ring host hook
+  push('--color-border-strong', 'var(--color-border-mid)'); // ADR-011: hover state internal fallback
 
   return lines;
 };

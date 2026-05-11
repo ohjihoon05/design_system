@@ -12,7 +12,9 @@
     {
       "step": 1,
       "name": "tokens-focus-and-border-strong",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T16:15:00+0900",
+      "summary": "build-css.ts에 --color-focus(var(--color-primary)) + --color-border-strong(var(--color-border-mid)) alias 2개 추가 emit(light/dark 양쪽). colors.ts interfaceColors에 focus 추가. interface variable 7개로 확장 완료(ADR-010 6개 + ADR-011 focus 1개). --color-border-strong은 internal fallback only. 컴포넌트 변경 0."
     },
     {
       "step": 2,
