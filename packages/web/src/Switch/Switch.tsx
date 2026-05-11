@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
-import { surfaces, borders, statusTokens } from '@wonik/tokens';
+import { surfaces, statusTokens, interfaceColors } from '@wonik/tokens';
 import type { SwitchProps, SwitchSize } from './types';
 
 interface SizeSpec {
@@ -94,7 +94,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
     width: spec.trackW,
     height: spec.trackH,
     background: surfaces.surfaceMid,
-    border: `1px solid ${invalid ? statusTokens.alarm.text : borders.mid}`,
+    border: `1px solid ${invalid ? statusTokens.alarm.text : interfaceColors.border}`,
     borderRadius: spec.trackH,
     transition: 'background-color 0.15s ease, border-color 0.15s ease',
     position: 'relative',

@@ -19,7 +19,9 @@
     {
       "step": 2,
       "name": "components-cascade-reference",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T15:25:00+0900",
+      "summary": "@wonik/web 컴포넌트 8개(Button·Input·Textarea·Spinner·Switch·Radio·Checkbox·Text)에서 interface variable에 매핑되는 internal token reference를 interfaceColors.*로 갱신. cascade fallback 패턴(var(host, fallback))이 자동 적용됨. Button primary text·Switch thumb 같은 의미상 매핑 안 되는 경우는 internal 그대로 유지. 163개 테스트 모두 통과. prop signature 변경 0, breaking 0."
     },
     {
       "step": 3,

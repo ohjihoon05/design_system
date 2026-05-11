@@ -2,14 +2,13 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import {
   surfaces,
-  text,
   statusTokens,
-  borders,
   space,
   radius,
   fontSize,
   fontFamily,
   fontWeight,
+  interfaceColors,
 } from '@wonik/tokens';
 import type { TextareaProps, TextareaSize } from './types';
 
@@ -28,9 +27,9 @@ const SIZE_PADDING: Record<TextareaSize, string> = {
 const BASE_STYLE: CSSProperties = {
   fontFamily: fontFamily.base,
   fontWeight: fontWeight.regular,
-  color: text.dark,
-  background: surfaces.surfaceWhite,
-  border: `1px solid ${borders.mid}`,
+  color: interfaceColors.text,
+  background: interfaceColors.surface,
+  border: `1px solid ${interfaceColors.border}`,
   borderRadius: radius.sm,
   outline: 'none',
   width: '100%',
@@ -46,7 +45,7 @@ const INVALID_STYLE: CSSProperties = {
 
 const DISABLED_STYLE: CSSProperties = {
   background: surfaces.surfaceSubtle,
-  color: text.dim,
+  color: interfaceColors.textMuted,
   cursor: 'not-allowed',
   opacity: 0.6,
   resize: 'none',

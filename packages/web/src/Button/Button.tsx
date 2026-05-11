@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
 import {
-  primary,
   surfaces,
   text,
   statusTokens,
@@ -9,20 +8,20 @@ import {
   fontSize,
   fontWeight,
   fontFamily,
-  borders,
+  interfaceColors,
 } from '@wonik/tokens';
 import type { ButtonProps, ButtonVariant, ButtonSize } from './types';
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
-    background: primary.base,
+    background: interfaceColors.primary,
     color: surfaces.surfaceWhite,
     border: 'none',
   },
   secondary: {
-    background: surfaces.surface,
+    background: interfaceColors.surface,
     color: text.primary,
-    border: `1px solid ${borders.mid}`,
+    border: `1px solid ${interfaceColors.border}`,
   },
   text: {
     background: 'transparent',
@@ -31,8 +30,8 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   },
   outline: {
     background: 'transparent',
-    color: primary.base,
-    border: `1px solid ${primary.base}`,
+    color: interfaceColors.primary,
+    border: `1px solid ${interfaceColors.primary}`,
   },
   danger: {
     background: statusTokens.alarm.text,

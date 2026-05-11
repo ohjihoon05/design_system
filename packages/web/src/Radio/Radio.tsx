@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
-import { primary, statusTokens } from '@wonik/tokens';
+import { statusTokens, interfaceColors } from '@wonik/tokens';
 import type { RadioProps, RadioSize } from './types';
 
 const SIZE_PX: Record<RadioSize, string> = {
@@ -16,7 +16,7 @@ const BASE_STYLE: CSSProperties = {
   margin: 0,
   cursor: 'pointer',
   flexShrink: 0,
-  accentColor: primary.base,
+  accentColor: interfaceColors.primary,
 };
 
 const INVALID_STYLE: CSSProperties = {
