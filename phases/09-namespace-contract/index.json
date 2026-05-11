@@ -12,7 +12,9 @@
     {
       "step": 1,
       "name": "tokens-interface-variables",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T15:15:00+0900",
+      "summary": "build-css.ts에 interface variable 3개 alias emit 추가(--color-bg/text/text-muted, light+dark 양쪽). colors.ts에 interfaceColors named export 추가 — 컴포넌트가 cascade fallback 패턴(var(host, fallback))으로 reference 가능. 우리 internal token 그대로 유지. 기존 export 보존 (회귀 0). web 패키지 변경 0 (step 2의 영역)."
     },
     {
       "step": 2,

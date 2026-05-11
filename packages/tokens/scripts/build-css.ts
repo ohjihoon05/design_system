@@ -75,6 +75,15 @@ const colorVarLines = (theme: Theme): string[] => {
     }
   }
 
+  // Interface Variables (ADR-010) — host product와의 contract.
+  // host(ppt 등)가 같은 이름을 정의하면 cascade로 host 우선.
+  // 미정의 시 우리 internal token으로 fallback.
+  // --color-surface, --color-border, --color-primary는 위 sections에서 이미 자연 emit됨.
+  section('Interface Variables (ADR-010)');
+  push('--color-bg', 'var(--color-canvas)');
+  push('--color-text', 'var(--color-text-dark)');
+  push('--color-text-muted', 'var(--color-text-dim)');
+
   return lines;
 };
 
