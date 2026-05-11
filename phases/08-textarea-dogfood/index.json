@@ -5,7 +5,11 @@
     {
       "step": 0,
       "name": "textarea-trial-3",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T14:40:00+0900",
+      "summary": "Trial 3 — ppt Home.tsx prompt textarea를 @wonik/web Textarea로 교체. 핵심 발견: Trial 2의 'host 흡수' 모델은 변수 이름 우연 일치(--color-primary) 덕에 성립한 것. namespace 불일치 시 흡수가 아니라 invisibility(CSS variable invalid → declaration 통째 무시 → textarea가 dark surface와 구분 안 됨)가 발생. focus state·placeholder color 명시 부재도 같이 노출됨. design_system 코드 변경 0. 후속 phase 후보 4건 도출(namespace alignment / focus state / resize·placeholder ADR / Trial 4 Outline)."
     }
-  ]
+  ],
+  "created_at": "2026-05-11T14:20:00+0900",
+  "completed_at": "2026-05-11T14:40:00+0900"
 }
