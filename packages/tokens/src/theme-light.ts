@@ -64,6 +64,21 @@ export const statusTokensLight = {
   ok: { dot: '#07895E', text: '#00D492' },
 } as const;
 
+// Graph semantic tokens — status-driven plot/chart colors.
+// signalTuned line MUST stay WONIK BLUE #273E82 (ADR-007 brand alignment).
+// signalReference line MUST stay WONIK GRAY #ACACAC (ADR-007 brand alignment).
+export const graphTokensLight = {
+  limitUpper: { line: '#EC4899', surface: '#FCE7F3', label: '#EC4899' },
+  limitLower: { line: '#14B8A6', surface: '#CCFBF1', label: '#14B8A6' },
+  signalPrimary: { line: '#818CF8', surface: '#EEF0FE' },
+  signalTuned: { line: '#273E82', surface: '#D6DCF0' },
+  signalReference: { line: '#ACACAC' },
+  pass: { line: '#22C55E', surface: '#DCFCE7', label: '#16A34A' },
+  action: { line: '#EC4899' },
+  annotation: { fg: '#303030', surface: '#FFFFFF' },
+  axis: { label: '#71717B', grid: '#E1E1E4' },
+} as const;
+
 export const themeLight = {
   surfaces: surfacesLight,
   borders: bordersLight,
@@ -71,4 +86,5 @@ export const themeLight = {
   secondary: secondaryLight,
   text: textLight,
   statusTokens: statusTokensLight,
+  graphTokens: graphTokensLight,
 } as const;
