@@ -26,8 +26,11 @@
     {
       "step": 3,
       "name": "trial-3-recapture",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T15:35:00+0900",
+      "summary": "ppt에 새 dist 적용 후 Trial 3 재캡쳐. invisibility 완전 해결 — textarea가 ppt --color-surface/border/text를 cascade로 흡수해 panel로 명확히 인지됨. ADR-010 정책이 form 컨트롤에서 의도대로 작동함을 입증. layer A 모델의 코드 단위 closure. 남은 미해결(focus ring·resize·placeholder)은 Phase 10 후보로 명시."
     }
   ],
-  "created_at": "2026-05-11T14:45:00+0900"
+  "created_at": "2026-05-11T14:45:00+0900",
+  "completed_at": "2026-05-11T15:35:00+0900"
 }
