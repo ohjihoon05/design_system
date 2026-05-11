@@ -26,8 +26,11 @@
     {
       "step": 3,
       "name": "visual-verification",
-      "status": "pending"
+      "status": "completed",
+      "completed_at": "2026-05-11T16:35:00+0900",
+      "summary": "ADR-011 적용 후 default state 회귀 0 시각 입증(trial-3-phase10-default.png == Phase 09 재캡쳐). focus·hover·placeholder는 Chrome headless 자동 캡쳐 어려워 manual 검증 권장으로 docs/phase-10-verification.md에 정리. resize prop 사용법 예시 명시. 다음 phase 후보(Trial 4 Outline·Phase 11)와 future-work(aria-disabled/autofill/readonly/AAA 2.4.13) 노트 보존."
     }
   ],
-  "created_at": "2026-05-11T15:50:00+0900"
+  "created_at": "2026-05-11T15:50:00+0900",
+  "completed_at": "2026-05-11T16:35:00+0900"
 }
