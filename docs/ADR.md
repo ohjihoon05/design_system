@@ -95,3 +95,52 @@
 2. **기존 79개 테스트의 hex assertion 일부 갱신 필요** — `toHaveStyle({background: '#273E82'})`가 jsdom의 CSS 변수 해상도에 따라 그대로 살거나 `var(...)` literal 어선션으로 갱신. phase 04 step 1에서 결정.
 3. **다크 모드 색상 결정** — base hex(text·border·surface)를 새로 정해야 함. 본 ADR은 결정 위임 — phase 04 step 0이 명시적으로 정의. 시작점은 ppt의 slate-900 계열 + WONIK BLUE를 dark 모드용으로 조정한 값.
 4. **ADR-005 일부 supersede** — light-only 결정만 갱신. 모바일·반응형 미지원 부분은 ADR-005 그대로 유지.
+
+---
+
+### ADR-010: 호스트-디자인 시스템 CSS variable contract
+
+**결정**: `@wonik/web` 컴포넌트가 의존하는 색 변수 중 6개를 **interface variable**로 표준화한다 — host product가 정의할 가능성이 높은 표준 이름이다. `@wonik/tokens`의 `tokens.css`는 이 6개를 default로 emit하고, `@wonik/web` 컴포넌트는 `var(--color-surface, var(--color-surface-white))` 형태의 cascade fallback 패턴으로 reference한다. host가 같은 이름의 변수를 정의하면 자연 cascade로 host 우선 (Trial 2 모델 일반화). 정의 안 하면 우리 default 동작 (web-sandbox standalone에서도 작동).
+
+**interface variable 6개** (1단계, ppt dogfood 기준):
+
+| 이름 | 의미 | 우리 internal fallback |
+|------|------|------|
+| `--color-bg` | 가장 어두운 canvas / page 배경 | `--color-canvas` |
+| `--color-surface` | panel·card 배경 | `--color-surface-white` |
+| `--color-border` | 기본 border | `--color-border-mid` |
+| `--color-text` | 기본 text | `--color-text-dark` |
+| `--color-text-muted` | 보조·부가 text | `--color-text-dim` |
+| `--color-primary` | brand primary | `--color-primary` (이미 일치) |
+
+hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 변형(`--color-primary-pale`·`bg`·`stroke`)은 interface variable에서 **제외** — host가 own (Trial 3에서 host의 hover·variant 정책은 host의 자유로 확인됨).
+
+**이유**:
+
+1. **Trial 3가 입증한 invisibility 결함의 근본 원인은 contract 부재** — 우리 컴포넌트의 inline style이 `var(--color-surface-white)` 같은 우리 namespace 변수를 reference하는데, host(ppt)에는 그 이름이 정의되지 않아 CSS variable이 invalid로 떨어지고 declaration 통째로 무시됨 → textarea가 dark surface와 구분 안 됨. namespace 정책을 명시화하지 않으면 다음 form/display atom도 같은 결함 노출. evidence: `docs/dogfood-trial-3.md` 발견 1.
+
+2. **interface variable은 layer A 모델의 명시화** — Trial 2(Button)가 작동한 건 `--color-primary` 이름의 우연 일치였다. 그 우연 패턴을 6개로 격상해 의도적 contract로 만든다. design_system은 *시각 형태*만 제공하고 *색*은 host가 own한다는 1단계 layer A 정신을 코드 단위로 보존.
+
+3. **Cascade fallback은 progressive enhancement** — host가 interface variable 6개 모두 정의·일부 정의·미정의 세 경우 모두 동작한다. host 학습 곡선 0 (host는 자기 변수 이름을 그대로 쓰면 됨). 우리 컴포넌트는 host 의존성 0 (standalone 환경에서 우리 default 색으로 작동).
+
+4. **interface variable 6개는 dogfood evidence 기반** — ppt의 8개 변수에서 hover/variant 2개를 제외한 6개. 추측이 아니라 실제 host가 정의한 contract surface. 다른 사내 product 등장 시 추가 후보는 그때 dogfood로 확인 후 ADR 갱신.
+
+5. **1인 운영 부담 최소** — 우리 internal token(`--color-surface-white` 등)의 이름·구조는 그대로 유지. tokens.css에 interface variable 6개를 default로 emit하는 작은 추가만으로 contract 만족. 컴포넌트 코드도 `var(host, fallback)` 패턴 적용만 — 큰 refactor 없음.
+
+**구현 방향** (후속 step에서 진행):
+
+- **Step 1 (tokens)**: `packages/tokens/scripts/build-css.ts`에서 `tokens.css` emit 시 interface variable 6개를 default block (light/dark 양쪽)에 추가. internal token은 그대로 유지. `packages/tokens/src/colors.ts`는 두 reference path 모두 export.
+- **Step 2 (components)**: `@wonik/web`의 모든 컴포넌트(Button·Textarea·Input·Spinner·Checkbox·Switch·Radio·Box·Stack·Text 등)의 inline style을 `var(--color-X, var(--color-X-internal))` 패턴으로 갱신. prop signature 변경 0. 기존 테스트의 hex/CSS variable assertion 일부 갱신 필요.
+- **Step 3 (검증)**: Trial 3을 재캡쳐해 invisibility 해결 입증 (`docs/dogfood-trial-3-recapture.md`).
+
+**트레이드오프**:
+
+1. **tokens.css 크기 약간 증가** — interface variable 6개 default emit. light + dark 양쪽이라 12 lines 추가. 무시 가능.
+
+2. **컴포넌트 reference 코드 약간 복잡** — `var(--color-surface)` 대신 `var(--color-surface, var(--color-surface-white))`. 가독성 손실 작지만 0은 아님. 헬퍼 함수 도입은 1단계 외 — 명시성 우선.
+
+3. **interface variable 6개는 1단계 dogfood 기준 (closure 아님)** — 다른 host product 등장 시 추가 후보 가능 (예: form 컨트롤의 focus ring 색이 host마다 다를 수 있음 → `--color-focus`). 그 시점에 ADR-010 갱신 또는 새 ADR. 6개를 처음부터 8개·10개로 늘리지 않음 — 추측 추상화 금지(YAGNI).
+
+4. **우리 internal token namespace 정리 부수 issue 미해결** — Trial 3가 발견한 부수 issue(`--color-surface-white`가 dark theme에서 dark 색 반환 — 색조 이름이 semantic 위반)는 본 ADR 범위 외. 후속 phase(`Phase 10` 또는 별도 ADR)에서 정리. 본 ADR은 contract 명시화에 집중해 일관성·검증 가능성 보존.
+
+5. **ADR-007의 WONIK BLUE 정체성 보존, 단 host 우선** — ADR-007("Primary = WONIK BLUE #273E82")은 그대로 유효 — 우리 default 색. 단 host가 `--color-primary`로 자기 색을 정의하면 host 우선 (cascade). design_system 정체성은 (a) web-sandbox standalone (b) host 미정의 시 fallback 두 군데서 WONIK BLUE 유지. supersede 아님 — 보완.

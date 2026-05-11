@@ -1,0 +1,29 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "09-namespace-contract",
+  "steps": [
+    {
+      "step": 0,
+      "name": "adr-010",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:00:00+0900",
+      "summary": "ADR-010 추가 — interface variable 6개 (--color-bg/surface/border/text/text-muted/primary) 표준화 + cascade fallback 패턴(var(host, fallback)) 결정. hover/variant 색은 host가 own. design_system 코드 변경 0. 후속 step 1(tokens emit)·step 2(components reference)·step 3(trial-3 재캡쳐)에서 구현."
+    },
+    {
+      "step": 1,
+      "name": "tokens-interface-variables",
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "name": "components-cascade-reference",
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "name": "trial-3-recapture",
+      "status": "pending"
+    }
+  ],
+  "created_at": "2026-05-11T14:45:00+0900"
+}
