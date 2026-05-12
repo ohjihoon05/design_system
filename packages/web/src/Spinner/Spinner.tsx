@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
-import { primary, borders } from '@wonik/tokens';
+import { interfaceColors } from '@wonik/tokens';
 import type { SpinnerProps, SpinnerSize } from './types';
 
 interface SizeSpec {
@@ -44,8 +44,8 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinne
     height: spec.diameter,
     borderWidth: spec.thickness,
     borderStyle: 'solid',
-    borderColor: borders.mid,
-    borderTopColor: primary.base,
+    borderColor: interfaceColors.border,
+    borderTopColor: interfaceColors.primary,
     borderRadius: '50%',
     boxSizing: 'border-box',
     animation: 'wonik-spin 0.8s linear infinite',

@@ -4,8 +4,8 @@ import {
   fontSize,
   fontWeight,
   lineHeight,
-  primary,
   text as textColors,
+  interfaceColors,
 } from '@wonik/tokens';
 import type { TextColor, TextProps } from './types';
 
@@ -17,7 +17,7 @@ const COLOR_MAP: Record<TextColor, string> = {
   onDark: textColors.onDark,
   onDarkVal: textColors.onDarkVal,
   onDarkDim: textColors.onDarkDim,
-  brand: primary.base,
+  brand: interfaceColors.primary,
 };
 
 export function Text({

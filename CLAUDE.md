@@ -36,6 +36,8 @@
 - **CRITICAL**: 컴포넌트는 stateless 우선. 글로벌 state 라이브러리(Zustand/Redux/MobX/Jotai) 의존 금지 — consumer가 자유롭게 선택해야 한다. controlled + uncontrolled 패턴은 React 표준대로 둘 다 지원한다.
 - **CRITICAL**: 토큰 추가·이름 변경·삭제는 반드시 ADR 작성 + Changesets minor 이상 bump. patch로 처리 금지. 컴포넌트 prop signature 변경(이름·타입·필수 여부)은 major bump.
 - **CRITICAL**: 컴포넌트 코드에서 React 19-only API(`useFormStatus`/`useOptimistic`/`use()`/React Compiler 자동 메모 등) 사용 금지. peer는 `^18 || ^19` dual이므로 18에서도 import해 작동해야 한다 (ADR-008). 18·19 공통 API(`useState`/`useEffect`/`useRef`/`useMemo`/`useCallback` 등)만 사용.
+- **CRITICAL**: host product와 매핑되는 색 토큰(surface/text/border/primary/focus 등)을 reference할 때는 **`interfaceColors.*`** (ADR-010·011) 사용. cascade fallback이 자동 적용되어 host가 같은 이름의 `--color-X` 변수를 정의하면 host 우선, 미정의 시 우리 internal로 fallback. interface variable 7개: `bg`/`surface`/`border`/`text`/`textMuted`/`primary`/`focus`. 의미상 host와 매핑 안 되는 경우(예: Button primary variant의 흰 텍스트, Switch thumb의 흰 점)는 internal(`surfaces.surfaceWhite` 등) 그대로 사용.
+- **CRITICAL**: pseudo-class(`:focus-visible`/`:hover`)와 pseudo-element(`::placeholder`)는 inline style로 못 풀므로 **컴포넌트별 module-scope CSS 1회-inject 패턴**(ADR-011, `packages/web/src/Switch/Switch.tsx` 참조)을 사용한다. `ensureCssInjected()` 함수 + `data-wonik-X` style 태그 + className `wonik-X` 부여. SSR 가드(`typeof document === 'undefined'`) 필수. focus indicator는 `outline: 2px solid var(--color-focus, var(--color-primary))` 표준 (WCAG 2.1 SC 2.4.7 AA).
 
 ### 일반 규칙
 

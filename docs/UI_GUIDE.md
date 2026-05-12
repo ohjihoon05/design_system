@@ -181,9 +181,29 @@ Panel과 동일한 base를 가지되 더 ergonomic한 padding(`var(--space-6)` =
 
 첫 ppt 적용 시 본인 디자인 감각으로 확정.
 
-### 입력 필드 (Input)
-**TBD: 디자이너 결정.** 베이스라인 후보:
-- `rounded-md bg-white border border-[var(--color-border)] px-3 py-2 focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]`
+### 입력 필드 (Input / Textarea)
+
+ADR-010·011로 base 정착됨. 시각:
+- background: `var(--color-surface, ...)`. host가 정의하면 host 우선 (Trial 3 closure 입증).
+- border: `1px solid var(--color-border, ...)`. `:hover` 시 `var(--color-border-strong, ...)`.
+- text: `var(--color-text, ...)` / placeholder는 `var(--color-placeholder, var(--color-text-dim))` + `opacity: 1` 명시.
+- `:focus-visible`: `outline: 2px solid var(--color-focus, var(--color-primary))`, `outline-offset: 0` (border-통합 dual-cue, Material 3 outlined 패턴).
+- Textarea 추가: `resize?: 'none' | 'vertical' | 'both'` prop. default `vertical`. disabled 시 `'none'` 강제.
+
+### Form 컨트롤 polish 표준 (ADR-011)
+
+| 컴포넌트 | focus offset | hover | placeholder |
+|---|---|---|---|
+| Input | 0px (border 통합) | border-strong | text-dim, opacity 1 |
+| Textarea | 0px | border-strong | text-dim, opacity 1 |
+| Button | 2px (분리 ring) | — | — |
+| Checkbox | 2px | — | — |
+| Radio | 2px | — | — |
+| Switch | 2px | — | — |
+
+공통: `:focus-visible` only (마우스 click focus는 indicator 안 보임). outline 2px. focus color는 `var(--color-focus, var(--color-primary))` cascade. WCAG 2.1 SC 2.4.7 AA + SC 1.4.11 3:1 contrast 충족.
+
+구현 방식: 컴포넌트별 module-scope `ensureCssInjected()` 패턴 (ARCHITECTURE.md 참조). inline style로 못 푸는 pseudo-class·pseudo-element를 처리.
 
 ### 상태 칩 (Status Chip — Web variant)
 Brand의 status 색을 사용하되 Web에서는 더 ergonomic하게 — `height: 24px`, `border-radius: 4px`, `padding: 0 8px`. (HMI variant는 17px·radius 0.)

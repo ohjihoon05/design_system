@@ -49,8 +49,33 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 - Figma 자동 동기화 파이프라인, Code Connect 자동화 — 점진 확장 단계에서 도입.
 - 전용 docs 사이트(`docs.wonik.com` 같은) — 1단계는 README + apps/web-sandbox 정도, 풀스펙 docs는 나중.
 - Vue/Angular/Svelte 지원 — React로 통일 가정.
-- 다크 모드 — 1단계는 light-only.
+- ~~다크 모드~~ → ADR-009로 1단계 핵심으로 승격. light + dark dual.
 - 반응형 디자인 — 1단계 web은 데스크톱 우선.
+
+## 1단계 진행 현황 (2026-05-11 기준)
+
+Phase 01~10 closure. layer A의 핵심 contract가 dogfood로 입증됨.
+
+| Phase | 내용 | 핵심 산출 |
+|---|---|---|
+| 01 | foundation | `@wonik/tokens` + `@wonik/web` Button |
+| 02 | layout primitives | Box / Stack / Text |
+| 03 | form primitives | Input / Textarea |
+| 04 | theme tokens | light/dark dual (ADR-009) |
+| 05 | form atoms 2 | Checkbox / Switch / Radio |
+| 06 | display atoms | Spinner / Skeleton + dogfood trial 1 |
+| 07 | button polish | size lg를 hero/CTA로 풍부화 (dogfood trial 2 reaction) |
+| 08 | textarea dogfood | trial 3 — namespace 불일치는 **invisibility** 임을 노출 |
+| 09 | namespace contract | ADR-010 — interface variable 6개 + cascade fallback. invisibility 해결 입증 |
+| 10 | form polish | ADR-011 — `:focus-visible` outline / `--color-focus` 7번째 interface variable / `:hover` / `::placeholder` / Textarea `resize?` prop. WCAG 2.1 SC 2.4.7 AA 충족 |
+
+**layer A의 핵심 모델** (Phase 09·10 거치며 정착):
+- 디자인 시스템은 *시각 형태*만 own하고, *색은 host product가 own*한다.
+- 컴포넌트는 `interfaceColors.*`로 reference → `var(--color-X, var(--color-X-internal))` cascade fallback이 자동 적용. host 정의 시 host 우선, 미정의 시 우리 default. host 학습 곡선 0, 우리 standalone 동작 보장.
+- pseudo-class·pseudo-element(focus·hover·placeholder)는 컴포넌트별 module-scope CSS 1회-inject (`ensureCssInjected()` 패턴).
+- a11y는 비협상 — focus indicator는 WCAG AA 충족, contrast 3:1 보장.
+
+다음 후보: Trial 4 (Outline 페이지 dogfood 표면 확장), layer B (사내 npm 배포 인프라) 진입 검토.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.

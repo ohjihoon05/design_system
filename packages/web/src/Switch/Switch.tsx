@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
-import { surfaces, borders, statusTokens } from '@wonik/tokens';
+import { surfaces, statusTokens, interfaceColors } from '@wonik/tokens';
 import type { SwitchProps, SwitchSize } from './types';
 
 interface SizeSpec {
@@ -37,7 +37,7 @@ const SIZE_SPEC: Record<SwitchSize, SizeSpec> = {
 };
 
 // :checked 분기는 inline style로 못 풀므로 module-scoped CSS 1회 inject.
-// 토큰 reference 유지 — var(--color-primary) 등.
+// :checked는 brand primary 의미 (selected state), :focus-visible은 ADR-011 focus token 사용.
 const SWITCH_CSS = `
 .wonik-switch__input:checked + .wonik-switch__track {
   background-color: var(--color-primary);
@@ -47,7 +47,7 @@ const SWITCH_CSS = `
   transform: var(--wonik-switch-thumb-translate, translateX(12px));
 }
 .wonik-switch__input:focus-visible + .wonik-switch__track {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus, var(--color-primary));
   outline-offset: 2px;
 }
 `;
@@ -94,7 +94,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
     width: spec.trackW,
     height: spec.trackH,
     background: surfaces.surfaceMid,
-    border: `1px solid ${invalid ? statusTokens.alarm.text : borders.mid}`,
+    border: `1px solid ${invalid ? statusTokens.alarm.text : interfaceColors.border}`,
     borderRadius: spec.trackH,
     transition: 'background-color 0.15s ease, border-color 0.15s ease',
     position: 'relative',

@@ -2,16 +2,40 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import {
   surfaces,
-  text,
   statusTokens,
-  borders,
   space,
   radius,
   fontSize,
   fontFamily,
   fontWeight,
+  interfaceColors,
 } from '@wonik/tokens';
 import type { InputProps, InputSize } from './types';
+
+// ADR-011: :focus-visible, :hover, ::placeholder는 inline style로 못 풀어서 1회-inject CSS.
+const INPUT_CSS = `
+.wonik-input:focus-visible {
+  outline: 2px solid var(--color-focus, var(--color-primary));
+  outline-offset: 0;
+}
+.wonik-input:hover:not(:disabled) {
+  border-color: var(--color-border-strong, var(--color-border-mid));
+}
+.wonik-input::placeholder {
+  color: var(--color-placeholder, var(--color-text-dim));
+  opacity: 1;
+}
+`;
+
+let cssInjected = false;
+function ensureCssInjected() {
+  if (cssInjected || typeof document === 'undefined') return;
+  const style = document.createElement('style');
+  style.setAttribute('data-wonik-input', 'true');
+  style.textContent = INPUT_CSS;
+  document.head.appendChild(style);
+  cssInjected = true;
+}
 
 const SIZE_STYLES: Record<InputSize, CSSProperties> = {
   sm: { height: '24px', padding: `0 ${space[3]}`, fontSize: fontSize.labelSm },
@@ -22,9 +46,9 @@ const SIZE_STYLES: Record<InputSize, CSSProperties> = {
 const BASE_STYLE: CSSProperties = {
   fontFamily: fontFamily.base,
   fontWeight: fontWeight.regular,
-  color: text.dark,
-  background: surfaces.surfaceWhite,
-  border: `1px solid ${borders.mid}`,
+  color: interfaceColors.text,
+  background: interfaceColors.surface,
+  border: `1px solid ${interfaceColors.border}`,
   borderRadius: radius.sm,
   outline: 'none',
   width: '100%',
@@ -38,7 +62,7 @@ const INVALID_STYLE: CSSProperties = {
 
 const DISABLED_STYLE: CSSProperties = {
   background: surfaces.surfaceSubtle,
-  color: text.dim,
+  color: interfaceColors.textMuted,
   cursor: 'not-allowed',
   opacity: 0.6,
 };
@@ -50,12 +74,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     leftAddon,
     rightAddon,
     disabled,
+    className,
     style,
     onChange,
     ...rest
   },
   ref
 ) {
+  ensureCssInjected();
   const inputStyle: CSSProperties = {
     ...BASE_STYLE,
     ...SIZE_STYLES[size],
@@ -63,11 +89,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     ...(disabled && DISABLED_STYLE),
     ...style,
   };
+  const mergedClassName = className ? `wonik-input ${className}` : 'wonik-input';
 
   const inputEl = (
     <input
       {...rest}
       ref={ref}
+      className={mergedClassName}
       disabled={disabled}
       onChange={disabled ? undefined : onChange}
       aria-invalid={invalid || undefined}

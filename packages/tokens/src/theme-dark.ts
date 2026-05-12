@@ -1,7 +1,7 @@
 // Dark theme source-of-truth (ADR-009).
 // Starting point: ppt's slate-900 family + WONIK BLUE adjusted for dark surfaces.
 // Refinable by designer later — but the key set MUST stay 1:1 with theme-light.
-import { statusTokensLight } from './theme-light';
+import { statusTokensLight, graphTokensLight } from './theme-light';
 
 export const surfacesDark = {
   canvas: '#0F141C',
@@ -50,6 +50,10 @@ export const textDark = {
 // Contrast issues, if found, get a separate phase.
 export const statusTokensDark = statusTokensLight;
 
+// Graph tokens shared with light initially. Dark-mode contrast tuning is a
+// follow-up phase (esp. .surface fills which may need lower alpha on dark bg).
+export const graphTokensDark = graphTokensLight;
+
 export const themeDark = {
   surfaces: surfacesDark,
   borders: bordersDark,
@@ -57,4 +61,5 @@ export const themeDark = {
   secondary: secondaryDark,
   text: textDark,
   statusTokens: statusTokensDark,
+  graphTokens: graphTokensDark,
 } as const;

@@ -35,6 +35,21 @@
       "dir": "07-button-polish",
       "status": "completed",
       "completed_at": "2026-05-08T13:20:24+0900"
+    },
+    {
+      "dir": "08-textarea-dogfood",
+      "status": "completed",
+      "completed_at": "2026-05-11T14:40:00+0900"
+    },
+    {
+      "dir": "09-namespace-contract",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:35:00+0900"
+    },
+    {
+      "dir": "10-form-polish",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:35:00+0900"
     }
   ]
 }

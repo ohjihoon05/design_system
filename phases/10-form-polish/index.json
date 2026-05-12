@@ -1,0 +1,36 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "10-form-polish",
+  "steps": [
+    {
+      "step": 0,
+      "name": "adr-011",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:00:00+0900",
+      "summary": "ADR-011 추가 — form 컨트롤 focus·resize·placeholder·hover 정책. :focus-visible only, outline 2px, --color-focus를 7번째 interface variable로 격상, resize default vertical 유지 + prop 노출, placeholder는 text-muted fallback(YAGNI), hover 1줄 추가. 구현은 ensureCssInjected() 패턴. design_system 코드 변경 0. 후속 step에서 tokens·components·검증."
+    },
+    {
+      "step": 1,
+      "name": "tokens-focus-and-border-strong",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:15:00+0900",
+      "summary": "build-css.ts에 --color-focus(var(--color-primary)) + --color-border-strong(var(--color-border-mid)) alias 2개 추가 emit(light/dark 양쪽). colors.ts interfaceColors에 focus 추가. interface variable 7개로 확장 완료(ADR-010 6개 + ADR-011 focus 1개). --color-border-strong은 internal fallback only. 컴포넌트 변경 0."
+    },
+    {
+      "step": 2,
+      "name": "components-focus-hover-placeholder-resize",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:30:00+0900",
+      "summary": "6개 form 컨트롤(Button/Input/Textarea/Checkbox/Radio/Switch)에 ADR-011 정책 적용. Button·Input·Textarea·Checkbox·Radio: ensureCssInjected() 패턴 + className wonik-* + :focus-visible CSS (Input/Textarea는 :hover·::placeholder 추가). Switch: 기존 패턴의 focus color만 var(--color-focus, var(--color-primary))로 갱신, :checked는 var(--color-primary) 유지. Textarea: resize? prop 추가(default vertical, disabled 시 none). 163 tests passing. prop signature 추가만(Textarea resize), breaking 0."
+    },
+    {
+      "step": 3,
+      "name": "visual-verification",
+      "status": "completed",
+      "completed_at": "2026-05-11T16:35:00+0900",
+      "summary": "ADR-011 적용 후 default state 회귀 0 시각 입증(trial-3-phase10-default.png == Phase 09 재캡쳐). focus·hover·placeholder는 Chrome headless 자동 캡쳐 어려워 manual 검증 권장으로 docs/phase-10-verification.md에 정리. resize prop 사용법 예시 명시. 다음 phase 후보(Trial 4 Outline·Phase 11)와 future-work(aria-disabled/autofill/readonly/AAA 2.4.13) 노트 보존."
+    }
+  ],
+  "created_at": "2026-05-11T15:50:00+0900",
+  "completed_at": "2026-05-11T16:35:00+0900"
+}

@@ -95,3 +95,317 @@
 2. **기존 79개 테스트의 hex assertion 일부 갱신 필요** — `toHaveStyle({background: '#273E82'})`가 jsdom의 CSS 변수 해상도에 따라 그대로 살거나 `var(...)` literal 어선션으로 갱신. phase 04 step 1에서 결정.
 3. **다크 모드 색상 결정** — base hex(text·border·surface)를 새로 정해야 함. 본 ADR은 결정 위임 — phase 04 step 0이 명시적으로 정의. 시작점은 ppt의 slate-900 계열 + WONIK BLUE를 dark 모드용으로 조정한 값.
 4. **ADR-005 일부 supersede** — light-only 결정만 갱신. 모바일·반응형 미지원 부분은 ADR-005 그대로 유지.
+
+---
+
+### ADR-010: 호스트-디자인 시스템 CSS variable contract
+
+**결정**: `@wonik/web` 컴포넌트가 의존하는 색 변수 중 6개를 **interface variable**로 표준화한다 — host product가 정의할 가능성이 높은 표준 이름이다. `@wonik/tokens`의 `tokens.css`는 이 6개를 default로 emit하고, `@wonik/web` 컴포넌트는 `var(--color-surface, var(--color-surface-white))` 형태의 cascade fallback 패턴으로 reference한다. host가 같은 이름의 변수를 정의하면 자연 cascade로 host 우선 (Trial 2 모델 일반화). 정의 안 하면 우리 default 동작 (web-sandbox standalone에서도 작동).
+
+**interface variable 6개** (1단계, ppt dogfood 기준):
+
+| 이름 | 의미 | 우리 internal fallback |
+|------|------|------|
+| `--color-bg` | 가장 어두운 canvas / page 배경 | `--color-canvas` |
+| `--color-surface` | panel·card 배경 | `--color-surface-white` |
+| `--color-border` | 기본 border | `--color-border-mid` |
+| `--color-text` | 기본 text | `--color-text-dark` |
+| `--color-text-muted` | 보조·부가 text | `--color-text-dim` |
+| `--color-primary` | brand primary | `--color-primary` (이미 일치) |
+
+hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 변형(`--color-primary-pale`·`bg`·`stroke`)은 interface variable에서 **제외** — host가 own (Trial 3에서 host의 hover·variant 정책은 host의 자유로 확인됨).
+
+**이유**:
+
+1. **Trial 3가 입증한 invisibility 결함의 근본 원인은 contract 부재** — 우리 컴포넌트의 inline style이 `var(--color-surface-white)` 같은 우리 namespace 변수를 reference하는데, host(ppt)에는 그 이름이 정의되지 않아 CSS variable이 invalid로 떨어지고 declaration 통째로 무시됨 → textarea가 dark surface와 구분 안 됨. namespace 정책을 명시화하지 않으면 다음 form/display atom도 같은 결함 노출. evidence: `docs/dogfood-trial-3.md` 발견 1.
+
+2. **interface variable은 layer A 모델의 명시화** — Trial 2(Button)가 작동한 건 `--color-primary` 이름의 우연 일치였다. 그 우연 패턴을 6개로 격상해 의도적 contract로 만든다. design_system은 *시각 형태*만 제공하고 *색*은 host가 own한다는 1단계 layer A 정신을 코드 단위로 보존.
+
+3. **Cascade fallback은 progressive enhancement** — host가 interface variable 6개 모두 정의·일부 정의·미정의 세 경우 모두 동작한다. host 학습 곡선 0 (host는 자기 변수 이름을 그대로 쓰면 됨). 우리 컴포넌트는 host 의존성 0 (standalone 환경에서 우리 default 색으로 작동).
+
+4. **interface variable 6개는 dogfood evidence 기반** — ppt의 8개 변수에서 hover/variant 2개를 제외한 6개. 추측이 아니라 실제 host가 정의한 contract surface. 다른 사내 product 등장 시 추가 후보는 그때 dogfood로 확인 후 ADR 갱신.
+
+5. **1인 운영 부담 최소** — 우리 internal token(`--color-surface-white` 등)의 이름·구조는 그대로 유지. tokens.css에 interface variable 6개를 default로 emit하는 작은 추가만으로 contract 만족. 컴포넌트 코드도 `var(host, fallback)` 패턴 적용만 — 큰 refactor 없음.
+
+**구현 방향** (후속 step에서 진행):
+
+- **Step 1 (tokens)**: `packages/tokens/scripts/build-css.ts`에서 `tokens.css` emit 시 interface variable 6개를 default block (light/dark 양쪽)에 추가. internal token은 그대로 유지. `packages/tokens/src/colors.ts`는 두 reference path 모두 export.
+- **Step 2 (components)**: `@wonik/web`의 모든 컴포넌트(Button·Textarea·Input·Spinner·Checkbox·Switch·Radio·Box·Stack·Text 등)의 inline style을 `var(--color-X, var(--color-X-internal))` 패턴으로 갱신. prop signature 변경 0. 기존 테스트의 hex/CSS variable assertion 일부 갱신 필요.
+- **Step 3 (검증)**: Trial 3을 재캡쳐해 invisibility 해결 입증 (`docs/dogfood-trial-3-recapture.md`).
+
+**트레이드오프**:
+
+1. **tokens.css 크기 약간 증가** — interface variable 6개 default emit. light + dark 양쪽이라 12 lines 추가. 무시 가능.
+
+2. **컴포넌트 reference 코드 약간 복잡** — `var(--color-surface)` 대신 `var(--color-surface, var(--color-surface-white))`. 가독성 손실 작지만 0은 아님. 헬퍼 함수 도입은 1단계 외 — 명시성 우선.
+
+3. **interface variable 6개는 1단계 dogfood 기준 (closure 아님)** — 다른 host product 등장 시 추가 후보 가능 (예: form 컨트롤의 focus ring 색이 host마다 다를 수 있음 → `--color-focus`). 그 시점에 ADR-010 갱신 또는 새 ADR. 6개를 처음부터 8개·10개로 늘리지 않음 — 추측 추상화 금지(YAGNI).
+
+4. **우리 internal token namespace 정리 부수 issue 미해결** — Trial 3가 발견한 부수 issue(`--color-surface-white`가 dark theme에서 dark 색 반환 — 색조 이름이 semantic 위반)는 본 ADR 범위 외. 후속 phase(`Phase 10` 또는 별도 ADR)에서 정리. 본 ADR은 contract 명시화에 집중해 일관성·검증 가능성 보존.
+
+5. **ADR-007의 WONIK BLUE 정체성 보존, 단 host 우선** — ADR-007("Primary = WONIK BLUE #273E82")은 그대로 유효 — 우리 default 색. 단 host가 `--color-primary`로 자기 색을 정의하면 host 우선 (cascade). design_system 정체성은 (a) web-sandbox standalone (b) host 미정의 시 fallback 두 군데서 WONIK BLUE 유지. supersede 아님 — 보완.
+
+---
+
+### ADR-011: form 컨트롤 focus·resize·placeholder·hover 정책
+
+**결정**: `@wonik/web`의 form 컨트롤(Button/Input/Textarea/Checkbox/Radio/Switch)에 다음 7개 정책을 일괄 적용한다.
+
+1. **Focus selector**: `:focus-visible` only — fallback 없음 (Safari 15.4 ship 후 baseline widely available).
+2. **Focus ring**: `outline: 2px solid var(--color-focus, var(--color-primary, var(--color-primary-internal)))` 3-단 cascade.
+3. **Focus offset**: Input/Textarea는 `outline-offset: 0px` (border-통합 dual-cue, Material 3 outlined input 패턴). Button/Checkbox/Radio/Switch는 `outline-offset: 2px` (Switch 기존 패턴 일관 — 컨트롤과 ring 시각 분리).
+4. **Resize default**: Textarea의 `resize: 'vertical'` default 유지. 다만 `resize?: 'none' | 'vertical' | 'both'` prop을 노출해 host별 선택 가능.
+5. **Placeholder color**: `::placeholder { color: var(--color-placeholder, var(--color-text-muted-internal)); opacity: 1; }`. **interface variable 격상 안 함** (1단계 YAGNI).
+6. **Hover state**: Input/Textarea에 `:hover { border-color: var(--color-border-strong, var(--color-border-mid-internal)) }` 1줄 추가.
+7. **구현 방식**: `ensureCssInjected()` 1회-inject pattern (Switch.tsx 참조) — 각 컴포넌트가 자기 module-scope CSS block 정의. pseudo-class·pseudo-element를 inline style로 못 풀기 때문.
+
+**interface variable 격상**: ADR-010이 결정한 6개를 **7개로 확장**.
+- 추가: `--color-focus` (default fallback `--color-primary`) — focus ring 색을 host가 분리 own할 수 있는 hook.
+- 격상 안 함: `--color-placeholder` (1단계 dogfood에 host override needs 없음 — text-muted internal로 fallback 충분).
+
+**이유**:
+
+1. **WCAG 2.1 SC 2.4.7 (AA) 충족 필수** — 키보드 focus indicator visible. 현재 Input/Textarea의 `outline: 'none'`은 a11y regression. SC 1.4.11이 정량 보충 — 비텍스트 3:1 contrast. WONIK BLUE `#273E82` on 흰 surface ≈ 9:1로 안전.
+
+2. **`:focus-visible`이 modern 표준** — 2022-03 Safari 15.4 ship으로 모든 메이저 브라우저에서 baseline widely available ([Igalia](https://blogs.igalia.com/mrego/2022/04/08/focus-visible-is-shipping-in-safari-webkit/), [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible)). 키보드 focus만 indicator 보이고 마우스 click focus는 숨기는 패턴이 a11y + UX 표준. 1단계 dogfood(React 19 + Vite + 최신 Chromium) 환경에서 fallback 불필요.
+
+3. **outline > box-shadow** — Radix Themes가 box-shadow → outline으로 마이그레이션한 명시적 이유 ([Radix discussion](https://github.com/radix-ui/primitives/discussions/3651)): Chrome anti-aliasing 안정, `border-radius` 자동 추적 (Chromium 94+/Safari 16.4+). modern 표준.
+
+4. **`--color-focus`를 7번째 interface variable로 격상 (layer A 정신 일관)** — Primer/Radix Themes/Chakra v3가 모두 별도 focus color token을 둠. 그 이유는 (a) form-heavy product에서 brand-tinted ring이 산만, (b) dark/high-contrast 모드에서 brand와 독립 조정 필요, (c) brand color가 primary action button과 같아 focus와 action 시각 혼동. layer A의 "host가 색을 own" 정신상 host가 분리 override 가능한 hook이 우월. ADR-010 line 142가 이미 future hook으로 언급 — 본 ADR이 실현. default fallback이 primary라 host 미정의 시 회귀 0.
+
+5. **`resize: vertical` default 유지 + prop opt-out** — MDN 권장은 vertical(사용자 자유). 1단계 dogfood ppt가 long-form 설문/리서치 폼이라 vertical 자연. layout-sensitive 산업용(반도체 dashboard) 등 future host는 `resize="none"` 명시. BC 0.
+
+6. **placeholder는 interface variable 격상 안 함 (YAGNI)** — WCAG 1.4.3 적용 대상이지만 1단계 dogfood에 별도 host override needs 없음. `::placeholder` `opacity: 1` 명시는 필수 (Firefox 일부 버전 default <1). dogfood로 needs 등장 시 별도 ADR로 격상.
+
+7. **hover state는 universal pattern, 1줄로 보충** — Material 3·Radix·Chakra 모두 input의 hover 시 border-color 진해짐을 universal pattern으로 채택. 현재 우리 시스템 gap. Phase 10에서 같이 묶음 (별도 phase 분리 시 marginal value, CSS injection 인프라 공유).
+
+**구현 방향** (후속 step):
+
+- **Step 1 (tokens)**: `build-css.ts`에 `--color-focus: var(--color-primary)` alias emit (light/dark 양쪽) + `--color-border-strong: var(--color-border-mid)` alias (hover state internal fallback). `interfaceColors`에 `focus` 추가.
+- **Step 2 (components)**: Button/Input/Textarea/Checkbox/Radio에 `ensureCssInjected()` 추가 — `:focus-visible`·`:hover`·`::placeholder` CSS block. Switch는 이미 패턴 적용됨 (focus만 검토, placeholder 없음). Textarea에 `resize?` prop 추가 (default `vertical`).
+- **Step 3 (검증)**: ppt 또는 sandbox에서 focus·hover·placeholder 시각 캡쳐. focus는 Chrome devtools `:focus-visible` toggle 또는 demo 페이지에서 Tab simulate.
+
+**트레이드오프**:
+
+1. **interface variable 7개로 증가** — ADR-010의 6 set이 7로 확장. tokens.css 추가 emit 1개 (light/dark = 2 lines). host 학습 부담 미미.
+
+2. **CSS injection이 form 컨트롤 8개 중 6개에 추가됨** — 현재 Switch만 inject 중. 5개 컴포넌트에 동일 패턴 추가 → 컴포넌트당 1회 inject. SSR 안전성은 `typeof document === 'undefined'` 가드로 처리(Switch 패턴 그대로).
+
+3. **inline style만 보고 컴포넌트 시각 추론 못 함** — pseudo-class CSS가 외부에 있어 디버깅·snapshot 난이도 증가. 보완: 각 컴포넌트의 CSS block을 컴포넌트 파일 안에 module-scope로 colocate.
+
+4. **`--color-focus` host override 안 하면 primary와 동일** — Trial 2·3 결과와 동일 시각. 분리 token 가치는 host가 명시적 override할 때만 실현. 1단계 dogfood엔 가치 실현 0 — 미래 host product 등장 시 회귀 0인 확장 hook.
+
+5. **AAA (WCAG 2.4.13 Focus Appearance) 미보장** — outline width 2px가 충족 후보지만, perimeter 면적 + 픽셀 3:1 변화 contrast의 정량 검증 안 함. AA(2.4.7 + 1.4.11) 목표 충족.
+
+6. **추가 form polish 영역 미해결** — 1단계 dogfood 범위 외:
+   - `aria-disabled` 대안 패턴 (현재는 native `disabled` 충분).
+   - WebKit autofill 노란 배경 override (`-webkit-box-shadow inset` 트릭).
+   - `readonly` 시각 처리 (Carbon/MD3는 border 옅게 + cursor:default).
+   - Card 컴포넌트 도입 시 focus indicator obscured (WCAG 2.2 SC 2.4.11 — padding ≥ outline-offset).
+   - AAA WCAG 2.4.13 Focus Appearance 정량 검증.
+   
+   각 항목은 dogfood로 needs 등장 시 별도 ADR.
+
+**관계**:
+- **ADR-010 보완** — 7번째 interface variable(`--color-focus`) 추가, layer A 정신 일관. supersede 아님.
+- **ADR-007/008/009**: 영향 없음.
+
+---
+
+### ADR-012: 그래프(시각화) 토큰을 별도 status-driven 도메인으로 분리, brand hex는 의도적으로 재사용
+
+**결정**: `@wonik/tokens`에 plot/chart 색을 위한 **graph 도메인**을 추가한다. 5축 status-driven taxonomy로 분류된 19개 CSS variable(`--color-graph-*`)과 runtime export `graphTokens`를 emit한다. brand hex(WONIK BLUE `#273E82`, WONIK GRAY `#ACACAC`)·text·border·surface와 hex가 일부 일치하지만 **CSS variable layer는 독립**이며, raw hex로 저장한다(alias 아님). Figma side에도 동일 hierarchy(`graph/limit/upper/line`)로 `Graph` collection을 등록(Light/Dark mode).
+
+**5축 taxonomy** (Parameter Description 캡쳐 9장 분석):
+
+| 축 | 의미 | 변수 |
+|---|---|---|
+| `limit` | 스펙 임계 zone (Range/Overshoot·Undershoot/Trim High·Low/Main·Sub Limit) | `upper.{line,surface,label}`, `lower.{line,surface,label}` |
+| `signal` | 플롯 라인 | `primary.{line,surface}`, `tuned.{line,surface}`, `reference.line` |
+| `pass` (status) | 판정 영역 (Spike, Pass Condition zone) | `line`, `surface`, `label` |
+| `action` | 튜닝 가이드 화살표·지시 | `line` |
+| `annotation` | 콜아웃 라벨 (중립) | `fg`, `surface` |
+| `axis` | 축 라벨·그리드 | `label`, `grid` |
+
+**brand hex 재사용**: 다음 graph 토큰은 의도적으로 기존 토큰과 동일 hex를 가진다 (alias 아닌 raw hex 복제):
+- `graph/signal/tuned/line` `#273E82` = `primary.base` (WONIK BLUE)
+- `graph/signal/tuned/surface` `#D6DCF0` = `primary.bg`
+- `graph/signal/reference/line` `#ACACAC` = `secondary.base` (WONIK GRAY)
+- `graph/annotation/fg` `#303030` = `text.dark`
+- `graph/annotation/surface` `#FFFFFF` = `surfaces.surfaceWhite`
+- `graph/axis/label` `#71717B` = `text.primary`
+- `graph/axis/grid` `#E1E1E4` = `borders.light`
+
+**이유**:
+
+1. **graph는 host와 매핑되지 않는 internal 도메인** — ADR-010·011의 interface variable 7개(bg/surface/border/text/textMuted/primary/focus)는 host product가 own하는 컬러. plot 영역의 의미적 색(임계·신호·판정)은 host가 own하지 않고 우리 시스템이 의미·일관성을 own하는 게 자연스럽다. graph는 interface variable이 아닌 자체 domain token으로 둔다.
+
+2. **status-driven taxonomy가 시각화 의미와 1:1** — 캡쳐 9장 전체에서 색이 데이터의 역할(임계 위/아래, 측정/튜닝/기준 신호, 판정 영역, 액션 방향, 주석)로 일관 사용됨. statusTokens(idle/run/alarm/...)와 동일한 2-level 구조(그룹 → property)로 정의해 `build-css.ts` emit loop 재사용. 컴포넌트별 ad-hoc 색이 아닌 의미 축 우선.
+
+3. **brand hex 재사용은 정체성 보존 + 의미 분리 동시 달성** — Tuned 신호가 WONIK BLUE인 것은 brand 정체성 표현(`statusTokens.run.dot`이 `#273E82` 재사용한 선례와 동일 패턴). 단 미래에 graph 가독성 issue로 tuned 색만 미세 조정해야 할 때 brand 토큰을 건드리지 않고 graph 쪽만 변경 가능해야 하므로 **CSS variable layer는 분리**한다. raw hex로 둔 이유: alias(`var(--color-primary)`)로 두면 brand 변경이 graph로 강제 전파되어 분리 가치를 잃음.
+
+4. **Figma side 1:1 mirror로 디자이너 인지 부담 0** — slash hierarchy(`graph/limit/upper/line`)와 CSS variable(`--color-graph-limit-upper-line`) 동형. Figma Variables `Graph` collection의 19개 변수가 코드와 1:1 매칭되어 design ↔ code 토큰 sync 비용 최소. 컴포넌트 코드 변경 시 Figma 측 분리 검토 불필요.
+
+5. **Figma variable scope 좁힘** — `*/line`은 `SHAPE_FILL+STROKE_COLOR`, `*/surface`는 `FRAME_FILL+SHAPE_FILL`, `*/label`·`fg`는 `TEXT_FILL`로만 노출. 디자이너가 Figma에서 변수 picker 열 때 의미에 맞는 변수만 보임. `ALL_SCOPES` 기본값은 모든 property picker를 오염시키므로 회피.
+
+6. **첫 customer 부재 우려 점검** — ADR-001 원칙("첫 customer 없이는 추상화 안 한다") 검토:
+   - Parameter Description 시안의 9장 캡쳐가 **이미 존재하는 시각 언어**이며 추상화의 결과가 아니라 raw value 표준화에 해당.
+   - 추상화 차원의 우려는 *컴포넌트* (예: `<Chart>` 도입)에 적용되며, 본 ADR은 *토큰* 표준화에 한정.
+   - 따라서 customer 0 우려에 해당 안 함. `@wonik/web` chart 컴포넌트 도입은 1단계 외(YAGNI 보존).
+
+**트레이드오프**:
+
+1. **brand hex 자동 추종 안 됨** — host가 `--color-primary`를 override하거나 ADR-007이 미래에 brand color 변경 시 graph 토큰은 따라가지 않는다. **의도된 분리**이며 미래에 brand-following이 더 적합하다고 판단되면 raw hex를 `var(--color-primary)` alias로 전환 (별도 ADR). 1단계 dogfood에 brand override 시나리오 없음(ppt는 자기 indigo primary 사용, graph는 그대로 brand WONIK BLUE).
+
+2. **dark mode는 light와 동일값 미러 상태** — `graphTokensDark = graphTokensLight`로 시작(statusTokens 동일 패턴). surface fill(연한 톤 `#FCE7F3`/`#CCFBF1`/`#EEF0FE`/`#DCFCE7`)의 어두운 배경 위 가독성은 별도 검증 안 됨. 첫 dark host product에서 issue 발견 시 dark 전용 hex 분리(별도 phase). 1단계 dogfood에 graph 컴포넌트 자체가 등장 안 함(`@wonik/web` chart 미정).
+
+3. **action과 limit/upper가 같은 hue `#EC4899`** — 의미는 분리(threshold zone vs tuning direction)이지만 색 동일. 캡쳐 원본도 같은 hue로 사용하는 패턴(magenta 화살표 = "이 방향으로 조정")이라 의도적. 미래에 시각 혼동 issue 발견 시 action 별도 hue 분리(별도 ADR). 분리 시 회귀 영향: `action` 사용하는 컴포넌트(현재 0)만.
+
+4. **`@wonik/web` 컴포넌트에 graph 토큰 import surface 없음** — 1단계 컴포넌트는 form 컨트롤 위주(Button/Input/Textarea/Switch/Checkbox/Radio). chart 컴포넌트는 1단계 외이므로 graph 토큰의 actual consumer는 dogfood product(ppt 후속 view 또는 recharts/visx 사용처)에서 직접 reference. 컴포넌트 prop signature 영향 0.
+
+5. **19개 토큰 신규 추가로 tokens.css 증가** — Light/Dark 각 19 lines → 총 38 lines 증가(이전 60 → 79). 무시 가능 수준. ESM/CJS bundle dts 6.56KB 유지(타입은 var(...) string union이므로 거의 영향 없음).
+
+6. **graph 도메인이 미래에 더 세분화될 가능성** — chart type별(line/bar/area/scatter/pie) 또는 industry별(반도체 dashboard vs 일반 BI)로 분기 needs 등장 가능. 본 ADR은 *의미 축* 5개를 base로 잡고, future variant는 그 위에 layer(예: `graph.bar.fill`, `graph.scatter.point`). base 5축은 어떤 chart type에도 적용 가능하므로 base는 안정적.
+
+**구현 상태** (본 ADR 작성 시점에 이미 완료):
+
+- `packages/tokens/src/graph.ts` — runtime export `graphTokens` (var refs).
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight` hex source.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` (mirror).
+- `packages/tokens/scripts/build-css.ts` — `Graph (semantic)` section emit.
+- `packages/tokens/src/index.ts` — re-export.
+- Figma `UI-UX-Standardization-2.0` 파일에 `Graph` collection 등록(19 vars, Dark/Light modes, scope 좁힘 적용).
+
+**관계**:
+- **ADR-007 일치** — `signal/tuned`·`signal/reference`가 brand color 그대로 사용. 정체성 보존.
+- **ADR-009 패턴 일치** — theme-light/theme-dark의 2-layer source-of-truth, build-css emit 패턴 동일.
+- **ADR-010·011와 분리** — graph는 host-overridable 도메인이 아닌 internal 도메인. interface variable 7개와 별개.
+- **ADR-001/004**: 영향 없음 (토큰 표준화는 추상화 차원 아님).
+- **ADR-013에 의해 부분 supersede** — 19개 → 12개로 축소. 5축 status-driven taxonomy 핵심(limit/signal/pass)은 유지되며, chrome(action/annotation/axis) 및 duplicate `.label` 7개가 제거됨. 본 ADR의 §brand hex 재사용 정책은 그대로 valid.
+
+---
+
+### ADR-013: graph 토큰을 19개 → 12개로 축소 (chrome 제거 + duplicate label 통합)
+
+**상태**: ADR-012 부분 supersede (의미축은 보존, 토큰 surface area만 축소).
+
+**결정**: ADR-012가 도입한 19개 graph 토큰을 **12개로 축소**한다. 의미축(limit/signal/pass) 3개와 그 안의 9개 property는 유지. chrome 성격의 3개 그룹(`action`/`annotation`/`axis`)과 hex가 line과 동일한 duplicate `.label` 2개를 제거한다. 제거된 use case는 기존 토큰 재사용으로 커버한다 (아래 migration 표).
+
+**최종 12개 토큰 / 6 그룹**:
+
+| 그룹 | property | 비고 |
+|---|---|---|
+| `limitUpper` | `line`, `surface` | `.label` 제거 — `.line`이 라벨 텍스트까지 겸함 (동일 hex) |
+| `limitLower` | `line`, `surface` | `.label` 제거 — 동일 |
+| `signalPrimary` | `line`, `surface` | 변경 없음 |
+| `signalTuned` | `line`, `surface` | 변경 없음 (WONIK BLUE 정체성 유지) |
+| `signalReference` | `line` | 변경 없음 (WONIK GRAY 정체성 유지) |
+| `pass` | `line`, `surface`, `label` | `.label`(`#16A34A`)은 `.line`(`#22C55E`)과 hex 다름 — 명도 대비 위해 유지 |
+
+**제거된 7개 토큰 및 migration 가이드**:
+
+| 제거 토큰 | runtime 대체 | CSS variable 대체 | 근거 |
+|---|---|---|---|
+| `graphTokens.limitUpper.label` | `graphTokens.limitUpper.line` | `var(--color-graph-limit-upper-line)` | hex 완전 동일 (`#EC4899`) |
+| `graphTokens.limitLower.label` | `graphTokens.limitLower.line` | `var(--color-graph-limit-lower-line)` | hex 완전 동일 (`#14B8A6`) |
+| `graphTokens.action.line` | `graphTokens.limitUpper.line` | `var(--color-graph-limit-upper-line)` | hex 동일 (`#EC4899`), ADR-012도 "동일 hue"로 명시. "위험·경고 방향"이라는 의미축이 limit과 같은 family |
+| `graphTokens.annotation.fg` | `text.dark` | `var(--color-text-dark)` | hex 동일 (`#303030`). graph 도메인 의미가 아닌 chrome |
+| `graphTokens.annotation.surface` | `surfaces.surfaceWhite` | `var(--color-surface-white)` | hex 동일 (`#FFFFFF`) |
+| `graphTokens.axis.label` | `text.primary` | `var(--color-text-primary)` | hex 동일 (`#71717B`). 축 label은 graph 의미가 아닌 일반 muted text |
+| `graphTokens.axis.grid` | `borders.light` | `var(--color-border)` | hex 동일 (`#E1E1E4`). grid는 일반 경계선 |
+
+**이유**:
+
+1. **의미축은 유지, chrome은 분리** — ADR-012의 핵심 가치인 status-driven taxonomy(데이터 *역할*에 색 묶기)는 limit/signal/pass에서 작동한다. 반대로 `axis`/`annotation`은 차트 도메인 의미가 아닌 "차트 안에 들어간 일반 텍스트·경계선"으로, 본문 텍스트(`text.primary`)와 시각 분리 needs가 없다. `action`은 의미는 다르지만 ADR-012도 인정했듯 hex가 `limit.upper.line`과 완전 동일하고 "경고 방향" family로 묶인다.
+
+2. **duplicate hex → duplicate token = noise** — `.label`이 `.line`과 hex 완전 동일하면 토큰 두 개가 같은 정보를 가리킨다. 미래에 라벨 텍스트 색만 분리 조정해야 할 시각 needs가 발생하면 그때 다시 갈라치는 게 YAGNI 원칙에 맞다 (ADR-001의 "첫 customer 없이 추상화 안 한다" 정신).
+
+3. **현재 consumer 0이라 BC 부담 없음** — graph 토큰은 ADR-012로 도입된 직후이며 `@wonik/web` 컴포넌트에서 사용 안 함. `apps/web-sandbox` 및 docs를 제외하면 import 0. 깰 사용자가 없는 지금이 정리 timing으로 적합.
+
+4. **유지보수자 인지 부하 감소** — 19개 → 12개는 한 화면에 들어와 mental model 단순화. Figma `Graph` collection의 변수 수도 같이 줄어 디자이너 picker도 가벼워짐.
+
+5. **brand hex 재사용 정책(ADR-012 §6)은 그대로 유지** — `signal/tuned`(WONIK BLUE)·`signal/reference`(WONIK GRAY)는 brand 정체성 표현이므로 그대로. ADR-012의 raw hex 복제(alias 아님) 결정도 그대로.
+
+**트레이드오프**:
+
+1. **`action`이 별도 의미 token이 아니게 됨** — consumer가 `graphTokens.limitUpper.line`을 가져다 화살표를 그리면 "이게 임계인지 액션인지" 시맨틱이 코드에서 흐려진다. 완화: ADR-013 자체 + GRAPH_TOKENS.md migration 표가 "action arrow = limit.upper.line 재사용"임을 명시. 미래에 action만 hue 분리 needs가 등장하면 그때 추가(ADR-014 등).
+
+2. **`axis`/`annotation`이 host 변경에 따라감** — 이전 19개 ADR-012 설계에서는 graph는 host-overridable이 아닌 internal로 분리됐다. 이제 axis label은 `text.primary` 추종, annotation surface는 `surfaces.surfaceWhite` 추종이라 host가 text/surface 토큰을 override하면 graph chrome도 함께 변한다. **이는 합당함** — axis/annotation은 차트의 chrome일 뿐 데이터 의미가 아니므로 host의 전체 톤(다크/라이트, 어두운 chrome/밝은 chrome)과 일관되는 게 자연스러움. 데이터 의미축(limit/signal/pass)은 여전히 graph-internal로 host 영향 안 받음.
+
+3. **Figma `Graph` collection 동기화 필요** — 19 → 12 variables로 줄여야 함. 7개 variable 제거 시 Figma에서 reference하던 도형이 broken 표시. 1단계는 아직 chart 도형 자체가 Figma에 거의 없으므로 영향 최소 (실제 사용처는 추후 dogfood product에서 graphTokens 직접 reference). Figma 측 정리는 변수 삭제 + 도형 fill 패널 picker 재선택으로 처리.
+
+4. **`pass.label`만 line과 다른 hex로 남음 — 비대칭** — `limitUpper`/`limitLower`는 label 제거했는데 `pass`만 label 유지. 이유: `pass.label`(`#16A34A`)은 `pass.line`(`#22C55E`)과 어두운 톤으로 다름(밝은 green 라인이 흰 배경 라벨로 쓰이면 대비 부족). 비대칭 비용보다 명도 대비 보존의 가치가 더 큼.
+
+**구현**:
+
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight`에서 7개 property 제거.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` 재export라 자동 반영.
+- `packages/tokens/src/graph.ts` — runtime export `graphTokens`에서 7개 property 제거. 헤더 주석에 migration 가이드 inline 명시.
+- `packages/tokens/scripts/build-css.ts` — 변경 없음 (generic Object.entries iterator).
+- `tokens.css` 자동 재생성 — light/dark 각 `--color-graph-*` 12개로 감소 (이전 19 → 12, 총 38 → 24).
+- `docs/GRAPH_TOKENS.md` — 12-token reference로 재작성, migration 표 포함.
+- `.changeset/` — minor bump 신규 항목 (토큰 삭제는 minor 이상 — CLAUDE.md 규칙).
+
+**관계**:
+- **ADR-012 부분 supersede** — taxonomy axes 5개 → 3개(limit/signal/pass), 토큰 19 → 12. ADR-012의 §brand hex 재사용·§host와의 매핑 분리 정신은 limit/signal/pass에 그대로 적용.
+- **ADR-007 일치** — `signal/tuned`·`signal/reference`의 brand color 유지.
+- **ADR-010·011와 관계 정밀화** — 데이터 의미축(limit/signal/pass)은 여전히 host-internal. chrome(axis/annotation 등)은 ADR-013에 의해 host 추종 토큰(`text.*`/`borders.*`/`surfaces.*`) 재사용으로 위임됨.
+- **ADR-001 일치** — 첫 customer(`@wonik/web` chart 컴포넌트) 등장 전이라 더 가벼운 baseline으로 출발.
+- **ADR-014에 의해 추가 보완** — 토큰 12 → 13. `signalReference`에 `surface` property 추가로 signal 3개 신호의 (line, surface) 쌍 대칭 완성.
+
+---
+
+### ADR-014: `signalReference.surface` 추가 — signal 그룹의 (line, surface) 쌍 대칭 완성
+
+**상태**: ADR-013 보완 (additive, supersede 아님). 토큰 surface area를 12 → 13으로 확장.
+
+**결정**: `graphTokens.signalReference`에 `surface` property를 추가한다. hex는 `#F0F0F0` — `line`의 WONIK GRAY `#ACACAC`를 paler 톤으로 라이트닝한 값 (`signalPrimary`/`signalTuned`가 line→surface로 라이트닝하는 패턴과 동일).
+
+**결과 shape (13개 토큰 / 6 그룹)**:
+
+| 그룹 | property | hex (Light) |
+|---|---|---|
+| `limitUpper` | `line`, `surface` | `#EC4899`, `#FCE7F3` |
+| `limitLower` | `line`, `surface` | `#14B8A6`, `#CCFBF1` |
+| `signalPrimary` | `line`, `surface` | `#818CF8`, `#EEF0FE` |
+| `signalTuned` | `line`, `surface` | `#273E82`, `#D6DCF0` |
+| `signalReference` | `line`, **`surface` (신규)** | `#ACACAC`, **`#F0F0F0`** |
+| `pass` | `line`, `surface`, `label` | `#22C55E`, `#DCFCE7`, `#16A34A` |
+
+**이유**:
+
+1. **signal 3개 신호의 시각 표현 일관성** — `signalPrimary`/`signalTuned`는 area chart fill 등에서 `.surface`를 활용할 수 있는데 `signalReference`만 `line`만 있어서 비대칭이었다. 같은 도메인의 3개 신호가 같은 property 구조를 갖는 게 사용자(consumer 컴포넌트, chart 라이브러리 wrapper) 입장에서 인지 부담 최소.
+
+2. **ADR-012/013 분석 시 reference signal에 area fill 시안이 없었지만 미래 needs는 존재** — 캡쳐 9장 분석에서는 reference 신호가 dashed line으로만 그려졌고 area fill 시안이 없어서 ADR-013까지는 `surface` 생략했다. 그러나 (a) reference 신호도 "비교 baseline 영역"으로 area chart화될 수 있고, (b) 첫 dogfood chart 컴포넌트에서 (line, surface) 쌍을 요구할 가능성이 높다. 토큰 슬롯을 미리 확보해두는 비용은 거의 0 (1 hex + 1 CSS variable).
+
+3. **YAGNI 위반 우려 점검** — ADR-001 "첫 customer 없이 추상화 안 함" 원칙과 충돌하는가? 본 ADR은 *컴포넌트* 추상화가 아니라 *토큰 surface area* 확장. 토큰은 디자인 시안에서 도출된 시각 언어의 정규화이며, "signal 3개 신호 = 같은 구조" 정규화는 추상화 비용이 아닌 일관성 확보. 따라서 ADR-001과 충돌 없음.
+
+4. **chrome 통합 정신과 분리** — ADR-013은 chrome(axis/annotation/action)을 graph 토큰에서 제거하고 host 토큰 재사용으로 위임. ADR-014는 정반대 방향(추가)이지만 *의미축(signal) 내부의 대칭 완성*이라 ADR-013과 충돌 없음. ADR-013은 "graph 도메인 의미가 아닌 chrome 분리"이고 본 ADR은 "graph 도메인 의미축의 대칭".
+
+5. **WONIK GRAY 정체성 보존** — surface hex `#F0F0F0`은 line `#ACACAC`의 paler 톤으로 brand secondary와 동일 hue family. ADR-007 brand 정체성 일치.
+
+**트레이드오프**:
+
+1. **현재 시안 binding 적용처 0** — `signalReference.surface` 도형이 캡쳐 9장에 없어서 Figma 시안 측 즉시 binding 적용처 없음. 토큰만 추가되고 시각 결과 변화 없음. **수용 가능** — 미래 area chart needs에 미리 슬롯 확보가 더 가치 있음.
+
+2. **Figma `Graph` collection 동기화 필요** — 변수 1개 추가 (`graph/signal/reference/surface`, FRAME_FILL+SHAPE_FILL scope). 이미 ADR-013 동기화(7개 변수 제거)가 pending 상태였으므로 함께 처리.
+
+3. **dark mode hex는 light 미러로 시작** — `graphTokensDark = graphTokensLight` 재export 패턴이라 자동 반영. 어두운 배경에서 `#F0F0F0`은 매우 밝게 floating할 수 있음 — first dark host product 등장 시 dark 전용 hex 분리(별도 phase).
+
+4. **`#F0F0F0` 선택의 임의성** — line `#ACACAC` 대비 paler 톤이라는 패턴은 맞지만 정확한 명도는 디자이너 검토 필요. 1단계 dogfood까지 디자이너 의견 수용 가능 (별도 ADR 또는 본 ADR 갱신).
+
+**구현**:
+
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight.signalReference.surface = '#F0F0F0'` 추가.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` 재export라 자동 반영.
+- `packages/tokens/src/graph.ts` — runtime export에 `signalReference.surface` 추가. 헤더 주석에 ADR-014 명시.
+- `packages/tokens/scripts/build-css.ts` — 변경 없음 (generic iterator).
+- `tokens.css` 자동 재생성 — light/dark 각 `--color-graph-*` 13개로 증가 (이전 12 → 13, 총 24 → 26).
+- `docs/GRAPH_TOKENS.md` — 13-token reference로 갱신.
+- `.changeset/` — minor bump (토큰 추가).
+
+**관계**:
+- **ADR-013 보완** — supersede 아님, additive. ADR-013의 chrome 제거 결정은 그대로 유효.
+- **ADR-012 §brand hex 재사용 정책 일치** — `signalReference.line` `#ACACAC`은 WONIK GRAY와 raw hex 복제. `surface`는 paler 톤이므로 brand 토큰과 hex 일치 없음.
+- **ADR-007 일치** — brand secondary(WONIK GRAY) 정체성 보존.
+- **ADR-001 부합** — 추상화 아닌 의미축 대칭 정규화.

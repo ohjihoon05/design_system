@@ -1,0 +1,36 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "09-namespace-contract",
+  "steps": [
+    {
+      "step": 0,
+      "name": "adr-010",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:00:00+0900",
+      "summary": "ADR-010 추가 — interface variable 6개 (--color-bg/surface/border/text/text-muted/primary) 표준화 + cascade fallback 패턴(var(host, fallback)) 결정. hover/variant 색은 host가 own. design_system 코드 변경 0. 후속 step 1(tokens emit)·step 2(components reference)·step 3(trial-3 재캡쳐)에서 구현."
+    },
+    {
+      "step": 1,
+      "name": "tokens-interface-variables",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:15:00+0900",
+      "summary": "build-css.ts에 interface variable 3개 alias emit 추가(--color-bg/text/text-muted, light+dark 양쪽). colors.ts에 interfaceColors named export 추가 — 컴포넌트가 cascade fallback 패턴(var(host, fallback))으로 reference 가능. 우리 internal token 그대로 유지. 기존 export 보존 (회귀 0). web 패키지 변경 0 (step 2의 영역)."
+    },
+    {
+      "step": 2,
+      "name": "components-cascade-reference",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:25:00+0900",
+      "summary": "@wonik/web 컴포넌트 8개(Button·Input·Textarea·Spinner·Switch·Radio·Checkbox·Text)에서 interface variable에 매핑되는 internal token reference를 interfaceColors.*로 갱신. cascade fallback 패턴(var(host, fallback))이 자동 적용됨. Button primary text·Switch thumb 같은 의미상 매핑 안 되는 경우는 internal 그대로 유지. 163개 테스트 모두 통과. prop signature 변경 0, breaking 0."
+    },
+    {
+      "step": 3,
+      "name": "trial-3-recapture",
+      "status": "completed",
+      "completed_at": "2026-05-11T15:35:00+0900",
+      "summary": "ppt에 새 dist 적용 후 Trial 3 재캡쳐. invisibility 완전 해결 — textarea가 ppt --color-surface/border/text를 cascade로 흡수해 panel로 명확히 인지됨. ADR-010 정책이 form 컨트롤에서 의도대로 작동함을 입증. layer A 모델의 코드 단위 closure. 남은 미해결(focus ring·resize·placeholder)은 Phase 10 후보로 명시."
+    }
+  ],
+  "created_at": "2026-05-11T14:45:00+0900",
+  "completed_at": "2026-05-11T15:35:00+0900"
+}
