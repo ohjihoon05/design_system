@@ -281,3 +281,131 @@ hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 �
 - **ADR-009 패턴 일치** — theme-light/theme-dark의 2-layer source-of-truth, build-css emit 패턴 동일.
 - **ADR-010·011와 분리** — graph는 host-overridable 도메인이 아닌 internal 도메인. interface variable 7개와 별개.
 - **ADR-001/004**: 영향 없음 (토큰 표준화는 추상화 차원 아님).
+- **ADR-013에 의해 부분 supersede** — 19개 → 12개로 축소. 5축 status-driven taxonomy 핵심(limit/signal/pass)은 유지되며, chrome(action/annotation/axis) 및 duplicate `.label` 7개가 제거됨. 본 ADR의 §brand hex 재사용 정책은 그대로 valid.
+
+---
+
+### ADR-013: graph 토큰을 19개 → 12개로 축소 (chrome 제거 + duplicate label 통합)
+
+**상태**: ADR-012 부분 supersede (의미축은 보존, 토큰 surface area만 축소).
+
+**결정**: ADR-012가 도입한 19개 graph 토큰을 **12개로 축소**한다. 의미축(limit/signal/pass) 3개와 그 안의 9개 property는 유지. chrome 성격의 3개 그룹(`action`/`annotation`/`axis`)과 hex가 line과 동일한 duplicate `.label` 2개를 제거한다. 제거된 use case는 기존 토큰 재사용으로 커버한다 (아래 migration 표).
+
+**최종 12개 토큰 / 6 그룹**:
+
+| 그룹 | property | 비고 |
+|---|---|---|
+| `limitUpper` | `line`, `surface` | `.label` 제거 — `.line`이 라벨 텍스트까지 겸함 (동일 hex) |
+| `limitLower` | `line`, `surface` | `.label` 제거 — 동일 |
+| `signalPrimary` | `line`, `surface` | 변경 없음 |
+| `signalTuned` | `line`, `surface` | 변경 없음 (WONIK BLUE 정체성 유지) |
+| `signalReference` | `line` | 변경 없음 (WONIK GRAY 정체성 유지) |
+| `pass` | `line`, `surface`, `label` | `.label`(`#16A34A`)은 `.line`(`#22C55E`)과 hex 다름 — 명도 대비 위해 유지 |
+
+**제거된 7개 토큰 및 migration 가이드**:
+
+| 제거 토큰 | runtime 대체 | CSS variable 대체 | 근거 |
+|---|---|---|---|
+| `graphTokens.limitUpper.label` | `graphTokens.limitUpper.line` | `var(--color-graph-limit-upper-line)` | hex 완전 동일 (`#EC4899`) |
+| `graphTokens.limitLower.label` | `graphTokens.limitLower.line` | `var(--color-graph-limit-lower-line)` | hex 완전 동일 (`#14B8A6`) |
+| `graphTokens.action.line` | `graphTokens.limitUpper.line` | `var(--color-graph-limit-upper-line)` | hex 동일 (`#EC4899`), ADR-012도 "동일 hue"로 명시. "위험·경고 방향"이라는 의미축이 limit과 같은 family |
+| `graphTokens.annotation.fg` | `text.dark` | `var(--color-text-dark)` | hex 동일 (`#303030`). graph 도메인 의미가 아닌 chrome |
+| `graphTokens.annotation.surface` | `surfaces.surfaceWhite` | `var(--color-surface-white)` | hex 동일 (`#FFFFFF`) |
+| `graphTokens.axis.label` | `text.primary` | `var(--color-text-primary)` | hex 동일 (`#71717B`). 축 label은 graph 의미가 아닌 일반 muted text |
+| `graphTokens.axis.grid` | `borders.light` | `var(--color-border)` | hex 동일 (`#E1E1E4`). grid는 일반 경계선 |
+
+**이유**:
+
+1. **의미축은 유지, chrome은 분리** — ADR-012의 핵심 가치인 status-driven taxonomy(데이터 *역할*에 색 묶기)는 limit/signal/pass에서 작동한다. 반대로 `axis`/`annotation`은 차트 도메인 의미가 아닌 "차트 안에 들어간 일반 텍스트·경계선"으로, 본문 텍스트(`text.primary`)와 시각 분리 needs가 없다. `action`은 의미는 다르지만 ADR-012도 인정했듯 hex가 `limit.upper.line`과 완전 동일하고 "경고 방향" family로 묶인다.
+
+2. **duplicate hex → duplicate token = noise** — `.label`이 `.line`과 hex 완전 동일하면 토큰 두 개가 같은 정보를 가리킨다. 미래에 라벨 텍스트 색만 분리 조정해야 할 시각 needs가 발생하면 그때 다시 갈라치는 게 YAGNI 원칙에 맞다 (ADR-001의 "첫 customer 없이 추상화 안 한다" 정신).
+
+3. **현재 consumer 0이라 BC 부담 없음** — graph 토큰은 ADR-012로 도입된 직후이며 `@wonik/web` 컴포넌트에서 사용 안 함. `apps/web-sandbox` 및 docs를 제외하면 import 0. 깰 사용자가 없는 지금이 정리 timing으로 적합.
+
+4. **유지보수자 인지 부하 감소** — 19개 → 12개는 한 화면에 들어와 mental model 단순화. Figma `Graph` collection의 변수 수도 같이 줄어 디자이너 picker도 가벼워짐.
+
+5. **brand hex 재사용 정책(ADR-012 §6)은 그대로 유지** — `signal/tuned`(WONIK BLUE)·`signal/reference`(WONIK GRAY)는 brand 정체성 표현이므로 그대로. ADR-012의 raw hex 복제(alias 아님) 결정도 그대로.
+
+**트레이드오프**:
+
+1. **`action`이 별도 의미 token이 아니게 됨** — consumer가 `graphTokens.limitUpper.line`을 가져다 화살표를 그리면 "이게 임계인지 액션인지" 시맨틱이 코드에서 흐려진다. 완화: ADR-013 자체 + GRAPH_TOKENS.md migration 표가 "action arrow = limit.upper.line 재사용"임을 명시. 미래에 action만 hue 분리 needs가 등장하면 그때 추가(ADR-014 등).
+
+2. **`axis`/`annotation`이 host 변경에 따라감** — 이전 19개 ADR-012 설계에서는 graph는 host-overridable이 아닌 internal로 분리됐다. 이제 axis label은 `text.primary` 추종, annotation surface는 `surfaces.surfaceWhite` 추종이라 host가 text/surface 토큰을 override하면 graph chrome도 함께 변한다. **이는 합당함** — axis/annotation은 차트의 chrome일 뿐 데이터 의미가 아니므로 host의 전체 톤(다크/라이트, 어두운 chrome/밝은 chrome)과 일관되는 게 자연스러움. 데이터 의미축(limit/signal/pass)은 여전히 graph-internal로 host 영향 안 받음.
+
+3. **Figma `Graph` collection 동기화 필요** — 19 → 12 variables로 줄여야 함. 7개 variable 제거 시 Figma에서 reference하던 도형이 broken 표시. 1단계는 아직 chart 도형 자체가 Figma에 거의 없으므로 영향 최소 (실제 사용처는 추후 dogfood product에서 graphTokens 직접 reference). Figma 측 정리는 변수 삭제 + 도형 fill 패널 picker 재선택으로 처리.
+
+4. **`pass.label`만 line과 다른 hex로 남음 — 비대칭** — `limitUpper`/`limitLower`는 label 제거했는데 `pass`만 label 유지. 이유: `pass.label`(`#16A34A`)은 `pass.line`(`#22C55E`)과 어두운 톤으로 다름(밝은 green 라인이 흰 배경 라벨로 쓰이면 대비 부족). 비대칭 비용보다 명도 대비 보존의 가치가 더 큼.
+
+**구현**:
+
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight`에서 7개 property 제거.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` 재export라 자동 반영.
+- `packages/tokens/src/graph.ts` — runtime export `graphTokens`에서 7개 property 제거. 헤더 주석에 migration 가이드 inline 명시.
+- `packages/tokens/scripts/build-css.ts` — 변경 없음 (generic Object.entries iterator).
+- `tokens.css` 자동 재생성 — light/dark 각 `--color-graph-*` 12개로 감소 (이전 19 → 12, 총 38 → 24).
+- `docs/GRAPH_TOKENS.md` — 12-token reference로 재작성, migration 표 포함.
+- `.changeset/` — minor bump 신규 항목 (토큰 삭제는 minor 이상 — CLAUDE.md 규칙).
+
+**관계**:
+- **ADR-012 부분 supersede** — taxonomy axes 5개 → 3개(limit/signal/pass), 토큰 19 → 12. ADR-012의 §brand hex 재사용·§host와의 매핑 분리 정신은 limit/signal/pass에 그대로 적용.
+- **ADR-007 일치** — `signal/tuned`·`signal/reference`의 brand color 유지.
+- **ADR-010·011와 관계 정밀화** — 데이터 의미축(limit/signal/pass)은 여전히 host-internal. chrome(axis/annotation 등)은 ADR-013에 의해 host 추종 토큰(`text.*`/`borders.*`/`surfaces.*`) 재사용으로 위임됨.
+- **ADR-001 일치** — 첫 customer(`@wonik/web` chart 컴포넌트) 등장 전이라 더 가벼운 baseline으로 출발.
+- **ADR-014에 의해 추가 보완** — 토큰 12 → 13. `signalReference`에 `surface` property 추가로 signal 3개 신호의 (line, surface) 쌍 대칭 완성.
+
+---
+
+### ADR-014: `signalReference.surface` 추가 — signal 그룹의 (line, surface) 쌍 대칭 완성
+
+**상태**: ADR-013 보완 (additive, supersede 아님). 토큰 surface area를 12 → 13으로 확장.
+
+**결정**: `graphTokens.signalReference`에 `surface` property를 추가한다. hex는 `#F0F0F0` — `line`의 WONIK GRAY `#ACACAC`를 paler 톤으로 라이트닝한 값 (`signalPrimary`/`signalTuned`가 line→surface로 라이트닝하는 패턴과 동일).
+
+**결과 shape (13개 토큰 / 6 그룹)**:
+
+| 그룹 | property | hex (Light) |
+|---|---|---|
+| `limitUpper` | `line`, `surface` | `#EC4899`, `#FCE7F3` |
+| `limitLower` | `line`, `surface` | `#14B8A6`, `#CCFBF1` |
+| `signalPrimary` | `line`, `surface` | `#818CF8`, `#EEF0FE` |
+| `signalTuned` | `line`, `surface` | `#273E82`, `#D6DCF0` |
+| `signalReference` | `line`, **`surface` (신규)** | `#ACACAC`, **`#F0F0F0`** |
+| `pass` | `line`, `surface`, `label` | `#22C55E`, `#DCFCE7`, `#16A34A` |
+
+**이유**:
+
+1. **signal 3개 신호의 시각 표현 일관성** — `signalPrimary`/`signalTuned`는 area chart fill 등에서 `.surface`를 활용할 수 있는데 `signalReference`만 `line`만 있어서 비대칭이었다. 같은 도메인의 3개 신호가 같은 property 구조를 갖는 게 사용자(consumer 컴포넌트, chart 라이브러리 wrapper) 입장에서 인지 부담 최소.
+
+2. **ADR-012/013 분석 시 reference signal에 area fill 시안이 없었지만 미래 needs는 존재** — 캡쳐 9장 분석에서는 reference 신호가 dashed line으로만 그려졌고 area fill 시안이 없어서 ADR-013까지는 `surface` 생략했다. 그러나 (a) reference 신호도 "비교 baseline 영역"으로 area chart화될 수 있고, (b) 첫 dogfood chart 컴포넌트에서 (line, surface) 쌍을 요구할 가능성이 높다. 토큰 슬롯을 미리 확보해두는 비용은 거의 0 (1 hex + 1 CSS variable).
+
+3. **YAGNI 위반 우려 점검** — ADR-001 "첫 customer 없이 추상화 안 함" 원칙과 충돌하는가? 본 ADR은 *컴포넌트* 추상화가 아니라 *토큰 surface area* 확장. 토큰은 디자인 시안에서 도출된 시각 언어의 정규화이며, "signal 3개 신호 = 같은 구조" 정규화는 추상화 비용이 아닌 일관성 확보. 따라서 ADR-001과 충돌 없음.
+
+4. **chrome 통합 정신과 분리** — ADR-013은 chrome(axis/annotation/action)을 graph 토큰에서 제거하고 host 토큰 재사용으로 위임. ADR-014는 정반대 방향(추가)이지만 *의미축(signal) 내부의 대칭 완성*이라 ADR-013과 충돌 없음. ADR-013은 "graph 도메인 의미가 아닌 chrome 분리"이고 본 ADR은 "graph 도메인 의미축의 대칭".
+
+5. **WONIK GRAY 정체성 보존** — surface hex `#F0F0F0`은 line `#ACACAC`의 paler 톤으로 brand secondary와 동일 hue family. ADR-007 brand 정체성 일치.
+
+**트레이드오프**:
+
+1. **현재 시안 binding 적용처 0** — `signalReference.surface` 도형이 캡쳐 9장에 없어서 Figma 시안 측 즉시 binding 적용처 없음. 토큰만 추가되고 시각 결과 변화 없음. **수용 가능** — 미래 area chart needs에 미리 슬롯 확보가 더 가치 있음.
+
+2. **Figma `Graph` collection 동기화 필요** — 변수 1개 추가 (`graph/signal/reference/surface`, FRAME_FILL+SHAPE_FILL scope). 이미 ADR-013 동기화(7개 변수 제거)가 pending 상태였으므로 함께 처리.
+
+3. **dark mode hex는 light 미러로 시작** — `graphTokensDark = graphTokensLight` 재export 패턴이라 자동 반영. 어두운 배경에서 `#F0F0F0`은 매우 밝게 floating할 수 있음 — first dark host product 등장 시 dark 전용 hex 분리(별도 phase).
+
+4. **`#F0F0F0` 선택의 임의성** — line `#ACACAC` 대비 paler 톤이라는 패턴은 맞지만 정확한 명도는 디자이너 검토 필요. 1단계 dogfood까지 디자이너 의견 수용 가능 (별도 ADR 또는 본 ADR 갱신).
+
+**구현**:
+
+- `packages/tokens/src/theme-light.ts` — `graphTokensLight.signalReference.surface = '#F0F0F0'` 추가.
+- `packages/tokens/src/theme-dark.ts` — `graphTokensDark = graphTokensLight` 재export라 자동 반영.
+- `packages/tokens/src/graph.ts` — runtime export에 `signalReference.surface` 추가. 헤더 주석에 ADR-014 명시.
+- `packages/tokens/scripts/build-css.ts` — 변경 없음 (generic iterator).
+- `tokens.css` 자동 재생성 — light/dark 각 `--color-graph-*` 13개로 증가 (이전 12 → 13, 총 24 → 26).
+- `docs/GRAPH_TOKENS.md` — 13-token reference로 갱신.
+- `.changeset/` — minor bump (토큰 추가).
+
+**관계**:
+- **ADR-013 보완** — supersede 아님, additive. ADR-013의 chrome 제거 결정은 그대로 유효.
+- **ADR-012 §brand hex 재사용 정책 일치** — `signalReference.line` `#ACACAC`은 WONIK GRAY와 raw hex 복제. `surface`는 paler 톤이므로 brand 토큰과 hex 일치 없음.
+- **ADR-007 일치** — brand secondary(WONIK GRAY) 정체성 보존.
+- **ADR-001 부합** — 추상화 아닌 의미축 대칭 정규화.

@@ -64,19 +64,19 @@ export const statusTokensLight = {
   ok: { dot: '#07895E', text: '#00D492' },
 } as const;
 
-// Graph semantic tokens — status-driven plot/chart colors.
+// Graph semantic tokens — status-driven plot/chart colors (ADR-013, ADR-014).
 // signalTuned line MUST stay WONIK BLUE #273E82 (ADR-007 brand alignment).
 // signalReference line MUST stay WONIK GRAY #ACACAC (ADR-007 brand alignment).
+// 13개: limit/signal/pass 의미축. ADR-014로 signalReference.surface 추가 →
+// signal 3개 신호 모두 (line, surface) 쌍 대칭. chrome(action/annotation/axis)
+// 및 duplicate label은 ADR-013에서 제거 — chrome 색은 brand/text/border 토큰 재사용.
 export const graphTokensLight = {
-  limitUpper: { line: '#EC4899', surface: '#FCE7F3', label: '#EC4899' },
-  limitLower: { line: '#14B8A6', surface: '#CCFBF1', label: '#14B8A6' },
+  limitUpper: { line: '#EC4899', surface: '#FCE7F3' },
+  limitLower: { line: '#14B8A6', surface: '#CCFBF1' },
   signalPrimary: { line: '#818CF8', surface: '#EEF0FE' },
   signalTuned: { line: '#273E82', surface: '#D6DCF0' },
-  signalReference: { line: '#ACACAC' },
+  signalReference: { line: '#ACACAC', surface: '#F0F0F0' },
   pass: { line: '#22C55E', surface: '#DCFCE7', label: '#16A34A' },
-  action: { line: '#EC4899' },
-  annotation: { fg: '#303030', surface: '#FFFFFF' },
-  axis: { label: '#71717B', grid: '#E1E1E4' },
 } as const;
 
 export const themeLight = {
