@@ -1,0 +1,18 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "14-badge",
+  "purpose": "Badge 컴포넌트 추가 — Trial 4+5 누적 4회 evidence (OutlineCard layout 3 + Home slideCount 1). primary/neutral × 단일 sm 사이즈.",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "tasks": "tasks.md",
+  "steps": [
+    { "step": 0, "name": "prep-and-adr-outline", "file": "step0.md", "status": "completed", "completed_at": "2026-05-13T14:36:00+0900", "summary": "phases/14-badge dir + index 초기화. Changeset draft + ADR-016 outline (Step 5에서 본문 완성). Trial 4+5 evidence reference 명시." },
+    { "step": 1, "name": "tdd-test-first", "file": "step1.md", "status": "completed", "completed_at": "2026-05-13T14:38:00+0900", "summary": "types.ts (BadgeVariant 'neutral'|'primary') + Badge.test.tsx 9 케이스. TDD red 확인 (Badge.tsx 부재 fail)." },
+    { "step": 2, "name": "implementation", "file": "step2.md", "status": "completed", "completed_at": "2026-05-13T14:39:00+0900", "summary": "Badge.tsx 구현: BASE_STYLE(inline-flex, padding 4px/8px, radius.sm, fontSize.label, medium, tabular-nums) + VARIANT_STYLE(neutral surface+border / primary primary+white). polymorphic span default. 9/9 tests green in 219ms." },
+    { "step": 3, "name": "export-and-build", "file": "step3.md", "status": "completed", "completed_at": "2026-05-13T14:40:00+0900", "summary": "packages/web/src/index.ts Badge re-export 추가. tokens+web build clean. 186 passing (177 + 9 신규). 회귀 0." },
+    { "step": 4, "name": "sandbox-matrix-capture", "file": "step4.md", "status": "completed", "completed_at": "2026-05-13T14:43:00+0900", "summary": "sandbox에 BadgeMatrixSection (2 variant × 4 컨텐츠 = 8셀) 추가. headless capture pkg-out/phase-14-badge-matrix.png ~330KB. neutral subtle border + primary WONIK BLUE white text 시각 확인. AI 슬롭 0." },
+    { "step": 5, "name": "finalize-and-close", "file": "step5.md", "status": "completed", "completed_at": "2026-05-13T14:46:00+0900", "summary": "ADR-016 본문 완성 + PRD Phase 13·14 행 추가 + Changeset finalize. spec S1~S10 모두 ✅. Trial 4+5 누적 4회 evidence 기록." }
+  ],
+  "created_at": "2026-05-13T14:35:00+0900",
+  "completed_at": "2026-05-13T14:46:00+0900"
+}

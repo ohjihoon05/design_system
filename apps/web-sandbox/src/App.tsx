@@ -3,7 +3,7 @@ import {
   Button, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
   Spinner, Skeleton,
-  Card,
+  Card, Badge,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -13,6 +13,7 @@ import type {
   CheckboxSize, SwitchSize, RadioSize,
   SpinnerSize,
   CardVariant, CardPadding,
+  BadgeVariant,
 } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -34,6 +35,13 @@ const radioSizes: RadioSize[] = ['sm', 'md', 'lg'];
 const spinnerSizes: SpinnerSize[] = ['sm', 'md', 'lg'];
 const cardVariants: CardVariant[] = ['surface', 'elevated'];
 const cardPaddings: CardPadding[] = ['none', 'sm', 'md', 'lg'];
+const badgeVariants: BadgeVariant[] = ['neutral', 'primary'];
+const badgeSamples: { label: string; content: string }[] = [
+  { label: 'short label', content: 'layout' },
+  { label: 'count number', content: '8장' },
+  { label: 'single digit', content: '1' },
+  { label: 'mixed', content: 'Draft v1.0' },
+];
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -51,7 +59,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            12 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card) + form 합성 + light/dark 테마.
+            13 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -79,7 +87,34 @@ export function App() {
       {/* phase 12 — Card */}
       <CardMatrixSection />
 
+      {/* phase 14 — Badge */}
+      <BadgeMatrixSection />
+
       <BeforeAfterSection />
+    </Stack>
+  );
+}
+
+function BadgeMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Badge</Text>
+      <Text color="secondary" variant="labelSm">
+        variant 2 × 컨텐츠 4 = 8셀. neutral은 subtle label (Trial 4 OutlineCard layout 패턴), primary는 attention count/tag (Trial 5 Home slideCount 패턴). 단일 sm 크기.
+      </Text>
+      {badgeVariants.map((variant) => (
+        <Stack key={variant} direction="column" gap={3}>
+          <Text variant="label" color="secondary" as="h3">{variant}</Text>
+          <Stack direction="row" align="center" gap={5} style={{ flexWrap: 'wrap' }}>
+            {badgeSamples.map((sample) => (
+              <Stack key={sample.label} direction="column" gap={2} align="start">
+                <Badge variant={variant}>{sample.content}</Badge>
+                <Text variant="labelSm" color="secondary">{sample.label}</Text>
+              </Stack>
+            ))}
+          </Stack>
+        </Stack>
+      ))}
     </Stack>
   );
 }

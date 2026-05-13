@@ -61,3 +61,6 @@ export type { SkeletonProps, SkeletonOwnProps, SkeletonVariant } from './Skeleto
 
 export { Card } from './Card';
 export type { CardProps, CardOwnProps, CardVariant, CardPadding } from './Card/types';
+
+export { Badge } from './Badge';
+export type { BadgeProps, BadgeOwnProps, BadgeVariant } from './Badge/types';

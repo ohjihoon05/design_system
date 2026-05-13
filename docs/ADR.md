@@ -494,3 +494,102 @@ dark theme 그림자 분기는 module-scope CSS 1회-inject 패턴(`ensureCssInj
 
 - Trial 5(별도 phase, ppt 다른 페이지 dogfood)로 Card 다중-페이지 호환 측정. IconButton/Badge needs 누적 시 합쳐 Phase 13. 누적 안 됨 → **layer A 1차 채움 종료 → layer B(사내 npm registry 배포 인프라) 진입.**
 - subcomponent(Header/Body/Footer) / interactive Card / shadow 토큰 / forwardRef 추가는 *needs 부상 후* 별도 minor bump.
+
+---
+
+### ADR-016: Badge 컴포넌트 — primary/neutral × inline span + interfaceColors 의존
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`) + Trial 5(`docs/dogfood-trial-5.md`) 누적 4회 evidence로 needs ✅ 확정. Phase 14로 1차 도입.
+
+**맥락**:
+
+Trial 4 ppt OutlineCard layout 표시 3회 + Trial 5 ppt Home slideCount "{N}장" 1회 = **누적 4회**. 한 페이지 4회 반복(Card)이든 여러 페이지 4회 누적(Badge)이든 동일 threshold — "디자인 시스템이 own해야 하는 영역".
+
+Phase 14 시점에 같이 측정한 다른 후보:
+- IconButton: Trial 4 mid + Trial 5 0회 → **Outline-local로 격하**.
+- Alert/Banner: Trial 4 inconclusive + Trial 5 1회 = 2회 → Trial 6 누적 후 결정.
+- ToggleGroup/SegmentedControl: Trial 5 1회 H4 신규 → Trial 6 누적 후 결정.
+- Select wrapper, EmptyState, Card variant=outline w/ dashed: 1회씩 — YAGNI.
+
+이 중 Badge만 threshold 통과 — 단독 Phase 14.
+
+**결정**:
+
+`@wonik/web`에 `Badge` 컴포넌트 1개. signature:
+
+```tsx
+type BadgeVariant = 'neutral' | 'primary';
+
+interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, never> {
+  variant?: BadgeVariant;   // default 'neutral'
+  as?: ElementType;          // default 'span'
+}
+```
+
+시각 매핑:
+
+| variant | background | text color | border |
+|---|---|---|---|
+| `neutral` (default) | `interfaceColors.surface` | `interfaceColors.text` | `1px solid ${interfaceColors.border}` |
+| `primary` | `interfaceColors.primary` | `surfaces.surfaceWhite` | none |
+
+공통 시각 토큰:
+- padding: `${space[1]} ${space[3]}` = 4px 8px
+- borderRadius: `radius.sm` = 5px
+- fontSize: `fontSize.label` = 12px (ppt `text-xs` 대응)
+- fontWeight: `fontWeight.medium` = 500
+- lineHeight: `lineHeight.tight` = 1
+- display: inline-flex + alignItems center
+- fontVariantNumeric: tabular-nums (count·숫자 width 일관)
+
+default variant **`neutral`** — Trial 4 layout label 패턴(누적 3회) > Trial 5 slideCount 1회. 더 보편이 default.
+
+dark theme 분기 CSS **불필요** — Badge에 box-shadow 0, interfaceColors가 cascade 자동 처리. Card·Button과 달리 module-scope CSS 1회-inject 패턴 **생략**.
+
+**대안 (검토 후 거부)**:
+
+1. **size prop (sm/md/lg)**
+   - 거부: Trial 4+5 evidence 모두 sm 단일. 미리 추가는 preemption. needs 부상 시 minor bump 추가는 non-breaking.
+
+2. **semantic 색 variant (info/success/warning/danger)**
+   - 거부: Trial 4+5 evidence 0. `status` 토큰은 graph 도메인 전용. 사내 product에 status badge needs 부상 시 별도 ADR.
+
+3. **icon slot (`leadingIcon`/`trailingIcon` prop)**
+   - 거부: needs 0. children으로 자유롭게 `<Badge><svg/>label</Badge>` 가능. prop은 over-engineering.
+
+4. **dismissable Badge (`onClose`)**
+   - 거부: needs 0. interactive Badge는 별도 컴포넌트(예: Chip)로 분리하는 것이 깔끔.
+
+5. **count truncation (`max={99}` "99+")**
+   - 거부: needs 0. 사용처에서 host가 `String(Math.min(count, 99))` 같은 1줄 가능.
+
+6. **fontWeight.bold (700) 토큰 추가 + Badge에 적용**
+   - 거부: medium(500)도 12px size에서 충분 emphasis. ppt 원본 bold와 시각 차이는 dogfood로 측정 후 needs 부상 시 bold 토큰 신설.
+
+7. **radius.pill (999px) 토큰 추가**
+   - 거부: ppt 시각은 `rounded-md`(Tailwind 6px) — `radius.sm`(5px)가 가장 가까움. 풀 pill 형태는 evidence 0.
+
+8. **forwardRef<HTMLSpanElement>**
+   - 거부: Card 답습. host가 Badge DOM ref 필요한 use case 0. needs 부상 시 minor bump.
+
+**결과**:
+
+- `packages/web/src/Badge/{Badge.tsx,Badge.test.tsx,types.ts,index.ts}` 신규.
+- 9 tests 추가, 177+9=186 passing 기대. 회귀 0.
+- 컴포넌트 코드 안에 hex 리터럴 0. bare px 리터럴은 표준 `1px solid` border width 1회 (Card와 동일 관례).
+- `interfaceColors`·`surfaces`·`space`·`radius`·`fontSize`·`fontWeight`·`lineHeight` 토큰만 사용.
+- `@wonik/web` minor bump (신규 컴포넌트 = minor).
+- sandbox에 2 variant × 4 컨텐츠 매트릭스 + 캡쳐 evidence (`pkg-out/phase-14-badge-matrix.png`).
+
+**관계**:
+
+- **ADR-001 부합** — Trial 4+5 누적 evidence(4회)로 입증된 후 도입.
+- **ADR-008 부합** — React 19-only API 0, peer `^18 || ^19` dual.
+- **ADR-010 답습** — `interfaceColors.surface`/`border`/`text`/`primary` cascade.
+- **ADR-015 패턴 답습** — `as` polymorphic, types.ts 분리, className 합성, style spread 마지막.
+
+**후속**:
+
+- **Trial 6 (Phase 15 후보, 별도 phase)**: ppt Presentation 또는 History 페이지 dogfood — Badge 적용 + Alert/ToggleGroup 누적 측정.
+- Trial 6 결과로 Phase 15 = Alert OR ToggleGroup 결정. 둘 다 강하면 ranking 후 한쪽.
+- size prop, semantic 색, icon slot 추가는 *needs 부상 후* 별도 minor bump.

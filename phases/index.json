@@ -65,6 +65,11 @@
       "dir": "13-trial-5-home",
       "status": "completed",
       "completed_at": "2026-05-13T14:25:00+0900"
+    },
+    {
+      "dir": "14-badge",
+      "status": "completed",
+      "completed_at": "2026-05-13T14:46:00+0900"
     }
   ]
 }
