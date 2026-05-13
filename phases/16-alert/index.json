@@ -1,0 +1,18 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "16-alert",
+  "purpose": "Alert 컴포넌트 추가 — Trial 4+5+6 누적 3회 evidence (모두 error 변형). variant prop 없는 단일 error Alert + onDismiss × 버튼 + role='alert' 강제. layer A 1차 채움 14 atoms 도달.",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "tasks": "tasks.md",
+  "steps": [
+    { "step": 0, "name": "prep-and-adr-outline", "file": "step0.md", "status": "completed", "completed_at": "2026-05-13T15:38:00+0900", "summary": "phases/16-alert + index.json 초기화. Changeset draft + ADR-017 outline (Step 5에서 finalize). Trial 4+5+6 evidence reference 명시." },
+    { "step": 1, "name": "tdd-test-first", "file": "step1.md", "status": "completed", "completed_at": "2026-05-13T15:39:00+0900", "summary": "types.ts (AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'>, role 강제) + Alert.test.tsx 12 케이스. TDD red 확인." },
+    { "step": 2, "name": "implementation", "file": "step2.md", "status": "completed", "completed_at": "2026-05-13T15:41:00+0900", "summary": "Alert.tsx 구현: BASE_STYLE(flex/items-center/padding 12px 16px/radius.md/14px) + statusTokens.alarm bg/border/text + onDismiss 분기(× 버튼 + aria-label 닫기) + role='alert' 강제. 12/12 tests green in 860ms." },
+    { "step": 3, "name": "export-and-build", "file": "step3.md", "status": "completed", "completed_at": "2026-05-13T15:42:00+0900", "summary": "packages/web/src/index.ts Alert re-export. tokens+web build clean (ESM 12.80 KB, +0.60 KB from phase 14). 198 passing (186 + 12 신규). 회귀 0." },
+    { "step": 4, "name": "sandbox-matrix-capture", "file": "step4.md", "status": "completed", "completed_at": "2026-05-13T15:44:00+0900", "summary": "sandbox AlertMatrixSection (3 케이스: 짧음 dismiss 무, 짧음 dismiss 유, 긺 dismiss 유). headless capture pkg-out/phase-16-alert-matrix.png ~349KB. light red bg + red border + red text statusTokens.alarm 정확. ppt error 패턴 시각 호환 ✅. AI 슬롭 0." },
+    { "step": 5, "name": "finalize-and-close", "file": "step5.md", "status": "completed", "completed_at": "2026-05-13T15:46:00+0900", "summary": "ADR-017 본문 완성 (10개 대안 거부). PRD Phase 15·16 행 + layer A 1차 채움 종료 후보 명시. Changeset finalize. spec S1~S13 모두 ✅. 14 atoms 도달." }
+  ],
+  "created_at": "2026-05-13T15:05:00+0900",
+  "completed_at": "2026-05-13T15:46:00+0900"
+}

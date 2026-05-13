@@ -3,7 +3,7 @@ import {
   Button, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
   Spinner, Skeleton,
-  Card, Badge,
+  Card, Badge, Alert,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -59,7 +59,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            13 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge) + form 합성 + light/dark 테마.
+            14 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge / Alert) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -90,7 +90,35 @@ export function App() {
       {/* phase 14 — Badge */}
       <BadgeMatrixSection />
 
+      {/* phase 16 — Alert */}
+      <AlertMatrixSection />
+
       <BeforeAfterSection />
+    </Stack>
+  );
+}
+
+function AlertMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Alert</Text>
+      <Text color="secondary" variant="labelSm">
+        error-only 단일 variant (Trial 4+5+6 누적 3회 evidence). onDismiss 제공 시 × 닫기 버튼 자동 렌더. role="alert" 강제 (screen reader 알림).
+      </Text>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">짧은 메시지 — dismiss 없음</Text>
+        <Alert>네트워크 오류</Alert>
+      </Stack>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">짧은 메시지 — dismiss 있음</Text>
+        <Alert onDismiss={() => console.log('dismissed')}>네트워크 연결 실패</Alert>
+      </Stack>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">긴 메시지 — dismiss 있음</Text>
+        <Alert onDismiss={() => console.log('dismissed')}>
+          서버에서 응답을 받지 못했습니다. 잠시 후 다시 시도해주세요. 문제가 계속 발생하면 관리자에게 문의하세요.
+        </Alert>
+      </Stack>
     </Stack>
   );
 }

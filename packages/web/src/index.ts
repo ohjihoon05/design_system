@@ -64,3 +64,6 @@ export type { CardProps, CardOwnProps, CardVariant, CardPadding } from './Card/t
 
 export { Badge } from './Badge';
 export type { BadgeProps, BadgeOwnProps, BadgeVariant } from './Badge/types';
+
+export { Alert } from './Alert';
+export type { AlertProps, AlertOwnProps } from './Alert/types';
