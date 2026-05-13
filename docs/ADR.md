@@ -593,3 +593,108 @@ dark theme 분기 CSS **불필요** — Badge에 box-shadow 0, interfaceColors�
 - **Trial 6 (Phase 15 후보, 별도 phase)**: ppt Presentation 또는 History 페이지 dogfood — Badge 적용 + Alert/ToggleGroup 누적 측정.
 - Trial 6 결과로 Phase 15 = Alert OR ToggleGroup 결정. 둘 다 강하면 ranking 후 한쪽.
 - size prop, semantic 색, icon slot 추가는 *needs 부상 후* 별도 minor bump.
+
+---
+
+### ADR-017: Alert 컴포넌트 — error-only(strict YAGNI) + onDismiss + statusTokens.alarm
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`) + Trial 5(`docs/dogfood-trial-5.md`) + Trial 6(`docs/dogfood-trial-6.md`) 누적 3회 evidence로 needs ✅ 확정. Phase 16으로 1차 도입.
+
+**맥락**:
+
+- Trial 4 ppt Outline error inconclusive (코드상 1회 등장)
+- Trial 5 ppt Home form error 1회
+- Trial 6 ppt Presentation error 1회 = **누적 3회**
+
+모두 동일 패턴: `role="alert"` + light red bg + red border + red text + 우측 dismiss 텍스트 버튼 ("닫기"). variant 다양성 0 — 전부 error.
+
+Trial 4·5·6에서 같이 측정된 다른 후보들의 운명:
+- IconButton: Trial 4 mid + Trial 5 0 + Trial 6 partial 격하 → **격하 유지**.
+- ToggleGroup: Trial 5 1 + Trial 6 0 → **약함, YAGNI**.
+- Card variant=outline w/ dashed: 누적 2회지만 outline+dashed는 시각 약한 needs → **YAGNI**.
+
+Alert만 3회 누적 threshold 통과.
+
+**결정**:
+
+`@wonik/web`에 `Alert` 컴포넌트 1개 (variant prop **없음**). signature:
+
+```tsx
+interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
+  onDismiss?: () => void;
+  as?: ElementType;
+}
+```
+
+`role="alert"`는 컴포넌트가 *강제* (consumer override 차단). 시각: 단일 error 변형.
+
+시각 매핑:
+
+| 속성 | 토큰 |
+|---|---|
+| background | `statusTokens.alarm.bg` |
+| border | `1px solid ${statusTokens.alarm.border}` |
+| color | `statusTokens.alarm.text` |
+| padding | `${space[5]} ${space[6]}` = 12px 16px |
+| borderRadius | `radius.md` = 10px |
+| fontSize | `fontSize.titleSm` = 14px (ppt `text-sm` 대응) |
+| lineHeight | `lineHeight.tight` = 1 |
+| display | flex + alignItems center, gap space[3] |
+| justifyContent | space-between (when onDismiss provided) |
+
+dismiss × 버튼: native `<button>` + inline style reset (background transparent, border none, padding `space[1]`, fontSize 동일), `aria-label="닫기"` (한국어 default, i18n needs 부상 시 prop).
+
+dark theme: statusTokens가 CSS variable이라 `theme-dark.ts`의 status-alarm-* 정의로 자동 분기.
+
+**대안 (검토 후 거부)**:
+
+1. **variant prop ('info' | 'warning' | 'error' | 'success')**
+   - 거부 (strict YAGNI): Trial 4+5+6 evidence 모두 error만. info/warning/success는 0회. Card·Badge precedent — variant당 1+ evidence가 원칙. needs 부상 시 minor bump 추가 (non-breaking).
+
+2. **interfaceColors.alertBg 같은 신규 interface variable 신설**
+   - 거부: host product가 alert 색을 own할 needs 0. statusTokens.alarm은 이미 존재 + 적합. 추후 needs 부상 시 별도 ADR로 격상.
+
+3. **dismissable boolean + onClose 분리**
+   - 거부: `onDismiss` callback 유무로 분기 충분. 중복 API.
+
+4. **dismiss 버튼 텍스트 "닫기" (한글) — × icon 대신**
+   - 거부: 시각 footprint 큼. × (unicode U+00D7) + aria-label="닫기"로 시각 작고 a11y 충분.
+
+5. **dismissLabel prop으로 i18n 지원**
+   - 거부 (1단계 YAGNI): 사내 한국어 default. needs 부상 시 minor bump.
+
+6. **leading icon prop (`<Alert icon={<svg/>}>...`)**
+   - 거부: children으로 자유롭게 `<Alert><svg/>메시지</Alert>` 가능. prop 추가 = over-engineering.
+
+7. **title + description split**
+   - 거부: ppt 3개 trial 모두 단일 메시지. compound 패턴은 needs 부상 후.
+
+8. **auto-dismiss timer (자동 사라짐)**
+   - 거부: needs 0. Toast 패턴과 혼동. Alert는 명시적 dismiss만.
+
+9. **animation 등장/사라짐**
+   - 거부: slop 위험(UI_GUIDE.md). needs 부상 시 별도.
+
+10. **forwardRef<HTMLDivElement>**
+    - 거부: Card·Badge 답습. ref needs 부상 시 minor bump.
+
+**결과**:
+
+- `packages/web/src/Alert/{Alert.tsx, Alert.test.tsx, types.ts, index.ts}` 신규.
+- 12 tests 추가, 186+12=198 passing. 회귀 0.
+- 컴포넌트 코드에 hex 리터럴 0. bare px 리터럴은 표준 `1px solid` 1회 (Card·Badge 동일 관례).
+- `statusTokens.alarm` + `space` + `radius` + `fontSize` + `lineHeight` 토큰만 사용.
+- `@wonik/web` minor bump.
+- sandbox에 3 케이스(짧음 dismiss 무 / 짧음 dismiss 유 / 긺 dismiss 유) + 캡쳐 evidence (`pkg-out/phase-16-alert-matrix.png`).
+
+**관계**:
+
+- **ADR-001 부합** — Trial 4+5+6 누적 evidence(3회)로 입증 후 도입.
+- **ADR-008 부합** — React 19-only API 0.
+- **ADR-009 부합** — statusTokens가 theme-dark.ts 정의로 dark 자동 분기.
+- **ADR-015·016 패턴 답습** — `as` polymorphic, types.ts 분리, className 합성, style spread 마지막, forwardRef 미사용.
+
+**후속**:
+
+- **layer A 1차 채움 종료 후보**: Alert 추가로 atoms 14개 도달. PRD.md "layer A의 1차 채움 + ppt dogfood 검증" 두 조건 충족 후보. 다음 단계는 (a) **layer A 종료 선언 → layer B(사내 npm registry 배포 인프라) 진입** 또는 (b) Trial 7+ 신규 needs 추가 측정. 사용자 결정 영역.
+- variant 확장(info/warning/success), title/description split, leading icon, auto-dismiss 등은 *needs 부상 후* 별도 minor bump.
