@@ -54,7 +54,7 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 
 ## 1단계 진행 현황 (2026-05-13 기준)
 
-Phase 01~12 closure. layer A 1차 채움이 4 reps dogfood evidence 기반 컴포넌트(Card)까지 도달.
+Phase 01~14 closure. layer A 1차 채움이 Trial 4+5 누적 evidence 기반 컴포넌트(Card, Badge)까지 도달.
 
 | Phase | 내용 | 핵심 산출 |
 |---|---|---|
@@ -70,6 +70,8 @@ Phase 01~12 closure. layer A 1차 채움이 4 reps dogfood evidence 기반 컴�
 | 10 | form polish | ADR-011 — `:focus-visible` outline / `--color-focus` 7번째 interface variable / `:hover` / `::placeholder` / Textarea `resize?` prop. WCAG 2.1 SC 2.4.7 AA 충족 |
 | 11 | trial 4 — outline dogfood | ppt Outline 페이지 통째 dogfood — H2 cascade 다중-컴포넌트 입증 + H3 needs ranking (Card ✅ 강함, IconButton·Badge mid) |
 | 12 | Card | ADR-015 — `<Card variant="surface\|elevated" padding="none\|sm\|md\|lg" as>` + interfaceColors cascade 답습 + dark theme 그림자 0 (ADR-009 정신) |
+| 13 | trial 5 — home dogfood | ppt Home 페이지 통째 dogfood — H2 cascade 재확인(form-heavy) + Badge 누적 4회 확정 + H4 ToggleGroup 신규 발견 + IconButton 격하(Outline-local) |
+| 14 | Badge | ADR-016 — `<Badge variant="neutral\|primary" as>` 단일 sm 크기. Trial 4 OutlineCard layout 라벨 3 + Trial 5 Home slideCount 1 = 누적 4회 evidence |
 
 **layer A의 핵심 모델** (Phase 09·10 거치며 정착):
 - 디자인 시스템은 *시각 형태*만 own하고, *색은 host product가 own*한다.
@@ -77,7 +79,7 @@ Phase 01~12 closure. layer A 1차 채움이 4 reps dogfood evidence 기반 컴�
 - pseudo-class·pseudo-element(focus·hover·placeholder)는 컴포넌트별 module-scope CSS 1회-inject (`ensureCssInjected()` 패턴).
 - a11y는 비협상 — focus indicator는 WCAG AA 충족, contrast 3:1 보장.
 
-다음 후보: **Trial 5** (ppt 다른 페이지 dogfood로 Card 다중-페이지 호환 측정 + IconButton·Badge needs 누적 검증). 누적 시 Phase 13(IconButton+Badge), 누적 안 됨 → **layer A 1차 채움 종료 → layer B(사내 npm registry 배포 인프라) 진입**.
+다음 후보: **Trial 6** (ppt Presentation 또는 History 페이지 dogfood로 Badge 적용 + Alert·ToggleGroup needs 누적 측정). 누적 결과로 Phase 15 = Alert OR ToggleGroup 결정. 둘 다 약하면 → **layer A 1차 채움 종료 → layer B(사내 npm registry 배포 인프라) 진입**.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.
