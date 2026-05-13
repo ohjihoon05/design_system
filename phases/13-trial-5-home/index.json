@@ -1,0 +1,17 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "13-trial-5-home",
+  "purpose": "Trial 5 — ppt Home 페이지 통째 dogfood. H2(form-heavy 페이지 cascade 재확인) + H3(needs 누적) + H4(form-heavy 신규 needs) 동시 검증.",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "tasks": "tasks.md",
+  "steps": [
+    { "step": 0, "name": "prep-and-branch", "file": "step0.md", "status": "completed", "completed_at": "2026-05-13T14:10:00+0900", "summary": "design_system tokens+web build+pack. ppt frontend reinstall (Trial 4 lockfile/changes는 stash로 격리). main에서 trial-5-home branch 분기. Home.tsx R19-only API 자취 0 확인. spec §3 매핑 8행 line 재확인." },
+    { "step": 1, "name": "home-tsx-replace-part1", "file": "step1.md", "status": "completed", "completed_at": "2026-05-13T14:15:00+0900", "summary": "Textarea/Card import 추가. inline <textarea>→<Textarea resize=none> (native attr 8개 통과). AI 다듬기 inline <button>+style 3종→<Button variant=outline size=sm>+svg+text. PDF dropzone <div>→<Card padding=md> (시각도 inline 0 → dashed 손실은 의도된 evidence). 삭제 inline text-link→<Button variant=danger size=sm>. tsc clean, hex 0." },
+    { "step": 2, "name": "home-tsx-replace-part2", "file": "step2.md", "status": "completed", "completed_at": "2026-05-13T14:17:00+0900", "summary": "Verbosity 5-pill→<Button variant={selected?'primary':'outline'} size=sm> prop 토글. slideCount badge/Audience select/Error alert는 그대로 유지 (각각 needs evidence 기록). 첫 인상: Verbosity primary 시각 무거움 → ToggleGroup needs evidence." },
+    { "step": 3, "name": "capture-and-analyze", "file": "step3.md", "status": "completed", "completed_at": "2026-05-13T14:20:00+0900", "summary": "ppt dev server port 3004 fallback (3000~3003 점유). default 캡쳐 39522bytes + with-pdf fixture 캡쳐 39715bytes. AI 시각 분석 8행 매트릭스 채움. H2 ✅(cascade form-heavy 재입증), H3 Badge 4회 누적 강함, H4 ToggleGroup mid 첫 등장." },
+    { "step": 4, "name": "trial-doc-and-close", "file": "step4.md", "status": "completed", "completed_at": "2026-05-13T14:25:00+0900", "summary": "docs/dogfood-trial-5.md 작성 완료 (Trial 1~4 형식). 매트릭스 8행 + H2/H3/H4 결론 + Trial 4→Trial 5 누적 ranking. phases/index.json에 phase 12 누락 entry + 13 entry 추가. spec S1~S10 자동/정성 모두 ✅. ≥163 tests passing 유지." }
+  ],
+  "created_at": "2026-05-13T13:00:00+0900",
+  "completed_at": "2026-05-13T14:25:00+0900"
+}
