@@ -58,3 +58,6 @@ export type { SpinnerProps, SpinnerOwnProps, SpinnerSize } from './Spinner/types
 
 export { Skeleton } from './Skeleton';
 export type { SkeletonProps, SkeletonOwnProps, SkeletonVariant } from './Skeleton/types';
+
+export { Card } from './Card';
+export type { CardProps, CardOwnProps, CardVariant, CardPadding } from './Card/types';

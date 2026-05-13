@@ -3,6 +3,7 @@ import {
   Button, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
   Spinner, Skeleton,
+  Card,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -11,6 +12,7 @@ import type {
   InputSize,
   CheckboxSize, SwitchSize, RadioSize,
   SpinnerSize,
+  CardVariant, CardPadding,
 } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -30,6 +32,8 @@ const checkboxSizes: CheckboxSize[] = ['sm', 'md', 'lg'];
 const switchSizes: SwitchSize[] = ['sm', 'md', 'lg'];
 const radioSizes: RadioSize[] = ['sm', 'md', 'lg'];
 const spinnerSizes: SpinnerSize[] = ['sm', 'md', 'lg'];
+const cardVariants: CardVariant[] = ['surface', 'elevated'];
+const cardPaddings: CardPadding[] = ['none', 'sm', 'md', 'lg'];
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -47,7 +51,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            11 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton) + form 합성 + light/dark 테마.
+            12 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -72,7 +76,41 @@ export function App() {
       <SkeletonMatrixSection />
       <LoadingScenarioSection />
 
+      {/* phase 12 — Card */}
+      <CardMatrixSection />
+
       <BeforeAfterSection />
+    </Stack>
+  );
+}
+
+function CardMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Card</Text>
+      <Text color="secondary" variant="labelSm">
+        variant 2 × padding 4 = 8개 조합. surface는 1px border, elevated는 light에서 약한 그림자(dark에선 그림자 0 — ADR-009 정신).
+      </Text>
+      {cardVariants.map((variant) => (
+        <Stack key={variant} direction="column" gap={3}>
+          <Text variant="label" color="secondary" as="h3">{variant}</Text>
+          <Stack direction="row" align="start" gap={5} style={{ flexWrap: 'wrap' }}>
+            {cardPaddings.map((padding) => (
+              <Card
+                key={padding}
+                variant={variant}
+                padding={padding}
+                style={{ minWidth: 160 }}
+              >
+                <Stack direction="column" gap={2}>
+                  <Text variant="label" weight="medium">{variant}/{padding}</Text>
+                  <Text color="secondary" variant="labelSm">Card content</Text>
+                </Stack>
+              </Card>
+            ))}
+          </Stack>
+        </Stack>
+      ))}
     </Stack>
   );
 }

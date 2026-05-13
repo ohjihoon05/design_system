@@ -50,6 +50,11 @@
       "dir": "10-form-polish",
       "status": "completed",
       "completed_at": "2026-05-11T16:35:00+0900"
+    },
+    {
+      "dir": "11-trial-4-outline",
+      "status": "completed",
+      "completed_at": "2026-05-12T17:45:00+0900"
     }
   ]
 }
