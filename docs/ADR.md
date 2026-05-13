@@ -698,3 +698,77 @@ dark theme: statusTokens가 CSS variable이라 `theme-dark.ts`의 status-alarm-*
 
 - **layer A 1차 채움 종료 후보**: Alert 추가로 atoms 14개 도달. PRD.md "layer A의 1차 채움 + ppt dogfood 검증" 두 조건 충족 후보. 다음 단계는 (a) **layer A 종료 선언 → layer B(사내 npm registry 배포 인프라) 진입** 또는 (b) Trial 7+ 신규 needs 추가 측정. 사용자 결정 영역.
 - variant 확장(info/warning/success), title/description split, leading icon, auto-dismiss 등은 *needs 부상 후* 별도 minor bump.
+
+## ADR-018 — layer B 진입: publish-ready 전환 + registry 옵션 비교 (결정 보류)
+
+**상태**: 결정 보류 (사내 IT 협의 결과 대기). 본 phase는 publish-ready 인프라까지 완료. 실제 첫 publish 시 본 ADR의 "결정" 섹션을 후속 minor phase가 확정.
+
+**Context**:
+
+Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert) × ppt 3페이지 (Outline/Home/Presentation) dogfood × interface variable cascade(ADR-010) 입증. PRD 도달점 layer 정의에 따르면 다음은 layer B(사내 패키지 배포). 본 ADR은 layer B 진입 시 결정해야 할 *registry 옵션*과 *준비 작업*을 정리한다.
+
+**옵션 비교**:
+
+| 옵션 | 인프라 | scope | token 발급 | IT 의존성 | publish 자동화 | 1순위 후보 가능성 |
+|---|---|---|---|---|---|---|
+| **A. 사내 npm registry (Verdaccio 호스팅 등)** | 사내 서버 + Verdaccio/Nexus 등 | `@wonik` 그대로 유지 가능 | IT가 발급 (사내 계정 연동) | ★★★ (셋업 자체가 IT 작업) | manual 시작 → CI 추후 | ◯ (사내 표준화 관점 best) |
+| **B. GitHub Packages** | GitHub org 또는 personal | scope = GitHub username/org와 매칭 필요 → `@wonik` 쓰려면 GitHub `wonik` org 필요 | GitHub PAT (개인 token, scope: read/write:packages) | ★ (GitHub org 생성만) | GitHub Actions 자연스러움 | ◯ (가장 빠른 진입) |
+| **C. Tarball via GitHub Release** | GitHub Release asset | scope 무관 | 없음 (public release) | 0 | 자동 가능 (gh release) | △ (host install 매번 URL 직접 지정 — 학습 곡선 ↑) |
+
+**거부된 대안**:
+
+1. **공개 npm registry**(npmjs.com에 public publish) — 사내 전용 디자인 시스템이 외부 노출. 보안/IP 관점 부적합. `restricted` access로 publish해도 npmjs.com 자체가 공개 인덱스에 메타데이터 등록.
+2. **공유 폴더 + file: 의존성** — 진짜 "패키지 배포"가 아니라 link. version pinning 불가. 본 phase의 목표(host product가 `pnpm add`로 install)와 어긋남.
+3. **Verdaccio를 본인 노트북에서 호스팅** — 가용성 0. 사내 인프라가 아니므로 다른 팀원 install 불가.
+4. **scope 이름 변경 (`@wonik` → `@ohjihoon05` 등)** — host product의 모든 import path 재작성 비용 + 사내 정체성 상실. 사내 IT가 `@wonik` org를 GitHub에 만들거나 사내 registry가 scope 제약 없으면 회피 가능.
+
+**1순위 권장 + 2순위 fallback**:
+
+- **1순위**: 옵션 A (사내 npm registry). 사내 정체성 유지, scope 제약 없음, 사내 SSO 연동 자연스러움. 비용은 IT 셋업 시간 — 협의 후 일정 확정.
+- **2순위 fallback**: 옵션 B (GitHub Packages). 사내 registry 셋업이 N주 이상 지연되면 GitHub `wonik` org 생성 + 임시 publish. scope 매칭만 풀면 즉시 진입 가능.
+- **결정 보류 명시**: 본 phase에서는 어느 옵션도 *확정하지 않는다*. publish-ready 메타데이터 (publishConfig.registry는 placeholder URL `https://npm.pkg.github.com/RESOLVE_BEFORE_PUBLISH`)로 두고, 결정 후 후속 phase에서 실제 URL로 교체.
+
+**본 phase에서 완료한 publish-ready 준비**:
+
+1. **메타데이터** — 두 패키지 `package.json`에 description / repository / homepage / license(`UNLICENSED`) / version(`0.1.0`) / publishConfig.access(`restricted`) / sideEffects / files(`["dist"]`) 추가. `private: true` 제거.
+2. **publish 가드** — `prepublishOnly: "pnpm build && pnpm test"` — 깨진 artifact publish 불가.
+3. **placeholder URL 방어** — publishConfig.registry가 명백한 placeholder(`RESOLVE_BEFORE_PUBLISH`)이므로 실수 publish 시 404 즉시 fail. 결정 후 교체 필수.
+4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). dependency도 유지(workspace:*는 publish 시 자동 변환). host가 직접 token CSS를 import해 cascade 활성화 가능.
+5. **install 가이드** — `docs/INSTALL.md` 신설 (인증 / install / import / cascade override / FAQ).
+6. **`.npmrc.example` + `.gitignore`** — 실제 token이 git history에 남지 않도록 보호.
+
+**결정해야 할 항목 (후속 phase가 닫음)**:
+
+| 항목 | default | 비고 |
+|---|---|---|
+| registry 옵션 | A (사내 npm) | B/C는 fallback |
+| 실제 registry URL | TBD | `RESOLVE_BEFORE_PUBLISH` 자리 교체 |
+| `@wonik` scope 매핑 | 사내 namespace 그대로 | GitHub Packages 선택 시 `wonik` org 필요 |
+| token 발급 정책 | 사내 SSO 기반 | IT가 발급 흐름 정의 |
+| CI 자동 publish | 1단계는 manual | GitHub Actions changeset/action은 후속 검토 |
+| 첫 publish 후 monorepo dogfood 절차 | ppt가 workspace:* → 실제 `@wonik/web@0.1.0`으로 install 전환 | dual-direction 입증 |
+
+**Trade-offs / 위험**:
+
+- **R1 실수 publish**: placeholder URL + prepublishOnly로 이중 방어.
+- **R2 workspace:* 미변환**: changeset publish가 자동 변환. dry-run report에서 명시적 확인 (Step 4).
+- **R3 scope 충돌**: 옵션 B에서만 발생. 옵션 A 채택 시 회피.
+- **R4 license `UNLICENSED` 경고**: 일부 tool이 warning. `private`/`restricted` 조합으로 host install엔 영향 없음.
+- **R5 publish 후 host product workflow**: 첫 publish 성공 후 ppt가 `workspace:*` → 실제 버전으로 전환할 때 dual-direction (local dev는 link, prod는 published version) 검증 필요. 별도 phase.
+
+**거부된 대안의 결정 근거 (요약)**:
+
+- 공개 npm: 사내 IP 보호 ✗
+- file: 의존성: version 관리 ✗, 본 phase 목적 ✗
+- 본인 노트북 Verdaccio: 가용성 ✗
+- scope 변경: host 마이그레이션 비용 ↑, 정체성 ✗
+
+**후속 phase 예상 흐름**:
+
+1. IT 협의 → 옵션 확정
+2. registry URL/token 발급
+3. `publishConfig.registry`를 실제 URL로 교체 + changeset 항목 추가
+4. `pnpm publish` 첫 실행 (manual)
+5. ppt가 published 버전으로 install 전환 → dual-direction 입증
+6. (선택) CI 자동 publish workflow
+

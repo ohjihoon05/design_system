@@ -1,7 +1,14 @@
 {
   "name": "@wonik/web",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "WONIK IPS Design System — Web 컴포넌트 (Button / Input / Card / Badge / Alert 외 14 atoms). React 18·19 dual peer. interface variable cascade 지원.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohjihoon05/design_system.git",
+    "directory": "packages/web"
+  },
+  "homepage": "https://github.com/ohjihoon05/design_system#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -12,18 +19,25 @@
       "require": "./dist/index.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/RESOLVE_BEFORE_PUBLISH"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "echo 'no lint yet'"
+    "lint": "echo 'no lint yet'",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@wonik/tokens": "^0.1.0"
   },
   "dependencies": {
     "@wonik/tokens": "workspace:*"

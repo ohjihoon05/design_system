@@ -1,0 +1,16 @@
+# .npmrc.example — `@wonik/*` 패키지 install용 인증 설정
+#
+# 사용법:
+#   1. 이 파일을 host product repo 루트에 `.npmrc`로 복사
+#   2. `<사내-registry-URL>`을 IT가 알려준 실제 URL로 교체
+#   3. `<사내-registry-host>`를 위 URL의 host 부분으로 교체 (예: npm.wonik.internal)
+#   4. token을 환경변수로 export — `.npmrc`에 평문 commit 절대 금지
+#
+# .gitignore에 반드시 `.npmrc` 추가.
+
+@wonik:registry=<사내-registry-URL>
+//<사내-registry-host>/:_authToken=${WONIK_NPM_TOKEN}
+
+# GitHub Packages 사용 시 예시 (registry 결정 후 갱신):
+# @wonik:registry=https://npm.pkg.github.com
+# //npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
