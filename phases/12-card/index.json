@@ -1,0 +1,18 @@
+{
+  "project": "WONIK IPS Design System",
+  "phase": "12-card",
+  "purpose": "Trial 4의 needs ✅ 강함(4+회 반복) 결과로 Card 컴포넌트 도입. surface/elevated × none/sm/md/lg API + interfaceColors cascade.",
+  "spec": "spec.md",
+  "plan": "plan.md",
+  "tasks": "tasks.md",
+  "steps": [
+    { "step": 0, "name": "adr-draft-and-init", "file": "step0.md", "status": "completed", "completed_at": "2026-05-13T10:10:00+0900", "summary": "phases/12-card/{index.json,step0~5.md} skeleton 생성. docs/ADR.md에 ADR-015 추가 (맥락/결정/대안/결과/관계/후속). .changeset/12-card.md 생성 (@wonik/web minor)." },
+    { "step": 1, "name": "types-and-failing-tests", "file": "step1.md", "status": "completed", "completed_at": "2026-05-13T10:12:00+0900", "summary": "packages/web/src/Card/types.ts 생성 (CardVariant/CardPadding/CardOwnProps/CardProps, Box 패턴 답습 — forwardRef 미사용). Card.test.tsx에 14 케이스 작성." },
+    { "step": 2, "name": "card-implementation", "file": "step2.md", "status": "completed", "completed_at": "2026-05-13T10:14:00+0900", "summary": "Card.tsx 구현. variant=surface는 1px border+interfaceColors.border, elevated는 light box-shadow + className suffix 'wonik-card-elevated'. dark theme box-shadow 0은 module-scope CSS inject(data-wonik-card)로 분기. padding 매핑(none=0/sm=10px/md=16px/lg=32px). border-radius radius.md=10px." },
+    { "step": 3, "name": "reexport-build-test", "file": "step3.md", "status": "completed", "completed_at": "2026-05-13T10:16:00+0900", "summary": "Card/index.ts + packages/web/src/index.ts re-export. pnpm build tokens+web 성공 (dist/index.mjs/cjs/d.ts 산출). pnpm test 177 passing (163+14, 회귀 0)." },
+    { "step": 4, "name": "sandbox-matrix-capture", "file": "step4.md", "status": "completed", "completed_at": "2026-05-13T10:22:00+0900", "summary": "apps/web-sandbox/src/App.tsx에 CardMatrixSection 추가 (2 variant × 4 padding = 8 셀). Vite dev 5174 부팅, headless Chrome 캡쳐 3개: phase-12-card-matrix.png(180KB) + phase-12-card-matrix-zoom.png(919KB, 2x scale) + phase-12-card-matrix-dark.png. 8 셀 모두 visible — surface row는 border 보임, elevated row는 약한 그림자 (육안 검증, AI Read tool로 확인)." },
+    { "step": 5, "name": "adr-finalize-prd-closure", "file": "step5.md", "status": "completed", "completed_at": "2026-05-13T10:25:00+0900", "summary": "ADR-015 finalize (Step 0에서 사실상 완성 — Step 5에서 추가 변경 0). docs/PRD.md '1단계 진행 현황' 표에 Phase 11·12 행 추가 + '다음 후보' Trial 5로 갱신. spec §5 S1–S10 자동 검증 모두 ✅. closure 완료." }
+  ],
+  "created_at": "2026-05-13T00:00:00+0900",
+  "completed_at": "2026-05-13T10:25:00+0900"
+}

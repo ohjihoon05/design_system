@@ -409,3 +409,88 @@ hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 �
 - **ADR-012 §brand hex 재사용 정책 일치** — `signalReference.line` `#ACACAC`은 WONIK GRAY와 raw hex 복제. `surface`는 paler 톤이므로 brand 토큰과 hex 일치 없음.
 - **ADR-007 일치** — brand secondary(WONIK GRAY) 정체성 보존.
 - **ADR-001 부합** — 추상화 아닌 의미축 대칭 정규화.
+
+---
+
+### ADR-015: Card 컴포넌트 — surface/elevated × none/sm/md/lg, interfaceColors 의존
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`)에서 needs ✅ 강함(한 페이지 4 reps)으로 확정. Phase 12로 1차 도입.
+
+**맥락**:
+
+Trial 4 ppt Outline dogfood 결과, *rounded border + surface bg + 내부 padding* 패턴이 한 페이지에서 4회 반복(OutlineCard ×3 + loading wrapper + generation wrapper)되었다. CLAUDE.md 원칙 "한 페이지에서 4회 반복되는 패턴 = 디자인 시스템이 own해야 하는 영역"에 따라 1단계 layer A 1차 채움 마지막 컴포넌트 후보 중 가장 강한 evidence를 갖는다.
+
+Phase 11에서 부상한 다른 후보(IconButton/Badge — mid needs, Alert/EmptyState — 약함 또는 inconclusive)는 모두 *Card 도입 이후* Trial 5에서 누적 측정하기로 보류.
+
+**결정**:
+
+`@wonik/web`에 `Card` 컴포넌트 1개만 추가. signature:
+
+```tsx
+type CardVariant = 'surface' | 'elevated';
+type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: CardVariant;    // default 'surface'
+  padding?: CardPadding;    // default 'md'
+  as?: ElementType;         // default 'div'
+}
+```
+
+시각 매핑:
+
+| variant | background | border | boxShadow (light) | boxShadow (dark) |
+|---|---|---|---|---|
+| `surface` (default) | `interfaceColors.surface` | `1px solid ${interfaceColors.border}` | none | none |
+| `elevated` | `interfaceColors.surface` | none | `0 1px 3px rgba(0,0,0,0.08)` | **none** (data-theme="dark"에서 box-shadow 강제 0) |
+
+padding 매핑: `none=0` / `sm=space[4]=10px` / `md=space[6]=16px` / `lg=space[8]=32px`. md=16px는 Trial 4의 ppt Tailwind `p-4`에 자연 대응.
+
+border-radius: `radius.md` = 10px (Skeleton/Button과 일관, WARP 시안 톤).
+
+dark theme 그림자 분기는 module-scope CSS 1회-inject 패턴(`ensureCssInjected()` + `data-wonik-card` style tag + `[data-theme="dark"] .wonik-card-elevated { box-shadow: none }`) — Button/Spinner/Skeleton과 동일.
+
+`as` prop은 Box 패턴 답습 (polymorphic ElementType). `forwardRef`는 미사용 — Box도 ref 없이 운영 중이고 사용처에서 ref needs가 부상하면 minor bump로 추가 가능.
+
+**대안 (검토 후 거부)**:
+
+1. **`Card.Header` / `Card.Body` / `Card.Footer` subcomponent compound 패턴**
+   - 거부: Trial 4 evidence 0. ppt OutlineCard는 명확한 구획 없는 자유 컨테이너 패턴 — subcomp를 미리 만들면 추정 over-engineering. CLAUDE.md "첫 customer 없이 추상화 금지" 위반. 미래 needs 부상 시 minor bump로 추가 가능(compound는 breaking change 아님).
+
+2. **interactive Card** (`onClick` 시 hover state·focus ring)
+   - 거부: Trial 4에서 클릭 가능 카드 패턴 0회. needs 부상 시 별도 ADR.
+
+3. **`shadow.sm/md/lg` 토큰 신설 + `interfaceColors.shadow` interface variable 격상**
+   - 거부: 그림자 사용처가 elevated variant 1개뿐. 토큰화는 사용처 2+ 부상 시 (별도 ADR + minor bump). 지금은 컴포넌트 내부 상수.
+
+4. **`forwardRef<HTMLDivElement>` + `as` polymorphic 결합**
+   - 거부: TS 타입 복잡도(`forwardRef`의 generic ElementType inference)와 1단계 가치 균형이 안 맞음. Skeleton은 ref만, Box는 `as`만 — 본 Card는 Box 답습. ref needs 부상 시 minor bump.
+
+5. **dark theme에서 elevated에 강한 box-shadow(`rgba(0,0,0,0.4)`)**
+   - 거부: ADR-009 정신("dark는 surface bg로 elevation 표현")과 충돌. CLARIFY로 사용자가 (c) `none` 선택.
+
+6. **image media slot / cover image variant**
+   - 거부: Trial 4 evidence 0. YAGNI.
+
+**결과**:
+
+- `packages/web/src/Card/{Card.tsx,Card.test.tsx,types.ts,index.ts}` 신규.
+- 14 tests 추가, 163+14=177 passing 기대. 회귀 0.
+- 컴포넌트 코드 안에 hex 리터럴 0, bare px 리터럴 0 (boxShadow `'0 1px 3px rgba(0,0,0,0.08)'`는 elevation 명시 주석 부착한 예외 1줄).
+- `interfaceColors` 사용으로 host product의 `--color-surface`/`--color-border` 정의 시 자동 흡수(ADR-010 cascade).
+- module-scope CSS inject 패턴(ADR-011 답습).
+- `@wonik/web` minor bump (신규 컴포넌트 = minor).
+- sandbox에 2×4 매트릭스 섹션 + light/dark 캡쳐 evidence.
+
+**관계**:
+
+- **ADR-001 부합** — 첫 customer(Trial 4 4 reps)로 입증된 후 도입. 추정 over-engineering 0.
+- **ADR-008 부합** — React 19-only API 미사용. peer `^18 || ^19` dual 호환.
+- **ADR-009 부합** — dark theme에서 elevated 그림자 0(surface bg로 elevation 표현).
+- **ADR-010 답습** — `interfaceColors.surface`/`interfaceColors.border` reference + cascade fallback.
+- **ADR-011 답습** — module-scope CSS 1회-inject + `data-wonik-card` 셀렉터.
+
+**후속**:
+
+- Trial 5(별도 phase, ppt 다른 페이지 dogfood)로 Card 다중-페이지 호환 측정. IconButton/Badge needs 누적 시 합쳐 Phase 13. 누적 안 됨 → **layer A 1차 채움 종료 → layer B(사내 npm registry 배포 인프라) 진입.**
+- subcomponent(Header/Body/Footer) / interactive Card / shadow 토큰 / forwardRef 추가는 *needs 부상 후* 별도 minor bump.
