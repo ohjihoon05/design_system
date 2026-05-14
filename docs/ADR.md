@@ -763,6 +763,14 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 - 본인 노트북 Verdaccio: 가용성 ✗
 - scope 변경: host 마이그레이션 비용 ↑, 정체성 ✗
 
+**POC 결과 (2026-05-14 보강)**:
+
+회사 PC에서 GitHub Release tarball 경로로 install이 *기술적으로 작동*함을 검증 완료. 자세한 결과는 `phases/17-distribution/poc-result.md` 참조. 핵심:
+
+- Release `v0.1.0-poc`를 회사 PC 브라우저에서 다운로드 → `pnpm add` 성공 (Done in 899ms) → `node_modules/@wonik/{web,tokens}/dist` 정상.
+- 회사 SSL inspection으로 `winget`이 막혀(`0x8a15005e`) `gh` CLI 정식 설치는 차단됐지만, *브라우저로 release asset 직접 다운로드*는 통과. → 옵션 C(tarball-via-release)가 *최소한의 우회 경로*로도 작동함을 입증.
+- IT 협의 시 추가 요청 항목: **winget 허용 또는 회사 root CA 신뢰 추가**(`gh` 같은 CLI 도구 사용 위해).
+
 **후속 phase 예상 흐름**:
 
 1. IT 협의 → 옵션 확정

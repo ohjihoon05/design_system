@@ -74,7 +74,7 @@ Phase 01~17 closure. **layer A 1차 채움 종료 선언** — 14 atoms (Button/
 | 14 | Badge | ADR-016 — `<Badge variant="neutral\|primary" as>` 단일 sm 크기. Trial 4 OutlineCard layout 라벨 3 + Trial 5 Home slideCount 1 = 누적 4회 evidence |
 | 15 | trial 6 — presentation dogfood | ppt Presentation 3-panel dogfood — Badge 첫 적용 입증 + Alert 3회 누적 확정 + IconButton 격하 reaffirm |
 | 16 | Alert | ADR-017 — `<Alert onDismiss? as?>` strict YAGNI error-only(variant prop 0). Trial 4+5+6 누적 3회 evidence. statusTokens.alarm 의존, role="alert" 강제 |
-| 17 | distribution | ADR-018 — layer B 진입 publish-ready (메타데이터 / `private` 제거 / `0.1.0` / publishConfig placeholder / prepublishOnly guard / `@wonik/tokens` peer 명시 / `sideEffects`). `docs/INSTALL.md` + `.npmrc.example`. registry 옵션(사내 npm / GitHub Packages / tarball) 비교 + 결정 보류 |
+| 17 | distribution | ADR-018 — layer B 진입 publish-ready (메타데이터 / `private` 제거 / `0.1.0` / publishConfig placeholder / prepublishOnly guard / `@wonik/tokens` peer 명시 / `sideEffects`). `docs/INSTALL.md` + `.npmrc.example`. registry 옵션(사내 npm / GitHub Packages / tarball) 비교 + 결정 보류. **POC 검증 2026-05-14** — 회사 PC에서 GitHub Release tarball 경로 install 성공 (poc-result.md) |
 
 **layer A의 핵심 모델** (Phase 09·10 거치며 정착):
 - 디자인 시스템은 *시각 형태*만 own하고, *색은 host product가 own*한다.
