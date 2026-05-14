@@ -54,7 +54,7 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 
 ## 1단계 진행 현황 (2026-05-13 기준)
 
-Phase 01~16 closure. layer A 1차 채움이 14 atoms 도달 (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert) — **1차 채움 종료 후보**.
+Phase 01~17 closure. **layer A 1차 채움 종료 선언** — 14 atoms (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert) × ppt 3페이지 (Outline/Home/Presentation) dogfood × interface variable cascade(ADR-010) 입증. **layer B 진입** — 본 phase는 publish-ready 인프라까지(메타데이터, 가드, 문서). 실제 첫 publish는 사내 IT 협의 후 별도 phase (ADR-018).
 
 | Phase | 내용 | 핵심 산출 |
 |---|---|---|
@@ -74,6 +74,7 @@ Phase 01~16 closure. layer A 1차 채움이 14 atoms 도달 (Button/Box/Stack/Te
 | 14 | Badge | ADR-016 — `<Badge variant="neutral\|primary" as>` 단일 sm 크기. Trial 4 OutlineCard layout 라벨 3 + Trial 5 Home slideCount 1 = 누적 4회 evidence |
 | 15 | trial 6 — presentation dogfood | ppt Presentation 3-panel dogfood — Badge 첫 적용 입증 + Alert 3회 누적 확정 + IconButton 격하 reaffirm |
 | 16 | Alert | ADR-017 — `<Alert onDismiss? as?>` strict YAGNI error-only(variant prop 0). Trial 4+5+6 누적 3회 evidence. statusTokens.alarm 의존, role="alert" 강제 |
+| 17 | distribution | ADR-018 — layer B 진입 publish-ready (메타데이터 / `private` 제거 / `0.1.0` / publishConfig placeholder / prepublishOnly guard / `@wonik/tokens` peer 명시 / `sideEffects`). `docs/INSTALL.md` + `.npmrc.example`. registry 옵션(사내 npm / GitHub Packages / tarball) 비교 + 결정 보류. **POC 검증 2026-05-14** — 회사 PC에서 GitHub Release tarball 경로 install 성공 (poc-result.md) |
 
 **layer A의 핵심 모델** (Phase 09·10 거치며 정착):
 - 디자인 시스템은 *시각 형태*만 own하고, *색은 host product가 own*한다.
@@ -81,15 +82,13 @@ Phase 01~16 closure. layer A 1차 채움이 14 atoms 도달 (Button/Box/Stack/Te
 - pseudo-class·pseudo-element(focus·hover·placeholder)는 컴포넌트별 module-scope CSS 1회-inject (`ensureCssInjected()` 패턴).
 - a11y는 비협상 — focus indicator는 WCAG AA 충족, contrast 3:1 보장.
 
-**다음 단계: layer A 1차 채움 종료 후보 진입**. 14 atoms 도달 (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert). Trial 1~6에서 ppt 3개 페이지(Outline/Home/Presentation) dogfood 검증 완료. PRD 결승선 두 조건 충족:
+**layer A 1차 채움 종료 / layer B 진입 (Phase 17 완료)**. PRD 결승선 두 조건 충족:
 1. layer A의 1차 채움 ✅ (evidence-driven 14 atoms)
 2. ppt dogfood 검증 ✅ (Trial 1~6, ADR-010 cascade 다중 페이지 재입증)
 
-**Phase 17 후보 (두 갈래)**:
-- (a) **layer A 1차 채움 종료 선언 → layer B 진입** (사내 npm registry 배포 인프라)
-- (b) Trial 7+ — 신규 needs 추가 측정 (H4 3-panel 패턴, History 페이지 등)
+Phase 17에서 publish-ready 인프라까지 완료. 다음 단계는 **사내 IT 협의 후 첫 publish phase** — ADR-018의 registry 옵션(사내 npm registry / GitHub Packages / tarball 중) 확정 + `publishConfig.registry` placeholder 교체 + 첫 manual `pnpm publish` + ppt가 published 버전으로 install 전환해 dual-direction 입증.
 
-사용자 결정 영역.
+병행 가능: Trial 7+ — 신규 needs 측정 (H4 3-panel 패턴, History 페이지 등) — IT 협의 시간 동안 끼워넣기 가능한 자투리 작업.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.
