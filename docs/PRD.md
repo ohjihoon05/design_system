@@ -52,7 +52,7 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 - ~~다크 모드~~ → ADR-009로 1단계 핵심으로 승격. light + dark dual.
 - 반응형 디자인 — 1단계 web은 데스크톱 우선.
 
-## 1단계 진행 현황 (Phase 01~17 history — 2026-05-13)
+## 1단계 진행 현황 (Phase 01~17 + Trial 7~11 closure — 2026-05-15)
 
 > **현재 위치 + 다음 액션은 [`ROADMAP.md`](./ROADMAP.md)에서 관리**. 본 섹션은 layer A 종료 시점까지의 phase history 기록.
 
@@ -89,6 +89,15 @@ Phase 01~17 closure. **layer A 1차 채움 종료 선언** — 14 atoms (Button/
 2. ppt dogfood 검증 ✅ (Trial 1~6, ADR-010 cascade 다중 페이지 재입증)
 
 Phase 17에서 publish-ready 인프라까지 완료. layer B 본격 진입 흐름과 병행 가능한 자투리 작업(Trial 7+, 추가 atom 등)은 [`ROADMAP.md`](./ROADMAP.md)에서 단기 액션 단위로 관리.
+
+**Trial 7~11 closure (2026-05-15)** — Phase 17 후속 dogfood/cleanup 사이클이 ROADMAP에서 완결:
+- Trial 7: packaging contract 검증 → ADR-019 신설 (peer-only contract)
+- Trial 8: Home Textarea + Button 3종 — 결정 절감 본질 발견
+- Trial 9: ppt `data-theme="dark"` 활성화 + 인디고 anti-pattern 제거 — ADR-009 dual mode 첫 host 실증
+- Trial 10: Outline 통째 재dogfood — Alert/Badge/Card 첫 적용, evidence-driven cycle 한 바퀴 closure
+- Trial 11: Presentation 미완 청소 + Alert/Input/Textarea + 보라 anti-pattern 제거, dashed 격하 reaffirm
+
+→ **Layer A 1차 사이클 마감 (host 3 페이지 적용 + 시각 정체성 통일 + evidence cycle 입증)**. 다음은 Layer B 본격 진입 — 회사 PC + IT 협의 의존, ROADMAP에서 신호 대기 중.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.
