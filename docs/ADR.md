@@ -733,7 +733,8 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 1. **메타데이터** — 두 패키지 `package.json`에 description / repository / homepage / license(`UNLICENSED`) / version(`0.1.0`) / publishConfig.access(`restricted`) / sideEffects / files(`["dist"]`) 추가. `private: true` 제거.
 2. **publish 가드** — `prepublishOnly: "pnpm build && pnpm test"` — 깨진 artifact publish 불가.
 3. **placeholder URL 방어** — publishConfig.registry가 명백한 placeholder(`RESOLVE_BEFORE_PUBLISH`)이므로 실수 publish 시 404 즉시 fail. 결정 후 교체 필수.
-4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). dependency도 유지(workspace:*는 publish 시 자동 변환). host가 직접 token CSS를 import해 cascade 활성화 가능.
+4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). ~~dependency도 유지(workspace:*는 publish 시 자동 변환).~~ host가 직접 token CSS를 import해 cascade 활성화 가능.
+   > **🔄 Superseded by ADR-019 (2026-05-15)**: trial 7 dogfood(ppt 0.0.0 → 0.1.0 마이그레이션)에서 `dependencies."@wonik/tokens"` 유지가 `ERR_PNPM_FETCH_404`를 유발함을 확인. 사내 npm registry 미정 상태에서는 broken contract. ADR-019에서 `dependencies` 제거 + `devDependencies` (`workspace:*`)로 dev link만 보존하는 peer-only 패턴으로 변경.
 5. **install 가이드** — `docs/INSTALL.md` 신설 (인증 / install / import / cascade override / FAQ).
 6. **`.npmrc.example` + `.gitignore`** — 실제 token이 git history에 남지 않도록 보호.
 

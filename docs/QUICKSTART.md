@@ -17,7 +17,10 @@ ls C:\Users\ohjih\ppt\frontend\node_modules\@wonik
 ```
 
 → `tokens`, `web` 두 폴더가 보이면 OK.
-→ 안 보이면 ppt에서 `pnpm install` 한 번 (Trial 1~6 환경 그대로면 workspace로 자동 link).
+→ 안 보이면 ppt에서 `pnpm install` 한 번. 환경 시나리오별:
+  - **vendor tarball** (Trial 7 이후 — 사내 registry 결정 전 기본): `package.json`이 `file:vendor/wonik-{tokens,web}-X.Y.Z.tgz`를 가리킴. 두 패키지 다 dependency로 명시 필요(ADR-019 peer-only contract).
+  - **published 버전** (사내 registry 결정 후 — Phase 18~): `package.json`에 `@wonik/web: ^0.1.0` 형태. `.npmrc`에 사내 registry URL 설정 필수 (`docs/INSTALL.md`).
+  - **monorepo workspace** (sandbox만): `workspace:*` — design_system repo 안의 `apps/web-sandbox`처럼.
 
 토큰 CSS가 app entry에 1회 import돼있는지:
 
@@ -242,4 +245,4 @@ A. 모든 module-scope CSS injection에 SSR 가드 들어있음 (ADR-011). hydra
 - 외부 install 가이드: `docs/INSTALL.md`
 - 결정 기록: `docs/ADR.md` — 특히 ADR-010 (interface variable cascade), ADR-011 (module-scope CSS)
 - 1단계 큰 그림: `docs/PRD.md`
-- 메타인지 노트: 옵시디언 vault의 `Frontend/디자인 시스템 패키지 host에서 쓰기.md`
+- 메타인지 노트: 옵시디언 vault의 `Design-System/` 폴더 (디자인 시스템 개발 워크플로우 — 토스 모델 / 디자인 시스템 패키지 host에서 쓰기 / Publish & adopt 사이클 — 첫 손-실행)
