@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-15 (trial 8 닫음, 다음 호흡 결정 대기 중)
+**최종 갱신**: 2026-05-15 (trial 9 닫음 — 시각 정체성 통일 완료, M1 ✅)
 
 ---
 
@@ -17,7 +17,7 @@
 |---|---|---|
 | Layer A — atom 1차 채움 | ✅ 완료 (14 atoms) | (마감) |
 | Layer A — 2차 채움 | 🔍 evidence 수집 중 | 누적 3회 자동 trigger |
-| 시각 정체성 통일 (host 토큰 적용) | ⏸️ 보류 | 사용자 시점 결정 |
+| 시각 정체성 통일 (host 토큰 적용) | ✅ 완료 (trial 9) | (마감 — ppt `data-theme="dark"` 활성화) |
 | host page dogfood | 🔄 Home / Outline / Presentation 1차 마침 | 재dogfood or 새 컴포넌트 |
 | 다른 host product 발굴 | ⏸️ ppt만 | 사내 후보 식별 여부 |
 | ▷ Layer B (publish / registry / CI) | 🔚 마지막 phase | 회사 PC + IT 협의 (시야 외) |
@@ -44,27 +44,27 @@
 
 | # | 결정 | 옵션 | 추천 (왜) |
 |---|---|---|---|
-| ① | **시각 정체성 통일 시점** | (a) 즉시 trial 9 / (b) 다른 page 좀 더 후 / (c) layer A 사이클 마감 후 한꺼번에 | **(a)** — 30분 견적, 시각 임팩트 큼, ADR-010 cascade 모델 첫 실증 |
+| ~~①~~ | ~~시각 정체성 통일 시점~~ | ✅ **trial 9로 닫음** (옵션 B 격상) | — |
 | ② | **다음 dogfood 대상** | Outline 재dogfood(Alert/Badge 추가) / Presentation 재dogfood / 새 컴포넌트(PromptRefineChat 등) | **Outline 재dogfood** — 가장 작음, evidence 수집 자동 |
 | ③ | **다른 host product 발굴** | ppt 한 곳 깊이 / 사내 다른 service 후보 식별 | **ppt 깊이** 우선 — host 다양화는 layer B 진입 후 |
 
-→ ①이 가장 짧고 시각적 임팩트 큼. ②는 evidence 자동 수집의 일환이라 부담 적음.
+→ ① 마감. 다음 호흡은 ② (M3 dogfood) 또는 layer A 사이클 마감 선언.
 
 ---
 
 ## 🛠️ 큰 milestone — 집에서 가능 (사용자 결정 후)
 
-### M1. 시각 정체성 통일 (trial 9 후보) — **30분 견적**
+### M1. 시각 정체성 통일 — ✅ 완료 (trial 9, 옵션 B 격상)
 
-| step | 작업 | 시간 |
-|---|---|---|
-| 1 | ppt `main.tsx`에 `import '@wonik/tokens/tokens.css'` 한 줄 추가 | 1분 |
-| 2 | ppt `index.css`에서 자체 정의 4개 interface variable 제거 (`--color-bg` `--color-surface` `--color-border` `--color-primary`) | 5분 |
-| 3 | dev server 검증 — WONIK BLUE `#273E82` 통일 + anti-pattern 인디고 제거 확인 | 15분 |
-| 4 | ppt 잔여 hover 변수(`--color-primary-hover` 등) 정리 vs 유지 결정 | 5분 |
-| 5 | `dogfood-trial-9.md` 작성 + commit (양쪽 repo) | 5분 |
+| step | 결과 |
+|---|---|
+| Phase A (1줄 제거) | ❌ contrast 1.7:1 fail 발견 → phase B로 격상 |
+| Phase B 1 — `<html data-theme="dark">` 추가 | ✅ |
+| Phase B 2 — ppt index.css hand-rolled 5 vars 제거 | ✅ |
+| Phase B 3 — `--color-primary-hover: var(--color-primary-selected)` 위임 | ✅ |
+| 시각 검증 | ⏭️ 후속 cycle로 미룸 (사용자 "continue") |
 
-**기대 효과**: 모든 페이지 색감이 한 번에 변함. ADR-010 cascade override 모델을 host에서 첫 실증. 보라/인디고 anti-pattern 제거.
+**얻은 것**: ADR-009 dual mode 첫 host 활성화. 인디고 anti-pattern 완전 제거. ppt의 hand-rolled dark vars 5개 → 우리 dark tokens 단일 출처. 자세한 finding은 `docs/dogfood-trial-9.md` (F9~F13).
 
 ### M2. Layer A 2차 채움 (evidence-driven, trigger 시 자동)
 
@@ -102,7 +102,7 @@
 
 | 작업 | 집 PC | 사용자 결정 |
 |---|---|---|
-| M1. 시각 정체성 통일 (trial 9) | ✅ | ✅ 시점 |
+| ~~M1. 시각 정체성 통일 (trial 9)~~ | ✅ 완료 | — |
 | M2. Layer A 2차 atom 추가 | ✅ | (evidence 3회 자동 trigger) |
 | M3. 추가 page / 컴포넌트 dogfood | ✅ | ✅ 대상 |
 | cleanup 거리 | ✅ | — |
@@ -124,8 +124,9 @@
 | 6 | 2026-05-13 | Presentation.tsx 통째 dogfood (3-panel) | `dogfood-trial-6.md` |
 | 7 | 2026-05-15 | packaging contract 검증 — ADR-019 신설, ppt 0.0.0→0.1.0 + Alert 첫 적용 | `dogfood-trial-7.md` |
 | 8 | 2026-05-15 | Home Textarea + Button 3종 — 라인 -18% / 결정 절감 본질 발견 | `dogfood-trial-8.md` |
+| 9 | 2026-05-15 | 시각 정체성 통일 — ppt `data-theme="dark"` 활성화 + hand-rolled dark vars 정리. ADR-009 dual mode 첫 실증 | `dogfood-trial-9.md` |
 
-→ 누적 8 trial. Layer A가 14 atoms로 안정화됨. host 적용은 Home 깊게 / Outline·Presentation 1차 마침.
+→ 누적 9 trial. Layer A가 14 atoms로 안정화됨 + host 시각 정체성도 우리 dark tokens로 통일됨. 남은 건 M2(evidence-driven 2차 atom) + M3(추가 dogfood) → 그러면 layer A 사이클 마감.
 
 ---
 
