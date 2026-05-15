@@ -780,3 +780,69 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 5. ppt가 published 버전으로 install 전환 → dual-direction 입증
 6. (선택) CI 자동 publish workflow
 
+
+
+---
+
+## ADR-019 — `@wonik/web` packaging: peer-only token contract (Supersedes ADR-018 #4 일부)
+
+**날짜**: 2026-05-15
+**상태**: 결정 완료. 구현 + ppt dogfood trial 7로 검증.
+
+**Context**:
+
+ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **peer + dependency 둘 다** 두는 패턴을 채택했다. 동기는 "peer는 host에 install을 요구, dependency는 monorepo workspace dev 시점 link". `workspace:*`는 publish 시 자동 변환된다고 가정.
+
+2026-05-15 dogfood trial 7(ppt에 `@wonik/web` 0.0.0 → 0.1.0 마이그레이션)에서 이 가정이 깨짐:
+
+- `pnpm pack`이 `workspace:*` → `0.1.0`으로 변환은 정상.
+- 그러나 ppt에서 `pnpm install` 시 pnpm이 `@wonik/tokens@0.1.0`을 **공개 npm registry에서** lookup → `ERR_PNPM_FETCH_404` 즉시 fail.
+- 사내 npm registry 미정 상태(layer B 결정 보류)에서는 dependency 선언 자체가 broken contract. host의 `pnpm.overrides`로 우회 가능하나 변칙적 + lockfile cache와 충돌.
+
+**결정**:
+
+`@wonik/web`은 `@wonik/tokens`를 **`peerDependencies` + `devDependencies` 조합으로만** 선언한다. `dependencies` 섹션에서 제거.
+
+```json
+{
+  "peerDependencies": {
+    "@wonik/tokens": "^0.1.0"
+  },
+  "devDependencies": {
+    "@wonik/tokens": "workspace:*"
+  }
+  // dependencies에서 @wonik/tokens 제거
+}
+```
+
+**효과**:
+
+1. **host 계약 명시화**: `@wonik/web`을 받는 host는 누구든 `@wonik/tokens`를 직접 install해야 한다는 강제. 이는 토스 TDS / Material UI / Radix UI / shadcn 등 모든 진짜 design system이 채택한 패턴.
+2. **dev 시점 동작 보존**: monorepo 안에서는 `devDependencies`의 `workspace:*`로 link되어 `@wonik/web` 내부에서 `@wonik/tokens` import 정상 동작. `devDependencies`는 tarball에 포함되지 않음(pnpm pack 표준 동작) — host 영향 없음.
+3. **registry 무관**: host가 tokens를 어떤 경로(file: / sha-pinned / 사내 registry)로 install하든 web은 신경쓰지 않음. layer B 옵션 결정과 독립적으로 동작.
+4. **lockfile 충돌 제거**: pnpm.overrides 같은 우회 메커니즘 불필요. ppt도 평범한 dependency 두 개로 정상화.
+
+**검증**:
+
+- design_system: `pnpm install` 통과(monorepo 안 web 내부 import 동작) + `pnpm -F @wonik/web build` 통과 + sandbox 정상 동작 (`apps/web-sandbox`).
+- packed tarball: `tar -xzOf wonik-web-0.1.0.tgz package/package.json` → `dependencies` 섹션 부재, `peerDependencies.@wonik/tokens: ^0.1.0`만 존재.
+- ppt: `pnpm install` 통과(`+ @wonik/tokens 0.1.0 / + @wonik/web 0.1.0`) + `pnpm dev` HMR 통과 + Alert 첫 import 동작.
+
+**Trade-offs / 위험**:
+
+- **R1 host가 tokens install 누락**: pnpm이 unmet peer warning 출력. ESLint/TS 단계까지 가면 import 자체 실패로 즉시 발견. host 인지 비용 ↑이지만 명시적이라 실수 적음.
+- **R2 tokens 버전 불일치**: host가 `@wonik/tokens@0.0.5`처럼 낮은 버전 install하면 cascade 변수 부재로 시각 깨짐. peer range `^0.1.0`이 minimum 보장.
+- **R3 ADR-018 문서 drift**: ADR-018 항목 #4의 "dependency도 유지" 문구가 본 ADR과 모순. ADR-018은 history로 유지하되 본 ADR이 supersede 명시. INSTALL.md / QUICKSTART.md도 갱신 필요.
+
+**거부된 대안**:
+
+1. **`pnpm.overrides` 영구 사용**: trial 7에서 lockfile cache와 충돌하며 깨짐. 변칙적, host 인지 비용 동일하면서 실수 여지 ↑.
+2. **`bundledDependencies` 로 tokens 함께 packing**: tarball 크기 ↑, 토큰 변경 시 web도 매번 재pack 필요, host가 cascade 위해 별도 import 불가능.
+3. **공개 npm registry에 tokens 먼저 publish**: 사내 IP 노출(ADR-018 거부 대안 #1과 동일 사유).
+
+**후속 변경 항목**:
+
+- [ ] `docs/INSTALL.md` 갱신: host에서 `@wonik/tokens`도 명시적 `pnpm add` 필요 명시.
+- [ ] `docs/QUICKSTART.md` 갱신: 같은 반영.
+- [ ] ADR-018 항목 #4에 본 ADR-019 supersede 마커 추가 (별도 commit).
+- [ ] sandbox `package.json`은 이미 토스 패턴(`@wonik/tokens` 직접 dep)이라 변경 불필요.

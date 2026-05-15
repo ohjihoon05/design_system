@@ -10,6 +10,7 @@ dist/
 
 # Tarball pack outputs (dogfood install용 임시 산출물)
 pkg-out/
+*.tgz
 
 # pnpm
 .pnpm-store/
