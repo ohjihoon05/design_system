@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-15 (trial 9 닫음 — 시각 정체성 통일 완료, M1 ✅)
+**최종 갱신**: 2026-05-15 (trial 10 닫음 — Outline 재dogfood + Alert/Badge/Card 첫 외부 적용)
 
 ---
 
@@ -18,7 +18,7 @@
 | Layer A — atom 1차 채움 | ✅ 완료 (14 atoms) | (마감) |
 | Layer A — 2차 채움 | 🔍 evidence 수집 중 | 누적 3회 자동 trigger |
 | 시각 정체성 통일 (host 토큰 적용) | ✅ 완료 (trial 9) | (마감 — ppt `data-theme="dark"` 활성화) |
-| host page dogfood | 🔄 Home / Outline / Presentation 1차 마침 | 재dogfood or 새 컴포넌트 |
+| host page dogfood | 🔄 Home(trial 7+8) ✅ + Outline(trial 10) ✅ + Presentation(trial 6) 1차 | 다음: Presentation 재 or 새 컴포넌트 |
 | 다른 host product 발굴 | ⏸️ ppt만 | 사내 후보 식별 여부 |
 | ▷ Layer B (publish / registry / CI) | 🔚 마지막 phase | 회사 PC + IT 협의 (시야 외) |
 
@@ -73,8 +73,10 @@
 | atom 후보 | 누적 evidence | 남은 거리 | 출처 |
 |---|---|---|---|
 | **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 1회 | Trial 5 + 8 |
+| **Add-dashed Button variant** | **2/3** | 1회 | Trial 4 + 10 |
 | **FormField** (label + Input + error 묶음) | **1/3** | 2회 | Trial 7 |
 | **RadioGroup** | **1/3** | 2회 | Trial 5 |
+| **Card with hover variant** | **1/3** | 2회 | Trial 10 (OutlineCard) |
 | Modal/Dialog · Tabs · Tooltip | **0/3** | 3회 | — |
 
 → ToggleGroup이 가장 가까움. 다음 host page에서 비슷한 selector 한 번 더 나오면 phase 18-toggle-group으로 진입.
@@ -83,9 +85,9 @@
 
 | 후보 | 이전 trial 기록 | 다음 작업 후보 | 추정 시간 |
 |---|---|---|---|
-| **Outline.tsx** | trial 4 (통째) | Alert(error) / Badge(상태표시) 추가 적용 | 30분 |
-| **Presentation.tsx** | trial 6 (통째 일부) | trial 6 미완 영역 + Alert / Badge | 1시간 |
-| PromptRefineChat / AiChatPanel / OutlineCard | 0회 | 첫 dogfood (작은 컴포넌트 단위) | 30분~ |
+| ~~Outline.tsx~~ | ~~trial 4 (branch-only)~~ + **trial 10 ✅ main 적용 + Alert/Badge/Card 도입** | (마감) | — |
+| **Presentation.tsx** | trial 6 (통째 일부) | trial 6 미완 영역 + Alert / Badge / Card | 1시간 |
+| PromptRefineChat / AiChatPanel | 0회 | 첫 dogfood (작은 컴포넌트 단위) | 30분~ |
 
 ---
 
@@ -125,8 +127,9 @@
 | 7 | 2026-05-15 | packaging contract 검증 — ADR-019 신설, ppt 0.0.0→0.1.0 + Alert 첫 적용 | `dogfood-trial-7.md` |
 | 8 | 2026-05-15 | Home Textarea + Button 3종 — 라인 -18% / 결정 절감 본질 발견 | `dogfood-trial-8.md` |
 | 9 | 2026-05-15 | 시각 정체성 통일 — ppt `data-theme="dark"` 활성화 + hand-rolled dark vars 정리. ADR-009 dual mode 첫 실증 | `dogfood-trial-9.md` |
+| 10 | 2026-05-15 | Outline 통째 재dogfood — trial 4 main 머지 closure + Alert/Badge/Card 첫 적용. Card 4회 evidence 정확 입증 | `dogfood-trial-10.md` |
 
-→ 누적 9 trial. Layer A가 14 atoms로 안정화됨 + host 시각 정체성도 우리 dark tokens로 통일됨. 남은 건 M2(evidence-driven 2차 atom) + M3(추가 dogfood) → 그러면 layer A 사이클 마감.
+→ 누적 10 trial. Layer A 14 atoms 모두 host 적용 누적. evidence-driven cycle(Phase 14 Badge → trial 10 적용)이 한 바퀴 닫힘. 남은 건 M2 자동 trigger + 추가 dogfood (Presentation 후보).
 
 ---
 
