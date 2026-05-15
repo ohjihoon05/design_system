@@ -52,7 +52,9 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 - ~~다크 모드~~ → ADR-009로 1단계 핵심으로 승격. light + dark dual.
 - 반응형 디자인 — 1단계 web은 데스크톱 우선.
 
-## 1단계 진행 현황 (2026-05-13 기준)
+## 1단계 진행 현황 (Phase 01~17 history — 2026-05-13)
+
+> **현재 위치 + 다음 액션은 [`ROADMAP.md`](./ROADMAP.md)에서 관리**. 본 섹션은 layer A 종료 시점까지의 phase history 기록.
 
 Phase 01~17 closure. **layer A 1차 채움 종료 선언** — 14 atoms (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert) × ppt 3페이지 (Outline/Home/Presentation) dogfood × interface variable cascade(ADR-010) 입증. **layer B 진입** — 본 phase는 publish-ready 인프라까지(메타데이터, 가드, 문서). 실제 첫 publish는 사내 IT 협의 후 별도 phase (ADR-018).
 
@@ -86,9 +88,7 @@ Phase 01~17 closure. **layer A 1차 채움 종료 선언** — 14 atoms (Button/
 1. layer A의 1차 채움 ✅ (evidence-driven 14 atoms)
 2. ppt dogfood 검증 ✅ (Trial 1~6, ADR-010 cascade 다중 페이지 재입증)
 
-Phase 17에서 publish-ready 인프라까지 완료. 다음 단계는 **사내 IT 협의 후 첫 publish phase** — ADR-018의 registry 옵션(사내 npm registry / GitHub Packages / tarball 중) 확정 + `publishConfig.registry` placeholder 교체 + 첫 manual `pnpm publish` + ppt가 published 버전으로 install 전환해 dual-direction 입증.
-
-병행 가능: Trial 7+ — 신규 needs 측정 (H4 3-panel 패턴, History 페이지 등) — IT 협의 시간 동안 끼워넣기 가능한 자투리 작업.
+Phase 17에서 publish-ready 인프라까지 완료. layer B 본격 진입 흐름과 병행 가능한 자투리 작업(Trial 7+, 추가 atom 등)은 [`ROADMAP.md`](./ROADMAP.md)에서 단기 액션 단위로 관리.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.
