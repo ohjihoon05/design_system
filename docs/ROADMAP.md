@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-15 (trial 10 닫음 — Outline 재dogfood + Alert/Badge/Card 첫 외부 적용)
+**최종 갱신**: 2026-05-15 (trial 11 닫음 — Presentation 재dogfood + Alert/Input/Textarea + 보라 anti-pattern 제거)
 
 ---
 
@@ -18,7 +18,7 @@
 | Layer A — atom 1차 채움 | ✅ 완료 (14 atoms) | (마감) |
 | Layer A — 2차 채움 | 🔍 evidence 수집 중 | 누적 3회 자동 trigger |
 | 시각 정체성 통일 (host 토큰 적용) | ✅ 완료 (trial 9) | (마감 — ppt `data-theme="dark"` 활성화) |
-| host page dogfood | 🔄 Home(trial 7+8) ✅ + Outline(trial 10) ✅ + Presentation(trial 6) 1차 | 다음: Presentation 재 or 새 컴포넌트 |
+| host page dogfood | ✅ Home(trial 7+8) + Outline(trial 10) + Presentation(trial 6+11) 모두 마감 | (마감 — ppt 3 main 페이지 모두 atom 적용) |
 | 다른 host product 발굴 | ⏸️ ppt만 | 사내 후보 식별 여부 |
 | ▷ Layer B (publish / registry / CI) | 🔚 마지막 phase | 회사 PC + IT 협의 (시야 외) |
 
@@ -70,14 +70,15 @@
 
 > 원칙: "다음 atom 뭐 만들지" → "host에서 같은 게 3번 나오면" trigger.
 
-| atom 후보 | 누적 evidence | 남은 거리 | 출처 |
-|---|---|---|---|
-| **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 1회 | Trial 5 + 8 |
-| **Add-dashed Button variant** | **2/3** | 1회 | Trial 4 + 10 |
-| **FormField** (label + Input + error 묶음) | **1/3** | 2회 | Trial 7 |
-| **RadioGroup** | **1/3** | 2회 | Trial 5 |
-| **Card with hover variant** | **1/3** | 2회 | Trial 10 (OutlineCard) |
-| Modal/Dialog · Tabs · Tooltip | **0/3** | 3회 | — |
+| atom 후보 | 누적 evidence | 결정 |
+|---|---|---|
+| **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 1회 더 trigger 대기 |
+| ~~Add-dashed Button variant~~ | **3/3 trigger** → 본질 needs 약함 | **보류 (격하 reaffirm)** — outline 우회로 충분, dashed visual 손실 수용 |
+| **FormField** (label + Input + error 묶음) | **1/3** | 2회 더 |
+| **RadioGroup** | **1/3** | 2회 더 |
+| **Card with hover variant** | **1/3** | 2회 더 |
+| **host 측 inline px helper 가이드** (Stack 권장) | **4/3** | doc 갱신 거리 (atom 아님) — QUICKSTART.md에 한 줄 추가 검토 |
+| Modal/Dialog · Tabs · Tooltip | **0/3** | — |
 
 → ToggleGroup이 가장 가까움. 다음 host page에서 비슷한 selector 한 번 더 나오면 phase 18-toggle-group으로 진입.
 
@@ -85,8 +86,8 @@
 
 | 후보 | 이전 trial 기록 | 다음 작업 후보 | 추정 시간 |
 |---|---|---|---|
-| ~~Outline.tsx~~ | ~~trial 4 (branch-only)~~ + **trial 10 ✅ main 적용 + Alert/Badge/Card 도입** | (마감) | — |
-| **Presentation.tsx** | trial 6 (통째 일부) | trial 6 미완 영역 + Alert / Badge / Card | 1시간 |
+| ~~Outline.tsx~~ | trial 4 + **trial 10 ✅ main 적용 + Alert/Badge/Card 도입** | (마감) | — |
+| ~~Presentation.tsx~~ | trial 6 + **trial 11 ✅ Alert/Input/Textarea + 보라 anti-pattern 제거** | (마감) | — |
 | PromptRefineChat / AiChatPanel | 0회 | 첫 dogfood (작은 컴포넌트 단위) | 30분~ |
 
 ---
@@ -128,8 +129,9 @@
 | 8 | 2026-05-15 | Home Textarea + Button 3종 — 라인 -18% / 결정 절감 본질 발견 | `dogfood-trial-8.md` |
 | 9 | 2026-05-15 | 시각 정체성 통일 — ppt `data-theme="dark"` 활성화 + hand-rolled dark vars 정리. ADR-009 dual mode 첫 실증 | `dogfood-trial-9.md` |
 | 10 | 2026-05-15 | Outline 통째 재dogfood — trial 4 main 머지 closure + Alert/Badge/Card 첫 적용. Card 4회 evidence 정확 입증 | `dogfood-trial-10.md` |
+| 11 | 2026-05-15 | Presentation 재dogfood — trial 6 미완 청소 + Alert/Input/Textarea + AI 수정 보라 anti-pattern 제거. dashed 3/3 trigger도 격하 reaffirm | `dogfood-trial-11.md` |
 
-→ 누적 10 trial. Layer A 14 atoms 모두 host 적용 누적. evidence-driven cycle(Phase 14 Badge → trial 10 적용)이 한 바퀴 닫힘. 남은 건 M2 자동 trigger + 추가 dogfood (Presentation 후보).
+→ 누적 11 trial. **Layer A 14 atoms × ppt 3 main 페이지 (Home/Outline/Presentation) 모두 적용 완료.** evidence-driven cycle 한 바퀴 closure(Phase 14 Badge → trial 10 적용) + dashed atom 후보 trigger 후 격하 reaffirm. **Layer A 사이클 마감 선언 가능 상태.**
 
 ---
 
