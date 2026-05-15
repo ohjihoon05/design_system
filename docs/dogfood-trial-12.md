@@ -71,15 +71,25 @@ step 4 publish 후 Verdaccio에서 받은 `@wonik/web@1.0.0` metadata:
 
 → source는 `"@wonik/tokens": "^0.1.0"`이었으나 `pnpm changeset version` + publish 과정에서 *자동으로 ^0.2.0으로 갱신*. ADR-019 peer-only contract가 publish 자동화에서도 정합 유지. 사내 진입 시 host가 항상 호환 가능한 peer 받음.
 
-### F28 — changesets 누적 minor 5개가 0.1.0 → 1.0.0 점프 (예상 외, 받아들임)
+### F28 — changesets 누적 minor 5개가 0.1.0 → 1.0.0 점프 (changesets 알려진 버그 가능성)
 
-`@wonik/web` 누적 changeset 5개(12-card minor + 14-badge minor + 16-alert minor + 17-distribution minor + phase-08-09-10 minor) → 0.1.0에서 한 번 적용 시 *0.6.0이 아닌 1.0.0*. 
+`@wonik/web` 누적 changeset 5개(12-card minor + 14-badge minor + 16-alert minor + 17-distribution minor + phase-08-09-10 minor) → 0.1.0에서 한 번 적용 시 *0.6.0이 아닌 1.0.0*. tokens는 같은 5 minor인데 0.2.0(예상 동작) → **두 패키지가 다른 동작 = 정책 아님 = 버그 또는 edge case 의심**.
 
-가설:
-- changesets 2.x가 0.x → 1.0을 "first stable cut"으로 자동 인식
-- 또는 누적 minor가 임계치 도달 시 major 자동 promotion
+WebSearch 결과 (2026-05-15):
+- changesets/changesets#1011 "Unexpected major version bumps on one package"
+- changesets/changesets#555 "patch+minor changesets resulting in major version bump"
+- changesets/action#358 "Major version bump where minor is set"
 
-→ 의외였으나 *의미상 정합*: ppt가 14 atoms × 3 host pages × 11 trials로 검증한 후 첫 publish는 "1.0.0 stable" 자격 충분. 받아들이고 진행. tokens는 5 minor → 0.2.0 (다른 동작 — 추후 조사 거리).
+→ "changesets known bug — 특정 조건에서 minor가 major로 promotion됨". 정확한 트리거 조건은 issue tracker에서 진행 중.
+
+**결정 — 받아들임**:
+- web 1.0.0이 의외였으나 *14 atoms × 11 trials evidence가 first stable cut 자격에 부합* → 의미적 우연이었지만 정합.
+- tokens 0.2.0은 정상.
+- 향후 publish cycle에서 web이 다시 minor → 또 major 점프하면 changesets bug 재현 → upstream issue에 reproduction 보고 후보.
+
+후속 작업:
+- [ ] 다음 patch publish 시 web 동작 재확인 (1.0.0 → 1.0.1 정상이면 단발 edge case)
+- [ ] 만약 minor 누적 시 또 major 점프하면 changesets#1011 reproduction commit으로 재현
 
 ### F29 — ppt `vendor/` 4개 tarball이 deletable 거리
 
