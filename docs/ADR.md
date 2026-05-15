@@ -781,7 +781,21 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 5. ppt가 published 버전으로 install 전환 → dual-direction 입증
 6. (선택) CI 자동 publish workflow
 
+**Verdaccio dry run 보강 (2026-05-15, trial 12)**:
 
+집에서 Verdaccio(localhost:14873)로 옵션 A 흐름을 *전체 cycle* 시뮬레이션 완료. 사용자 통찰("집에 구성을 회사에서 할 수 있는 것처럼 할 수 있잖아? 나 컴퓨터 안 꺼")에서 출발. 자세한 결과는 `docs/dogfood-trial-12.md`. 핵심:
+
+- 8 step 한 바퀴 (Verdaccio setup → 첫 publish → ppt install → dual-direction patch) 모두 성공.
+- 첫 publish: `@wonik/tokens@0.2.0` + `@wonik/web@1.0.0`. 누적 8개 changeset 적용 결과(F28).
+- ppt 마이그레이션: `file:vendor/...tgz` → `^0.2.0`/`^1.0.0` (3.7초). dual-direction patch 0.2.1: `pnpm update` 1.5초.
+- **사내 진입 시 교체 위치 = 정확히 2 곳**:
+  - `design_system/.npmrc`의 `@wonik:registry=...` + `_authToken`
+  - `tokens/web/package.json`의 `publishConfig.registry`
+- Verdaccio 표준 4873은 Windows excluded port range(4866-4965)에 잡혀 14873 사용. 사내 서버는 다른 머신이라 무관.
+- **ADR-019 peer-only contract publish 시도 정합 입증**: web의 `@wonik/tokens` peer가 publish 과정에서 `^0.1.0` → `^0.2.0`으로 자동 caret 갱신.
+- **changeset publish 자동 skip 검증**: tokens patch 시 web은 자동 제외.
+
+→ 옵션 A 1순위 reaffirm. 사내 진입 시 *URL만 교체*하면 즉시 작동 상태.
 
 ---
 

@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-15 (🏁 Layer A 1차 사이클 마감 선언 — 11 trial 누적)
+**최종 갱신**: 2026-05-15 (🏁 Layer A 1차 사이클 마감 + Layer B dry run 한 바퀴 — trial 12)
 
 ---
 
@@ -11,7 +11,7 @@
 
 > **🏁 Layer A 1차 사이클 마감 (2026-05-15)** — atom 14개 × ppt 3 main 페이지 적용 + 시각 정체성 통일 + evidence-driven cycle 한 바퀴 입증. 11 trial 누적.
 >
-> **다음 큰 단계**: **Layer B (publish & adopt 인프라)** — 회사 PC + IT 협의 의존, 사용자가 사내 환경 진입 신호 시 시작. ADR-018에 결정 누적.
+> **다음 큰 단계**: **Layer B (publish & adopt 인프라)** — 집 시뮬레이션 한 바퀴 ✅ (trial 12, Verdaccio 14873). 사내 진입 시 *URL 2 곳만 교체*하면 즉시 작동 상태. ADR-018에 결정 누적.
 >
 > **집에서 가능한 작은 호흡**: cleanup 거리 + doc 갱신 + (선택) sub-component dogfood. 자세한 건 §4.
 
@@ -21,7 +21,7 @@
 | Layer A — host page dogfood (Home/Outline/Presentation) | ✅ trial 7+8+10+11 |
 | Layer A — 시각 정체성 통일 (host 토큰) | ✅ trial 9 |
 | Layer A — 2차 채움 evidence cycle | ✅ 한 바퀴 입증 (Phase 14 Badge → trial 10 적용 + dashed 격하 reaffirm) |
-| ▷ Layer B — publish & adopt | ⏳ 회사 PC + IT 협의 대기 |
+| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12) — 사내 URL 결정만 대기 |
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
 
 ---
@@ -72,7 +72,7 @@
 
 ## 🛣️ 다음 호흡
 
-**큰 흐름은 Layer B 진입 대기 (회사 PC + IT 협의 의존).** 집에서 할 수 있는 작은 호흡:
+**큰 흐름은 Layer B 진입 대기 (사내 registry URL 결정만 남음 — dry run trial 12로 모든 cycle 검증 완료).** 집에서 할 수 있는 작은 호흡:
 
 | 후보 | 내용 | 시간 | 우선도 |
 |---|---|---|---|
@@ -128,20 +128,20 @@
 
 ---
 
-## ▷ Layer B 진입 준비 (회사 PC + IT 협의 시 시작)
+## ▷ Layer B 진입 준비 (집 시뮬레이션 ✅, 사내 URL만 대기)
 
-ADR-018에 결정 누적. 진입 시 6단계 흐름:
+집에서 Verdaccio(`localhost:14873`)로 전체 cycle 시뮬레이션 완료 (trial 12). ADR-018에 결정 누적.
 
-| step | 작업 | 의존 |
-|---|---|---|
-| 1 | IT 협의 → registry 옵션 확정 (Verdaccio / GitHub Packages / Tarball-via-Release) | IT |
-| 2 | registry URL / token 발급 | IT |
-| 3 | `publishConfig.registry` 실제 URL 교체 + Changesets 도입 | 집 PC OK (URL 결정 후) |
-| 4 | `pnpm publish` 첫 실행 (manual) | 회사 PC |
-| 5 | ppt가 published 버전으로 install 전환 → dual-direction 입증 | 회사 PC |
-| 6 | (선택) CI 자동 publish workflow | 회사 PC |
+| step | 작업 | 집 dry run 상태 | 사내 진입 시 |
+|---|---|---|---|
+| 1 | registry 옵션 확정 (A=사내 npm / B=GitHub Packages / C=Tarball) | A 채택 (Verdaccio) | IT 협의로 1순위 reaffirm 또는 변경 |
+| 2 | registry URL / token | `127.0.0.1:14873` + dev token | 사내 URL + 사내 SSO token |
+| 3 | `publishConfig.registry` + `.npmrc` `@wonik:registry` 교체 | ✅ 14873로 둘 다 교체 | URL 2 곳만 다시 교체 |
+| 4 | `pnpm changeset version` + `pnpm changeset publish` | ✅ tokens@0.2.0, web@1.0.0 publish | 동일 명령 |
+| 5 | host product `pnpm install` (vendor → registry) → dual-direction patch | ✅ ppt 3.7초 install + 1.5초 update | 동일 흐름 |
+| 6 | (선택) CI 자동 publish workflow | 보류 | GitHub Actions 추가 |
 
-> **진입 신호**: 사용자가 사내 환경 진입(회사 PC) 알릴 때까지 ROADMAP에서 push 안 함.
+> **진입 신호**: 사용자가 사내 환경 진입 알릴 때까지 ROADMAP에서 push 안 함. dry run 결과 commit은 집에서 가능.
 
 ---
 
@@ -153,8 +153,9 @@ ADR-018에 결정 누적. 진입 시 6단계 흐름:
 | M2. Layer A 2차 atom 추가 | ✅ | (evidence 3회 자동 trigger) |
 | M3. 추가 page / 컴포넌트 dogfood | ✅ | ✅ 대상 |
 | cleanup 거리 | ✅ | — |
+| **Layer B dry run (trial 12)** | ✅ Verdaccio 시뮬레이션 완료 | 사내 진입 시 URL만 교체 |
 
-> Layer B(사내 registry / Changesets / publish / dual-direction 입증)는 회사 PC + IT 협의 의존이라 매트릭스 외. 결정은 ADR-018에 누적 보존.
+> Layer B 사이클 자체(Changesets / publish / install / dual-direction)는 집에서 trial 12로 한 바퀴 검증. 사내 의존은 *URL 결정* 한 가지로 축소. 결정은 ADR-018 "Verdaccio dry run 보강" 섹션에 누적.
 
 ---
 
