@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-15 (🏁 Layer A 1차 사이클 마감 + Layer B dry run 한 바퀴 — trial 12)
+**최종 갱신**: 2026-05-18 (demo-fab-monitor 시각 점검 사이클 + token-duplicates 자동 검출 도입 + M2.b 부족 컴포넌트 리스트 정리)
 
 ---
 
@@ -117,6 +117,36 @@
 | Modal/Dialog · Tabs · Tooltip | **0/3** | — |
 
 → ToggleGroup이 가장 가까움. 다음 host page에서 비슷한 selector 한 번 더 나오면 phase 18-toggle-group으로 진입.
+
+### M2.b — 부족 컴포넌트 리스트 (2026-05-18 추가)
+
+> demo-fab-monitor 한 바퀴 dogfood로 internal 4개 승격 후보가 가시화 + PRD §1.4.2 명시 6개 + ROADMAP M2 명시 Tooltip 1개 = **11개 부족**. 다 채우면 14 + 11 = 25개 → Storybook(15+) ✅ + Chromatic(20+) ✅ 트리거 둘 다 충족.
+
+| Layer | 컴포넌트 | 출처 | 추산 |
+|---|---|---|---|
+| A — PRD 핵심 | Modal/Dialog | PRD §1.4.2 (M2 명시) | 2-3h (focus trap + ESC + portal) |
+| A — PRD 핵심 | Toast/Notification | PRD §1.4.2 | 2-3h (queue + auto-dismiss) |
+| A — PRD 핵심 | Tabs | PRD §1.4.2 (M2 명시) | 1.5h |
+| A — PRD 핵심 | Dropdown/Select | PRD §1.4.2 | 3-4h (keyboard nav + search 옵션) |
+| A — PRD 핵심 | SortableList | PRD §1.4.2 (ppt-derived) | 큰 단위 (드래그) |
+| A — PRD 핵심 | InlineEditableText | PRD §1.4.2 (ppt-derived) | 큰 단위 |
+| B — M2 명시 | Tooltip | ROADMAP M2 (positioning) | 1-1.5h |
+| C — demo 승격 | IconButton | demo internal (Topbar/Sidebar/Alarms dogfood ✅) | 1h |
+| C — demo 승격 | FilterChip | demo internal (Alarms/Equipment/Settings ✅) | 1-1.5h |
+| C — demo 승격 | Avatar | demo internal (Sidebar ✅) | 1h |
+| C — demo 승격 | ProgressBar | demo components (Dashboard/Equipment ✅) | 1-1.5h |
+
+**총 추산**: 16-22시간. 한 세션 못 함. **sub-batch로 분배**:
+
+| Phase | 컴포넌트 | 추산 | 달성 atom 수 | 도구 트리거 |
+|---|---|---|---|---|
+| **1** | IconButton | 1-2h | 15 | Storybook(15+) 검토 시점 |
+| **2** | FilterChip + Avatar + ProgressBar | 3-4h | 18 | — |
+| **3** | Tooltip + Tabs | 3-5h | 20 | Chromatic(20+) 검토 시점 |
+| **4** | Modal + Toast + Select | 5-7h | 23 | — |
+| **5** (옵션) | SortableList + InlineEditableText | 큰 단위 | 25 | — |
+
+> demo 승격은 dogfood로 실제 사용 패턴 + 토큰 정합도가 이미 검증된 상태라 가장 안전한 첫 단계. 도메인 specific 가정이 숨어있을 수 있으니 승격 시 generalize 필요. PRD 명시 6개는 ppt 또는 demo-fab-monitor에서 dogfood 가능성 추가 평가.
 
 ### M3. 추가 host page / 컴포넌트 dogfood
 
