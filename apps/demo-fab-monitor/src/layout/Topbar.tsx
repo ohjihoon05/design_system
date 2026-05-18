@@ -1,6 +1,5 @@
-import { Box, Stack, Text, Button, useTheme } from '@wonik/web';
+import { Box, Stack, Text, Button, IconButton, Badge, useTheme } from '@wonik/web';
 import { IconPause, IconPlay, IconSun, IconMoon, IconBell } from '../icons';
-import { IconButton } from '../components/internal/IconButton';
 
 interface TopbarProps {
   title: string;
@@ -49,7 +48,7 @@ export function Topbar({ title, subtitle, paused, onTogglePaused, alarmCount, on
         {subtitle && <Text variant="labelSm" color="dim">{subtitle}</Text>}
       </Stack>
 
-      <Stack direction="row" align="center" gap={3}>
+      <Stack direction="row" align="center" gap={3} style={{ flexShrink: 0 }}>
         <Button size="sm" variant="outline" onClick={onTogglePaused} aria-label={paused ? 'Resume simulation' : 'Pause simulation'}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
             {paused ? <IconPlay size={14} /> : <IconPause size={14} />}
@@ -57,18 +56,40 @@ export function Topbar({ title, subtitle, paused, onTogglePaused, alarmCount, on
           </span>
         </Button>
 
-        <IconButton
-          aria-label={alarmCount > 0 ? `${alarmCount} open alarms` : 'Alarms'}
-          icon={<IconBell size={16} />}
-          badge={alarmCount > 0 ? alarmCount : null}
-          onClick={onOpenAlarms}
-        />
+        <span style={{ position: 'relative', display: 'inline-flex' }}>
+          <IconButton
+            aria-label={alarmCount > 0 ? `${alarmCount} open alarms` : 'Alarms'}
+            onClick={onOpenAlarms}
+          >
+            <IconBell size={16} />
+          </IconButton>
+          {alarmCount > 0 && (
+            <Badge
+              aria-hidden
+              style={{
+                position: 'absolute',
+                top: -6,
+                right: -6,
+                background: 'var(--color-status-alarm-text)',
+                color: 'var(--color-surface-white)',
+                border: 'none',
+                padding: '0 5px',
+                minWidth: 18,
+                height: 18,
+                fontSize: 10,
+              }}
+            >
+              {alarmCount}
+            </Badge>
+          )}
+        </span>
 
         <IconButton
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
-          icon={theme === 'light' ? <IconMoon size={16} /> : <IconSun size={16} />}
           onClick={toggleTheme}
-        />
+        >
+          {theme === 'light' ? <IconMoon size={16} /> : <IconSun size={16} />}
+        </IconButton>
       </Stack>
     </Box>
   );

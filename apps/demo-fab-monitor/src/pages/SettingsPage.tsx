@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Card, Stack, Text, Switch, Radio, Input, Button, useTheme } from '@wonik/web';
-import { FilterChip } from '../components/internal/FilterChip';
+import { Card, Stack, Text, Switch, Radio, Input, Button, FilterChip, useTheme, useToast } from '@wonik/web';
 import { injectCss, FOCUS_RING } from '../lib/injectCss';
 
 injectCss('settings-page', `
@@ -21,12 +20,21 @@ injectCss('settings-page', `
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const toast = useToast();
   const [desktopNotif, setDesktopNotif] = useState(true);
   const [soundNotif, setSoundNotif] = useState(false);
   const [emailDigest, setEmailDigest] = useState(true);
   const [refreshRate, setRefreshRate] = useState<'2s' | '5s' | '10s'>('2s');
   const [name, setName] = useState('김기현');
   const [email] = useState('kim.gihyeon@wonik-ips.com');
+
+  const handleSave = () => {
+    toast.show({
+      tone: 'success',
+      title: 'Saved',
+      description: '설정이 저장되었습니다.',
+    });
+  };
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 720px)', gap: 16 }}>
@@ -108,7 +116,7 @@ export function SettingsPage() {
 
           <Stack direction="row" justify="end" gap={2}>
             <Button variant="text" size="sm">Cancel</Button>
-            <Button variant="primary" size="sm">Save changes</Button>
+            <Button variant="primary" size="sm" onClick={handleSave}>Save changes</Button>
           </Stack>
         </Stack>
       </Card>

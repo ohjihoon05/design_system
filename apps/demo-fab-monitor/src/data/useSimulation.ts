@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useToast } from '@wonik/web';
 import type { Equipment, AlarmEvent } from './types';
 import { equipmentSeed, createAlarmsSeed } from './seed';
 
@@ -48,6 +49,7 @@ export function useSimulation(): SimulationApi {
   const alarmCounter = useRef(9000);
   // Track every id we've ever shown so we can distinguish "never existed" from "was here, now gone".
   const seenIds = useRef<Set<string>>(new Set(alarms.map((a) => a.id)));
+  const toast = useToast();
 
   useEffect(() => {
     if (paused) return;
@@ -65,10 +67,15 @@ export function useSimulation(): SimulationApi {
         };
         seenIds.current.add(next.id);
         setAlarms((prev) => [next, ...prev].slice(0, MAX_ALARMS));
+        toast.show({
+          tone: next.severity === 'critical' ? 'error' : next.severity === 'warning' ? 'warning' : 'info',
+          title: `${next.equipmentName} · ${next.code}`,
+          description: next.message,
+        });
       }
     }, TICK_MS);
     return () => window.clearInterval(id);
-  }, [paused]);
+  }, [paused, toast]);
 
   const togglePaused = useCallback(() => setPaused((p) => !p), []);
 

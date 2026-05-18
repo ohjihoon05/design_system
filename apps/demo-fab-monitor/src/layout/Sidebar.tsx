@@ -1,4 +1,4 @@
-import { Box, Stack, Text, Badge } from '@wonik/web';
+import { Box, Stack, Text, Badge, Avatar } from '@wonik/web';
 import {
   IconDashboard,
   IconEquipment,
@@ -7,7 +7,6 @@ import {
   IconWonikLogo,
 } from '../icons';
 import { NavButton } from '../components/internal/NavButton';
-import { Avatar } from '../components/internal/Avatar';
 import type { PageKey } from '../App';
 
 interface SidebarProps {

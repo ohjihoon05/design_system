@@ -1,7 +1,6 @@
-import { Stack, Text } from '@wonik/web';
+import { Stack, Text, ProgressBar } from '@wonik/web';
 import type { Equipment } from '../data/types';
 import { StatusBadge } from './StatusBadge';
-import { ProgressBar } from './ProgressBar';
 import { injectCss, FOCUS_RING } from '../lib/injectCss';
 
 injectCss('equipment-row', `

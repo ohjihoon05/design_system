@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Card, Stack, Text, Button, Textarea, Alert, Badge } from '@wonik/web';
+import { Card, Stack, Text, Button, Textarea, Alert, Badge, FilterChip, Modal, useToast } from '@wonik/web';
 import type { AlarmEvent } from '../data/types';
 import type { SimulationApi } from '../data/useSimulation';
 import { AlarmRow } from '../components/AlarmRow';
 import { SeverityBadge } from '../components/StatusBadge';
 import { formatRelative } from '../data/useSimulation';
 import { operators } from '../data/seed';
-import { FilterChip } from '../components/internal/FilterChip';
 import { injectCss, FOCUS_RING } from '../lib/injectCss';
 
 injectCss('alarms-page', `
@@ -58,7 +57,40 @@ export function AlarmsPage({ api, now, selectedAlarmId, onSelectAlarm }: AlarmsP
   const { alarms, acknowledgeAlarm, closeAlarm, assignAlarm, isAlarmExpired } = api;
   const [tab, setTab] = useState<FilterTab>('all');
   const [note, setNote] = useState('');
+  const [confirmingClose, setConfirmingClose] = useState<AlarmEvent | null>(null);
+  const toast = useToast();
   const MY_NAME = '김기현';
+
+  const handleAck = (alarm: AlarmEvent) => {
+    acknowledgeAlarm(alarm.id);
+    toast.show({
+      tone: 'success',
+      title: 'Alarm acknowledged',
+      description: `${alarm.equipmentName} · ${alarm.code}`,
+    });
+  };
+
+  const handleConfirmClose = () => {
+    if (!confirmingClose) return;
+    const removed = confirmingClose;
+    closeAlarm(removed.id);
+    onSelectAlarm(null);
+    setNote('');
+    setConfirmingClose(null);
+    toast.show({
+      tone: 'info',
+      title: 'Alarm closed',
+      description: `${removed.equipmentName} · ${removed.code}`,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          // Restore by re-adding alarm at top of list (closeAlarm pure filter — we re-push).
+          api.alarms.unshift(removed); // best-effort, will resync on next tick
+          onSelectAlarm(removed.id);
+        },
+      },
+    });
+  };
 
   const counts = useMemo(() => ({
     all: alarms.length,
@@ -137,8 +169,8 @@ export function AlarmsPage({ api, now, selectedAlarmId, onSelectAlarm }: AlarmsP
             now={now}
             note={note}
             onNoteChange={setNote}
-            onAck={() => acknowledgeAlarm(selected.id)}
-            onClose={() => { closeAlarm(selected.id); onSelectAlarm(null); setNote(''); }}
+            onAck={() => handleAck(selected)}
+            onClose={() => setConfirmingClose(selected)}
             onAssign={(name) => assignAlarm(selected.id, name)}
             myName={MY_NAME}
           />
@@ -152,6 +184,27 @@ export function AlarmsPage({ api, now, selectedAlarmId, onSelectAlarm }: AlarmsP
           </Card>
         )}
       </div>
+
+      <Modal
+        isOpen={confirmingClose !== null}
+        onClose={() => setConfirmingClose(null)}
+        title="Close alarm"
+        size="sm"
+      >
+        <Modal.Body>
+          <Stack gap={3}>
+            <Text variant="label" color="dark">
+              {confirmingClose?.equipmentName} · {confirmingClose?.code} 알람을 영구히 종료합니다.
+            </Text>
+            <Text variant="labelSm" color="dim">{confirmingClose?.message}</Text>
+            <Text variant="labelSm" color="dim">이 동작은 되돌릴 수 있지만(Undo 5초), 그 뒤로는 복구되지 않습니다.</Text>
+          </Stack>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="text" size="sm" onClick={() => setConfirmingClose(null)}>Cancel</Button>
+          <Button variant="danger" size="sm" onClick={handleConfirmClose}>Close alarm</Button>
+        </Modal.Footer>
+      </Modal>
     </Stack>
   );
 }

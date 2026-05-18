@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-18 (demo-fab-monitor 시각 점검 사이클 + token-duplicates 자동 검출 도입 + M2.b 부족 컴포넌트 리스트 정리)
+**최종 갱신**: 2026-05-18 (M2.b Phase 1+2+4 부분 closure — IconButton + FilterChip + Avatar + ProgressBar + Toast + Modal, atom 14→20. Chromatic(20+) trigger 통과)
 
 ---
 
@@ -54,19 +54,21 @@
 
 ---
 
-## 🧱 Layer A 현재 atom 14개
+## 🧱 Layer A 현재 atom 20개
 
 | 분류 | atom |
 |---|---|
 | 레이아웃 | `Box` · `Stack` · `Text` |
-| 액션 | `Button` |
+| 액션 | `Button` · `IconButton` |
 | 입력 | `Input` · `Textarea` |
 | 상태 | `Checkbox` · `Radio` · `Switch` |
 | 로딩 | `Spinner` · `Skeleton` |
-| 표시 | `Card` · `Badge` · `Alert` |
+| 표시 | `Card` · `Badge` · `Alert` · `ProgressBar` · `Avatar` |
+| 선택 | `FilterChip` |
+| 오버레이 | `Modal` · `Toast` (+ `ToastProvider`/`useToast`) |
 
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
-> → 14 atom을 host에서 충분히 사용해본 다음, 정말로 부족한 게 누적 3회 evidence 모이면 2차 채움 (§5.M2).
+> → **20 atom 도달**: Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. 도입은 별도 결정. M2.b Phase 1+2+4 부분 closure (2026-05-18).
 
 ---
 
@@ -138,13 +140,14 @@
 
 **총 추산**: 16-22시간. 한 세션 못 함. **sub-batch로 분배**:
 
-| Phase | 컴포넌트 | 추산 | 달성 atom 수 | 도구 트리거 |
-|---|---|---|---|---|
-| **1** | IconButton | 1-2h | 15 | Storybook(15+) 검토 시점 |
-| **2** | FilterChip + Avatar + ProgressBar | 3-4h | 18 | — |
-| **3** | Tooltip + Tabs | 3-5h | 20 | Chromatic(20+) 검토 시점 |
-| **4** | Modal + Toast + Select | 5-7h | 23 | — |
-| **5** (옵션) | SortableList + InlineEditableText | 큰 단위 | 25 | — |
+| Phase | 컴포넌트 | 추산 | 달성 atom 수 | 도구 트리거 | 상태 |
+|---|---|---|---|---|---|
+| **1** | IconButton | 1-2h | 15 | Storybook(15+) 검토 시점 | ✅ 2026-05-18 (Phase 18) |
+| **2** | FilterChip + Avatar + ProgressBar | 3-4h | 18 | — | ✅ 2026-05-18 (Phase 19, 묶음 closure) |
+| **3** | Tooltip + Tabs | 3-5h | — | — | dogfood 부재 — host evidence 권장. Tabs 자리도 AlarmsPage FilterChip(single-select)이 더 적합해 약함 |
+| **4 (부분)** | Modal + Toast | 5-7h | 20 | Chromatic(20+) trigger 통과 | ✅ 2026-05-18 (Phase 20, dogfood-driven 묶음 closure — 5 자리 적용) |
+| **4 (잔여)** | Select | 1-2h | 21 | — | demo 자리 부족(현 inline `<select>` 1개) — 다음 dogfood로 자리 발견 시 진입 |
+| **5** (옵션) | SortableList + InlineEditableText | 큰 단위 | 23 | — | — |
 
 > demo 승격은 dogfood로 실제 사용 패턴 + 토큰 정합도가 이미 검증된 상태라 가장 안전한 첫 단계. 도메인 specific 가정이 숨어있을 수 있으니 승격 시 generalize 필요. PRD 명시 6개는 ppt 또는 demo-fab-monitor에서 dogfood 가능성 추가 평가.
 

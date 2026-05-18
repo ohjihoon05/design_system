@@ -1,6 +1,14 @@
 export { Button } from './Button';
 export type { ButtonProps, ButtonVariant, ButtonSize } from './Button/types';
 
+export { IconButton } from './IconButton';
+export type {
+  IconButtonProps,
+  IconButtonOwnProps,
+  IconButtonVariant,
+  IconButtonSize,
+} from './IconButton/types';
+
 export { Box } from './Box';
 export type {
   BoxProps,
@@ -67,3 +75,36 @@ export type { BadgeProps, BadgeOwnProps, BadgeVariant } from './Badge/types';
 
 export { Alert } from './Alert';
 export type { AlertProps, AlertOwnProps } from './Alert/types';
+
+export { FilterChip } from './FilterChip';
+export type { FilterChipProps, FilterChipOwnProps } from './FilterChip/types';
+
+export { Avatar } from './Avatar';
+export type { AvatarProps, AvatarOwnProps } from './Avatar/types';
+
+export { ProgressBar } from './ProgressBar';
+export type {
+  ProgressBarProps,
+  ProgressBarOwnProps,
+  ProgressTone,
+} from './ProgressBar/types';
+
+export { ToastProvider, useToast, Toast } from './Toast';
+export type {
+  ToastApi,
+  ToastItem,
+  ToastOptions,
+  ToastTone,
+  ToastPosition,
+  ToastAction,
+  ToastProviderProps,
+} from './Toast/types';
+
+export { Modal } from './Modal';
+export type {
+  ModalProps,
+  ModalOwnProps,
+  ModalBodyProps,
+  ModalFooterProps,
+  ModalSize,
+} from './Modal/types';

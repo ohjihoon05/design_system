@@ -1,11 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Card, Stack, Text, Input, Checkbox, Button } from '@wonik/web';
+import { Card, Stack, Text, Input, Checkbox, Button, IconButton, FilterChip, ProgressBar } from '@wonik/web';
 import type { Equipment, EquipmentType } from '../data/types';
 import { StatusBadge } from '../components/StatusBadge';
-import { ProgressBar } from '../components/ProgressBar';
 import { IconSearch, IconX } from '../icons';
-import { FilterChip } from '../components/internal/FilterChip';
-import { IconButton } from '../components/internal/IconButton';
 import { injectCss, FOCUS_RING } from '../lib/injectCss';
 
 injectCss('equipment-table', `
@@ -77,7 +74,7 @@ export function EquipmentPage({ equipment, selectedId, onSelect }: EquipmentPage
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: selected ? 'minmax(0,1fr) 360px' : 'minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: selected ? 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))' : 'minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
       <Card padding="md">
         <Stack gap={4}>
           <Stack direction="row" gap={3} align="center" wrap>
@@ -174,9 +171,10 @@ export function EquipmentPage({ equipment, selectedId, onSelect }: EquipmentPage
               <IconButton
                 aria-label="Close detail"
                 variant="ghost"
-                icon={<IconX size={14} />}
                 onClick={() => onSelect(null)}
-              />
+              >
+                <IconX size={14} />
+              </IconButton>
             </Stack>
 
             <Stack direction="row" gap={2}>
