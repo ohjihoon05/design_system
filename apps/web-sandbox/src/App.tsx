@@ -529,7 +529,7 @@ function FormExampleSection() {
               placeholder="예: ATM-3000"
             />
             {nameInvalid && (
-              <Text variant="labelSm" color="brand" weight="medium" style={{ color: '#CC0000' }}>
+              <Text variant="labelSm" weight="medium" style={{ color: 'var(--color-status-alarm-text)' }}>
                 장비 이름은 필수입니다.
               </Text>
             )}
