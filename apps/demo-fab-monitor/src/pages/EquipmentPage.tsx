@@ -77,7 +77,7 @@ export function EquipmentPage({ equipment, selectedId, onSelect }: EquipmentPage
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: selected ? 'minmax(0,1fr) 360px' : '1fr', gap: 16, alignItems: 'start' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: selected ? 'minmax(0,1fr) 360px' : 'minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
       <Card padding="md">
         <Stack gap={4}>
           <Stack direction="row" gap={3} align="center" wrap>
@@ -104,7 +104,7 @@ export function EquipmentPage({ equipment, selectedId, onSelect }: EquipmentPage
           </Stack>
 
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <table style={{ borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ textAlign: 'left', color: 'var(--color-text-dim)', fontWeight: 500, fontSize: 11, letterSpacing: 0.4, textTransform: 'uppercase' }}>
                   <Th>Equipment</Th>
@@ -218,7 +218,7 @@ function Th({ children }: { children: React.ReactNode }) {
 }
 
 function Td({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return <td style={{ padding: '12px', verticalAlign: 'middle', ...style }}>{children}</td>;
+  return <td style={{ padding: '12px', verticalAlign: 'middle', whiteSpace: 'nowrap', ...style }}>{children}</td>;
 }
 
 function Metric({ label, value }: { label: string; value: string }) {

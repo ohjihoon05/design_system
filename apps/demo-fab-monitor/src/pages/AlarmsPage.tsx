@@ -11,6 +11,7 @@ import { injectCss, FOCUS_RING } from '../lib/injectCss';
 
 injectCss('alarms-page', `
   .demo-alarm-select {
+    width: 100%;
     padding: 8px 10px;
     font-size: 13px;
     line-height: 1;
@@ -106,7 +107,7 @@ export function AlarmsPage({ api, now, selectedAlarmId, onSelectAlarm }: AlarmsP
         </Alert>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '380px minmax(0, 1fr)', gap: 16, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))', gap: 16, alignItems: 'start' }}>
         <Card padding="md">
           <Stack gap={4}>
             <Stack direction="row" gap={1} wrap>
@@ -184,9 +185,9 @@ function AlarmDetail({ alarm, now, note, onNoteChange, onAck, onClose, onAssign,
   return (
     <Card padding="lg">
       <Stack gap={5}>
-        <Stack direction="row" justify="between" align="start">
-          <Stack gap={2}>
-            <Stack direction="row" gap={2} align="center">
+        <Stack direction="row" justify="between" align="start" gap={3} wrap style={{ rowGap: 12 }}>
+          <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+            <Stack direction="row" gap={2} align="center" wrap>
               <SeverityBadge severity={alarm.severity} />
               <Text variant="labelSm" color="dim">{alarm.code}</Text>
               <Text variant="labelSm" color="dim">· {formatRelative(alarm.occurredAt, now)}</Text>
@@ -194,7 +195,7 @@ function AlarmDetail({ alarm, now, note, onNoteChange, onAck, onClose, onAssign,
             <Text variant="titleSm" weight="medium" color="dark" style={{ fontSize: 18 }}>{alarm.equipmentName}</Text>
             <Text variant="label" color="secondary">{alarm.message}</Text>
           </Stack>
-          <Stack direction="row" gap={2}>
+          <Stack direction="row" gap={2} style={{ flexShrink: 0 }}>
             {!alarm.acknowledged && (
               <Button variant="outline" size="sm" onClick={onAck}>Acknowledge</Button>
             )}
@@ -204,7 +205,7 @@ function AlarmDetail({ alarm, now, note, onNoteChange, onAck, onClose, onAssign,
 
         <div style={{ borderTop: '1px solid var(--color-border)' }} />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
           <Stack gap={2}>
             <Text variant="labelSm" color="dim" style={{ letterSpacing: 0.3, textTransform: 'uppercase' }}>Assignee</Text>
             <select

@@ -60,12 +60,12 @@ export function EquipmentRow({ equipment, onClick, selected, dense }: EquipmentR
         <Text variant="labelSm" color="dim">{equipment.type} · {equipment.bay}</Text>
       </Stack>
 
-      <div style={{ flex: 1, minWidth: 100 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         {equipment.status === 'run' && equipment.lotId ? (
           <Stack gap={2}>
             <Stack direction="row" justify="between" align="center" gap={3}>
               <Text variant="labelSm" color="dim" truncate>{equipment.lotId} · {equipment.recipe}</Text>
-              <Text variant="labelSm" color="dark" style={{ fontVariantNumeric: 'tabular-nums' }}>{equipment.progress}%</Text>
+              <Text variant="labelSm" color="dark" style={{ fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{equipment.progress}%</Text>
             </Stack>
             <ProgressBar value={equipment.progress} tone="primary" />
           </Stack>
@@ -76,7 +76,9 @@ export function EquipmentRow({ equipment, onClick, selected, dense }: EquipmentR
         )}
       </div>
 
-      <StatusBadge status={equipment.status} />
+      <div style={{ flexShrink: 0 }}>
+        <StatusBadge status={equipment.status} />
+      </div>
     </div>
   );
 }
