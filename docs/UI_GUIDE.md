@@ -143,7 +143,6 @@ Scale은 form factor에 따라 다름 — Web/HMI section 참조.
 | `--radius-sm` | 5px | 작은 버튼·아이콘 박스 |
 | `--radius-md` | 10px | 패널·카드 |
 | `--radius-full` | 50% | 도트·원형 |
-| `--radius-panel-header` | 10px 10px 0 0 | 패널 header (top corners only) |
 
 ---
 

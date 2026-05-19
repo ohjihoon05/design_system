@@ -861,3 +861,32 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - [ ] `docs/QUICKSTART.md` 갱신: 같은 반영.
 - [ ] ADR-018 항목 #4에 본 ADR-019 supersede 마커 추가 (별도 commit).
 - [ ] sandbox `package.json`은 이미 토스 패턴(`@wonik/tokens` 직접 dep)이라 변경 불필요.
+
+---
+
+### ADR-020: DTCG JSON 미채택, 토큰 구조만 1:1 매핑 호환 유지
+**결정**: 토큰을 [DTCG (Design Tokens Community Group) draft format](https://tr.designtokens.org/format/) JSON으로 emit하거나 변환 스크립트를 작성하지 **않는다**. 다만 `packages/tokens/src/theme-light.ts`·`theme-dark.ts`의 raw hex source 구조를 **DTCG와 1:1 매핑 가능한 형태로 유지**한다. 변환이 필요해질 때(예: Figma Variables import, Style Dictionary 도입, 사외 디자이너 협업 도구 연결) 30분 내 변환기를 작성할 수 있는 형태가 보장된다. 운영 가이드는 [`docs/TOKEN_DTCG_COMPAT.md`](./TOKEN_DTCG_COMPAT.md) 참조.
+
+**이유**: (a) **YAGNI** — 현재 consumer가 ppt 하나뿐인 단계에서 DTCG JSON publish는 사용처 없음. 변환 스크립트 작성·테스트·CI 시간보다 매핑 호환만 보장하는 게 비용 1/10. (b) **미래 호환 비용 0** — 구조가 1:1 매핑되면 변환은 mechanical `Object.fromEntries` loop이라 30분 작업. 지금 안 만들어도 잃을 게 없다. (c) **외부 도구 trigger 시 신속 대응** — Figma Variables가 DTCG import 지원하거나, 사외 디자이너가 Style Dictionary 워크플로우를 요청하는 순간 즉시 만들 수 있도록 길만 열어둠. (d) **구조 깨짐을 사전 차단** — 본 ADR이 없으면 future tokens에 `'10px 10px 0 0'` 같은 shorthand나 `\`${x}px\`` 합성 값이 들어가 매핑이 깨질 수 있음. 룰을 박아두면 추가 시 자연스럽게 leaf 1개 = $value 1개를 지키게 됨.
+
+**룰 (간략)**:
+1. Source-of-truth = `theme-light.ts` + `theme-dark.ts`의 raw hex object. `colors.ts`/`status.ts`/`graph.ts`의 `var(--color-X)` runtime export는 DTCG source 아님.
+2. Leaf 1개 = $value 1개. shorthand 값(`'10px 10px 0 0'`), template literal 합성(`\`${a}px\``) 금지.
+3. 한 group 안에 같은 `$type`만 (color group 전부 color, dimension group 전부 dimension).
+4. theme-light / theme-dark는 키셋 **1:1** 유지 (DTCG `$themes`로 publish할 때 양쪽이 같은 path를 가져야 함).
+
+**예외 (변환 시 special-case 1줄로 처리)**:
+- `fontFamily.base`: comma-separated string(`"'Segoe UI', 'Inter', system-ui, sans-serif"`)으로 유지. DTCG는 array를 기대하지만, CSS `font-family` property가 comma-separated string을 그대로 받기 때문에 소스 안정성을 우선. 변환기는 `.split(',').map(trim+unquote)` 1줄로 array 생성.
+
+**트레이드오프**: (1) Figma Variables가 갑자기 DTCG import를 정식 지원해도 즉시 publish 불가 — 변환기 작성 30분 + CI 연결 작업 필요. 다만 길은 열려있음. (2) `radius.panelHeader`처럼 dead token이 shorthand로 들어와있던 케이스는 본 ADR 시점에 제거 (사용처 0).
+
+**Supersedes/Affects**:
+- 본 ADR을 인지하지 않은 채로 추가된 dead token `radius.panelHeader` 제거 (consumer 0개 확인 후).
+
+**후속 변경 항목**:
+
+- [x] `radius.panelHeader` 제거 (`spacing.ts`, `build-css.ts`, `UI_GUIDE.md`).
+- [x] `docs/TOKEN_DTCG_COMPAT.md` 작성 — 매핑표 + 예외.
+- [x] `apps/ladle/build/` gitignore 처리 (관련 cleanup, 별 이슈는 아님).
+- [ ] 새 토큰 PR 리뷰 시 본 ADR 룰 1·2·3 check.
+- [ ] DTCG 변환기는 외부 trigger 시(Figma Variables / Style Dictionary / 사외 디자이너 요청) 그때 작성.
