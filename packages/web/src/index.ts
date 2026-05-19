@@ -111,3 +111,12 @@ export type {
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps, TooltipOwnProps, TooltipPlacement } from './Tooltip/types';
+
+export { InlineEditableText } from './InlineEditableText';
+export type {
+  InlineEditableTextProps,
+  InlineEditableTextOwnProps,
+  InlineEditableTextSize,
+  InlineEditableTextTrigger,
+  InlineEditableTextAs,
+} from './InlineEditableText/types';

@@ -147,7 +147,8 @@
 | **3** | Tooltip + Tabs | 3-5h | — | — | dogfood 부재 — host evidence 권장. Tabs 자리도 AlarmsPage FilterChip(single-select)이 더 적합해 약함 |
 | **4 (부분)** | Modal + Toast | 5-7h | 20 | Chromatic(20+) trigger 통과 | ✅ 2026-05-18 (Phase 20, dogfood-driven 묶음 closure — 5 자리 적용) |
 | **4 (잔여)** | Select | 1-2h | 21 | — | demo 자리 부족(현 inline `<select>` 1개) — 다음 dogfood로 자리 발견 시 진입 |
-| **5** (옵션) | SortableList + InlineEditableText | 큰 단위 | 23 | — | — |
+| **5a** | InlineEditableText | 1.5-2h | 22 | — | ✅ 2026-05-19 (Phase 23, ppt OutlineCard dogfood — 30→3줄 흡수) |
+| **5b** (옵션) | SortableList | 2-3h | 23 | — | dogfood 자리 2개 확보(OutlineCard ↑↓ + Presentation thumbnails). dnd-kit wrap + WAI-ARIA keyboard drag 패턴 필요 |
 
 > demo 승격은 dogfood로 실제 사용 패턴 + 토큰 정합도가 이미 검증된 상태라 가장 안전한 첫 단계. 도메인 specific 가정이 숨어있을 수 있으니 승격 시 generalize 필요. PRD 명시 6개는 ppt 또는 demo-fab-monitor에서 dogfood 가능성 추가 평가.
 
