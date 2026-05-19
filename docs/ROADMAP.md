@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-19 (Phase 21 Tooltip · Phase 22 Ladle · Phase 23 InlineEditableText · Phase 24 SortableList 차례 closure — **atom 23 도달** · trial 13으로 Layer A 2차 사이클 마감)
+**최종 갱신**: 2026-05-19 (Layer A 마지막 폴리시 패스 완료 — **Layer A 완벽 상태 도달**. trial 13으로 atom 23 dogfood closure + 인디고 잔재 제거 + atom 후보 4종 동결 + F30 publish 정책 정착. Layer B 진입 준비 완료, 사내 URL 결정만 대기)
 
 ---
 
@@ -22,7 +22,8 @@
 | Layer A — 시각 정체성 통일 (host 토큰) | ✅ trial 9 |
 | Layer A — 2차 채움 evidence cycle | ✅ 한 바퀴 입증 (Phase 14 Badge → trial 10 적용 + dashed 격하 reaffirm) |
 | Layer A — 2차 사이클 마감 (atom 23 closure) | ✅ trial 13 — atom 23 × ppt 4자리 (Phase 23 → OutlineCard / Phase 24 → Presentation, 같은 사이클 내 closure) |
-| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — 사내 URL 결정만 대기 |
+| Layer A — 마지막 폴리시 패스 | ✅ 2026-05-19 — 인디고 잔재 제거(History.tsx) + trial-N 주석 22→0 + ADR-007 F19 / ADR-018 F29·F30 doc 정착 + atom 후보 4종 동결 |
+| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — **Layer A 완벽 도달, 사내 URL 결정만 대기** |
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
 
 ---
@@ -113,15 +114,15 @@
 
 | atom 후보 | 누적 evidence | 결정 |
 |---|---|---|
-| **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 1회 더 trigger 대기 |
+| **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 🧊 **동결 (Layer B 후 재평가)** — ppt 추가 evidence 없음. 1단계 atom 23으로 충분 |
 | ~~Add-dashed Button variant~~ | **3/3 trigger** → 본질 needs 약함 | **보류 (격하 reaffirm)** — outline 우회로 충분, dashed visual 손실 수용 |
-| **FormField** (label + Input + error 묶음) | **1/3** | 2회 더 |
-| **RadioGroup** | **1/3** | 2회 더 |
-| **Card with hover variant** | **1/3** | 2회 더 |
-| **host 측 inline px helper 가이드** (Stack 권장) | **4/3** | doc 갱신 거리 (atom 아님) — QUICKSTART.md에 한 줄 추가 검토 |
-| Modal/Dialog · Tabs · Tooltip | **0/3** | — |
+| **FormField** (label + Input + error 묶음) | **1/3** | 🧊 **동결** — ppt에 본격 form 자리 0건 (label/errorMessage 패턴 부재) |
+| **RadioGroup** | **1/3** | 🧊 **동결** — ppt에 `type="radio"` 사용 0건 |
+| **Card with hover variant** | **1/3** | 🧊 **동결** — ppt에 cursor-pointer + Card 조합 패턴 0건 |
+| **host 측 inline px helper 가이드** (Stack 권장) | **4/3** | ✅ doc 갱신 끝 (QUICKSTART line 112 F23 wrap) |
+| Modal/Dialog · Tabs · Tooltip | **Modal·Tooltip ✅** / Tabs **0/3** | Tabs 동결 — Layer B 후 재평가 |
 
-→ ToggleGroup이 가장 가까움. 다음 host page에서 비슷한 selector 한 번 더 나오면 phase 18-toggle-group으로 진입.
+→ **모든 atom 후보 동결**. ppt main 3 + sub 2 자리에서 atom 23이 모두 dogfood됨. 새 host product 등장 시 evidence 재누적 가능.
 
 ### M2.b — 부족 컴포넌트 리스트 (2026-05-18 추가)
 

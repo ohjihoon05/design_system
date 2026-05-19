@@ -803,6 +803,17 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 
 trial 13 사이클 재현 시 `npx verdaccio --listen 14873` 단축 표기가 **IPv6 `::1`만 bind** → `.npmrc`/`publishConfig.registry`의 `127.0.0.1`(IPv4) publish 시 `ECONNREFUSED`. 해결: **`--listen 0.0.0.0:14873`** 명시 (IPv4 + IPv6 둘 다 listen). 사내 서버 셋업 시 `listen: 0.0.0.0:<port>` 또는 명확한 IP 지정 필요 — default `localhost` 단축 표기는 IPv4-only 가정 host에서 실패.
 
+**Publish prep 체크리스트 (2026-05-19, trial 13 F30)**:
+
+trial 13 publish 시 web `1.0.0 → 2.0.0` major 점프 관찰. 누적 7개 changeset 모두 minor 확인 (config의 `linked`/`fixed`/`linked` 빈 상태). 원인 가설 — changesets의 stable 1.0.0 이후 minor 누적 합산 동작 또는 추적 못 한 deleted changeset. 본질 원인 진단은 시간 비용 大 → 정책으로 정착:
+
+**Layer B 진입 전 publish prep 표준 절차**:
+1. `pnpm changeset status` 실행 — 예상 bump 사전 확인 (각 패키지 현재 → 다음 version 출력)
+2. 의도 외 major 발견 시 `.changeset/*.md` frontmatter 정정 후 retry
+3. dry-run 가능: `pnpm changeset version --snapshot dry-run` (실제 파일 수정 없음)
+
+**Semver 연속성보다 신뢰 우선**: 1.x → 2.x 한 라인 건너뛴 비용 수용. semver는 *최대 신뢰* 표기이지 *연속성 보장*이 아님. 단 의도 외 major는 host product에 caret semver 자동 흡수 안 됨(major bump는 명시 update 필요) → 반드시 사전 확인.
+
 ---
 
 ## ADR-019 — `@wonik/web` packaging: peer-only token contract (Supersedes ADR-018 #4 일부)
