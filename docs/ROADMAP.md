@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-19 (Phase 21 Tooltip · Phase 22 Ladle · Phase 23 InlineEditableText · Phase 24 SortableList 차례 closure — **atom 23 도달**)
+**최종 갱신**: 2026-05-19 (Phase 21 Tooltip · Phase 22 Ladle · Phase 23 InlineEditableText · Phase 24 SortableList 차례 closure — **atom 23 도달** · trial 13으로 Layer A 2차 사이클 마감)
 
 ---
 
@@ -21,7 +21,8 @@
 | Layer A — host page dogfood (Home/Outline/Presentation) | ✅ trial 7+8+10+11 |
 | Layer A — 시각 정체성 통일 (host 토큰) | ✅ trial 9 |
 | Layer A — 2차 채움 evidence cycle | ✅ 한 바퀴 입증 (Phase 14 Badge → trial 10 적용 + dashed 격하 reaffirm) |
-| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12) — 사내 URL 결정만 대기 |
+| Layer A — 2차 사이클 마감 (atom 23 closure) | ✅ trial 13 — atom 23 × ppt 4자리 (Phase 23 → OutlineCard / Phase 24 → Presentation, 같은 사이클 내 closure) |
+| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — 사내 URL 결정만 대기 |
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
 
 ---
