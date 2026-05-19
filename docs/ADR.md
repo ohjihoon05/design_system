@@ -60,6 +60,8 @@
 **이유**: (a) 회사 공식 brand 가이드가 실재하므로 자체 결정보다 공식 source가 우선. WONIK BLUE는 "future, youth, vitality"를, WONIK GRAY는 "advanced technology foundation"을 상징. 사내 프로덕트가 이 brand 위에서 일관되게 보이려면 단 하나의 정확한 hex만 통용돼야 한다. (b) 자산 CSS의 `#273D7F`는 사용자가 공식 brand로 마이그레이션 시도하던 잔재였고 G/B 채널이 약간 drift된 상태였다 — 이 PR로 정확한 값으로 통일. (c) 컴포넌트 코드에 사용 중인 `#2B7FFF`는 구 brand color로, 정리 대상.
 **트레이드오프**: (1) 모든 컴포넌트(`StatusIndicator`, `Toolbar`, `DataPanel` 등)의 hex 일괄 변경. (2) Derived primary 토큰(`--color-primary-bg`, `--color-primary-stroke`, `--color-primary-pale`, `--color-primary-selected`)을 새 base에서 다시 계산해 보정. (3) `--color-primary`가 status용 도트·텍스트 색에도 쓰이므로(예: Run 상태) 새 색의 contrast/가독성 재검토 필요 — `#273E82`는 RGB 채널 합이 `#2B7FFF`보다 훨씬 어두워 light 배경 위 가독성은 유리하지만 dark toolbar 위 active state 강조도는 떨어질 수 있음. (4) Status semantic colors (ok=green, warn=amber, alarm=red, init=yellow, processed=purple)는 brand color가 아니므로 변경 없음.
 
+**보강 (2026-05-15, trial 11 F19)**: `status.processed = #7C3AED` (보라)는 *AI 처리 semantic*으로 의도 채택. brand color 아닌 status 카테고리 — ADR-007 변경 없음. trial 11에서 ppt Presentation의 "AI 수정" Button이 임의 hex `#8b5cf6`을 사용하던 anti-pattern을 제거하고 `var(--color-status-processed-text)` token으로 흡수. 다른 host에서 AI/처리 의미 표현 시 이 token 사용 — raw 보라 hex 금지.
+
 ---
 
 ### ADR-008: React peer는 `^18 || ^19` dual 지원 (토스 OSS 표준 + Figma Make Kit 호환)
@@ -796,6 +798,10 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 - **changeset publish 자동 skip 검증**: tokens patch 시 web은 자동 제외.
 
 → 옵션 A 1순위 reaffirm. 사내 진입 시 *URL만 교체*하면 즉시 작동 상태.
+
+**Verdaccio 재기동 보강 (2026-05-19, trial 13 F29)**:
+
+trial 13 사이클 재현 시 `npx verdaccio --listen 14873` 단축 표기가 **IPv6 `::1`만 bind** → `.npmrc`/`publishConfig.registry`의 `127.0.0.1`(IPv4) publish 시 `ECONNREFUSED`. 해결: **`--listen 0.0.0.0:14873`** 명시 (IPv4 + IPv6 둘 다 listen). 사내 서버 셋업 시 `listen: 0.0.0.0:<port>` 또는 명확한 IP 지정 필요 — default `localhost` 단축 표기는 IPv4-only 가정 host에서 실패.
 
 ---
 
