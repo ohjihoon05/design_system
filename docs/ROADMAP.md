@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-18 (M2.b Phase 1+2+4 부분 closure — IconButton + FilterChip + Avatar + ProgressBar + Toast + Modal, atom 14→20. Chromatic(20+) trigger 통과)
+**최종 갱신**: 2026-05-19 (Ladle 도입 ✅ — atom 21개 카탈로그 + 토큰 시각화 23 stories. Phase 21 Tooltip + Phase 22 Ladle 차례 closure)
 
 ---
 
@@ -68,7 +68,7 @@
 | 오버레이 | `Modal` · `Toast` (+ `ToastProvider`/`useToast`) |
 
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
-> → **20 atom 도달**: Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. 도입은 별도 결정. M2.b Phase 1+2+4 부분 closure (2026-05-18).
+> → **21 atom 도달** (Tooltip 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Ladle 도입 완료 (2026-05-19, phase 22)** — `pnpm -F ladle dev`로 atom 카탈로그 + 토큰 시각화 23 stories. Chromatic은 사내 진입 시(CI 의존) 별도.
 
 ---
 
