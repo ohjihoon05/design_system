@@ -109,6 +109,8 @@ pnpm dev
 
 **Stack의 gap/padding은 숫자 index**라는 게 핵심 함정. `gap="md"`가 아니라 `gap={6}` (= 16px).
 
+> 💡 **host 측 spacing 가이드**: row 정렬 시 자식에 `style={{ marginRight: N }}`/`marginLeft` 박지 말고 `<Stack direction="row" gap={N}>`로 wrap하는 게 더 이상적. dogfood F7+F23(trial 8+11) 4회 누적 evidence — host inline px가 반복되면 wrap 후보.
+
 자세한 prop은 IDE의 자동완성 또는 `node_modules/@wonik/web/dist/index.d.ts`. design_system repo 안에서는 `packages/web/src/{컴포넌트}/types.ts`.
 
 ---

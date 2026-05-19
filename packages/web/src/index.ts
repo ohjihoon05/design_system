@@ -108,3 +108,6 @@ export type {
   ModalFooterProps,
   ModalSize,
 } from './Modal/types';
+
+export { Tooltip } from './Tooltip';
+export type { TooltipProps, TooltipOwnProps, TooltipPlacement } from './Tooltip/types';
