@@ -120,3 +120,10 @@ export type {
   InlineEditableTextTrigger,
   InlineEditableTextAs,
 } from './InlineEditableText/types';
+
+export { SortableList } from './SortableList';
+export type {
+  SortableListProps,
+  SortableListDirection,
+  SortableRenderItemArgs,
+} from './SortableList/types';
