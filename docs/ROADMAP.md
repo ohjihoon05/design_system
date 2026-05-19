@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-19 (Ladle 도입 ✅ — atom 21개 카탈로그 + 토큰 시각화 23 stories. Phase 21 Tooltip + Phase 22 Ladle 차례 closure)
+**최종 갱신**: 2026-05-19 (Phase 21 Tooltip · Phase 22 Ladle · Phase 23 InlineEditableText · Phase 24 SortableList 차례 closure — **atom 23 도달**)
 
 ---
 
@@ -54,21 +54,23 @@
 
 ---
 
-## 🧱 Layer A 현재 atom 20개
+## 🧱 Layer A 현재 atom 23개
 
 | 분류 | atom |
 |---|---|
 | 레이아웃 | `Box` · `Stack` · `Text` |
 | 액션 | `Button` · `IconButton` |
-| 입력 | `Input` · `Textarea` |
+| 입력 | `Input` · `Textarea` · `InlineEditableText` |
 | 상태 | `Checkbox` · `Radio` · `Switch` |
 | 로딩 | `Spinner` · `Skeleton` |
 | 표시 | `Card` · `Badge` · `Alert` · `ProgressBar` · `Avatar` |
 | 선택 | `FilterChip` |
-| 오버레이 | `Modal` · `Toast` (+ `ToastProvider`/`useToast`) |
+| 오버레이 | `Modal` · `Toast` · `Tooltip` (+ `ToastProvider`/`useToast`) |
+| 컬렉션 | `SortableList` |
 
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
-> → **21 atom 도달** (Tooltip 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Ladle 도입 완료 (2026-05-19, phase 22)** — `pnpm -F ladle dev`로 atom 카탈로그 + 토큰 시각화 23 stories. Chromatic은 사내 진입 시(CI 의존) 별도.
+> → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Ladle 도입 완료 (2026-05-19, phase 22)** — `pnpm -F ladle dev`로 atom 카탈로그 + 토큰 시각화. Chromatic은 사내 진입 시(CI 의존) 별도.
+> 잔여 M2.b 후보: Tabs(자리 약함 평가), Select(자리 부족).
 
 ---
 
@@ -209,8 +211,10 @@
 | 9 | 2026-05-15 | 시각 정체성 통일 — ppt `data-theme="dark"` 활성화 + hand-rolled dark vars 정리. ADR-009 dual mode 첫 실증 | `dogfood-trial-9.md` |
 | 10 | 2026-05-15 | Outline 통째 재dogfood — trial 4 main 머지 closure + Alert/Badge/Card 첫 적용. Card 4회 evidence 정확 입증 | `dogfood-trial-10.md` |
 | 11 | 2026-05-15 | Presentation 재dogfood — trial 6 미완 청소 + Alert/Input/Textarea + AI 수정 보라 anti-pattern 제거. dashed 3/3 trigger도 격하 reaffirm | `dogfood-trial-11.md` |
+| 12 | 2026-05-15 | Layer B publish & adopt 사이클 — Verdaccio 14873 + Changesets dry run, tokens 0.2.0/web 1.0.0 첫 publish + ppt dual-direction patch (3.7s install) | `dogfood-trial-12.md` |
+| 13 | 2026-05-19 | Phase 23/24 atom의 dogfood closure — InlineEditableText(OutlineCard 인라인 편집 6요소 흡수) + SortableList(Presentation SortableThumbnail ~120줄 흡수). −186 net 라인, ppt에서 dnd-kit 직접 의존 제거. **atom 23 × ppt 4 자리** | `dogfood-trial-13.md` |
 
-→ 누적 11 trial. **Layer A 14 atoms × ppt 3 main 페이지 (Home/Outline/Presentation) 모두 적용 완료.** evidence-driven cycle 한 바퀴 closure(Phase 14 Badge → trial 10 적용) + dashed atom 후보 trigger 후 격하 reaffirm. **Layer A 사이클 마감 선언 가능 상태.**
+→ 누적 13 trial. **Layer A 23 atoms × ppt 3 main 페이지 + 2 sub 자리 모두 적용 완료.** atom 추가 → host 흡수 cycle이 1주기 내(Phase 23→trial 13, Phase 24→trial 13) closure됨. **Layer A 사이클 마감 commit 거리 도달.**
 
 ---
 
