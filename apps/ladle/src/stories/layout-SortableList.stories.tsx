@@ -162,6 +162,63 @@ export const Horizontal = () => {
   );
 };
 
+export const WithAnnounceItem = () => {
+  // id가 UUID-like일 때 스크린리더 발음 개선 — id 대신 의미있는 label로 변환.
+  const [items, setItems] = useState([
+    { id: 'b3f9-a01', name: '시장 분석' },
+    { id: 'b3f9-a02', name: 'WONIK IPS 포지셔닝' },
+    { id: 'b3f9-a03', name: '경쟁 우위' },
+    { id: 'b3f9-a04', name: '로드맵' },
+  ]);
+  return (
+    <Stack gap={3} style={{ maxWidth: 420 }}>
+      <Text variant="labelSm" color="dim">
+        id가 UUID-like일 때 announceItem으로 스크린리더 발음 개선
+      </Text>
+      <Text variant="captionSm" color="dim" style={{ marginTop: -4 }}>
+        기본: "b3f9-a01 항목을 잡았습니다..." → 개선: "슬라이드 1 항목을 잡았습니다..."
+      </Text>
+      <SortableList
+        items={items}
+        getKey={(it) => it.id}
+        announceItem={(id) => {
+          const idx = items.findIndex((it) => it.id === id);
+          return idx >= 0 ? `슬라이드 ${idx + 1}` : id;
+        }}
+        onReorder={(from, to) => {
+          const copy = [...items];
+          const [moved] = copy.splice(from, 1);
+          copy.splice(to, 0, moved);
+          setItems(copy);
+        }}
+        renderItem={(item, idx, args) => (
+          <div
+            ref={args.setNodeRef}
+            style={{
+              ...args.itemStyle,
+              padding: 12,
+              marginBottom: 6,
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 5,
+              cursor: 'grab',
+              display: 'flex',
+              gap: 8,
+              alignItems: 'baseline',
+            }}
+            {...(args.dragHandleProps as object)}
+          >
+            <span style={{ fontFamily: 'monospace', opacity: 0.4, fontSize: 11 }}>
+              {item.id}
+            </span>
+            <span>{item.name}</span>
+          </div>
+        )}
+      />
+    </Stack>
+  );
+};
+
 export const Disabled = () => {
   const [items] = useState(SEED);
   return (
