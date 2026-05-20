@@ -34,7 +34,7 @@ export const Welcome = () => (
       <Stack gap={3}>
         <Text variant="label" weight="medium" color="dark">탐색 안내</Text>
         <Text variant="labelSm" color="secondary">
-          좌측 패널에서 atom 카테고리별로 시각 매트릭스 확인. 우상단 ☀️/🌙 토글로 light/dark 동시 검수.
+          좌측 사이드바에서 atom 카테고리별로 시각 매트릭스 확인. 상단 툴바의 Theme 토글로 light/dark 동시 검수.
         </Text>
       </Stack>
     </Card>

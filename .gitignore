@@ -8,8 +8,8 @@ tsconfig.tsbuildinfo
 dist/
 *.tsbuildinfo
 
-# Ladle catalog static build output
-apps/ladle/build/
+# Storybook static build output
+apps/storybook/storybook-static/
 
 # Tarball pack outputs (dogfood install용 임시 산출물)
 pkg-out/
