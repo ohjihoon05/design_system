@@ -44,4 +44,10 @@ export interface SortableListProps<T> {
   className?: string;
   /** Optional inline style applied to the list container. */
   style?: CSSProperties;
+  /**
+   * Maps an item id to a human-readable label for the Korean screen-reader
+   * announcement. Default echoes the id as-is — pass this when ids are UUIDs
+   * or other non-readable strings so VoiceOver/NVDA don't read them literally.
+   */
+  announceItem?: (id: string) => string;
 }

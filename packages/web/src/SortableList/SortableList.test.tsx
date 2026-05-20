@@ -185,4 +185,13 @@ describe('SortableList', () => {
     expect(screen.getByText('Alpha')).toBeInTheDocument();
     expect(screen.getByText('Bravo')).toBeInTheDocument();
   });
+
+  /* ── announceItem (Korean a11y label override) ────── */
+
+  it('renders with announceItem prop without crashing', () => {
+    const announceItem = vi.fn((id: string) => `슬라이드 ${id}`);
+    render(<Wrap announceItem={announceItem} />);
+    expect(screen.getByText('Alpha')).toBeInTheDocument();
+    expect(screen.getByText('Bravo')).toBeInTheDocument();
+  });
 });

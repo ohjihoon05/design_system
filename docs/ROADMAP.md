@@ -89,7 +89,7 @@
 | doc #2 | AI semantic purple ADR — `--color-status-processed-text: #7C3AED` 의미 확장(AI 처리)을 ADR-007에 짧게 추가 (F19) | 15분 | 중간 |
 | (선택) sub-component dogfood | PromptRefineChat / AiChatPanel — ToggleGroup 추가 evidence 가능성 | 30분~ | 낮음 (Layer A 이미 마감) |
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
-| polish #1 | `SortableList` announcement override prop — 한국어 a11y 문장에 raw `active.id`(UUID 등) 노출되는 한계. host가 의미있는 label(`{label}/{index}` 등) 주입할 수 있게 `announceItem?: (id, items) => string` prop 추가. minor changeset | 30분 | 낮음 (host evidence 1자리, 발음만 어색하지 흐름 동작) |
+| ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
 
 ---
 
