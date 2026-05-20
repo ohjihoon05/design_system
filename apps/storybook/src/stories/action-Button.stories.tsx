@@ -1,3 +1,5 @@
+import type { StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import { Button, Stack, Text } from '@wonik/web';
 
 export default { title: 'action/Button' };
@@ -42,3 +44,14 @@ export const Disabled = () => (
     <Button variant="text" disabled>Disabled</Button>
   </Stack>
 );
+
+// 디자인 토큰 CSS가 테스트 브라우저에 실제로 로드됐는지 검증하는 단 하나의 story.
+// primary 배경 = var(--color-primary) = WONIK BLUE #273E82 = rgb(39, 62, 130).
+// @wonik/tokens 의 tokens.css 가 로드 안 되면 var() 가 풀리지 않아 이 단언이 실패한다.
+export const CssCheck: StoryObj<typeof Button> = {
+  render: () => <Button variant="primary">Submit</Button>,
+  play: async ({ canvas }) => {
+    const button = canvas.getByRole('button', { name: /submit/i });
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(39, 62, 130)');
+  },
+};

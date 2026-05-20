@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import type { StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import { Modal, Button, Stack, Text } from '@wonik/web';
 
 export default { title: 'overlay/Modal' };
@@ -99,4 +101,30 @@ export const NoCloseOnBackdrop = () => {
       </Modal>
     </>
   );
+};
+
+// 트리거 클릭 → modal 이 열려 dialog 가 나타나는지 검증.
+export const OpensOnClick: StoryObj<typeof Modal> = {
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Open modal</Button>
+        <Modal isOpen={open} onClose={() => setOpen(false)} title="Basic modal">
+          <Modal.Body>
+            <Text variant="label" color="dark">play 함수로 열림을 검증하는 modal.</Text>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="text" onClick={() => setOpen(false)}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  },
+  play: async ({ canvas, canvasElement, userEvent }) => {
+    await userEvent.click(canvas.getByRole('button', { name: /open modal/i }));
+    // Modal 은 document.body 로 portal → canvas 밖. ownerDocument 로 조회.
+    const dialog = await within(canvasElement.ownerDocument.body).findByRole('dialog');
+    await expect(dialog).toBeVisible();
+  },
 };

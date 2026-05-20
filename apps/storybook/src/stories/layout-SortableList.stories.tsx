@@ -65,7 +65,7 @@ export const WithCustomHandle = () => {
           copy.splice(to, 0, moved);
           setItems(copy);
         }}
-        renderItem={(item, idx, args) => (
+        renderItem={(item, _idx, args) => (
           <div
             ref={args.setNodeRef}
             style={{
@@ -136,7 +136,7 @@ export const Horizontal = () => {
           setItems(copy);
         }}
         style={{ display: 'flex', gap: 8 }}
-        renderItem={(item, idx, args) => (
+        renderItem={(item, _idx, args) => (
           <div
             ref={args.setNodeRef}
             style={{
@@ -175,7 +175,7 @@ export const WithAnnounceItem = () => {
       <Text variant="labelSm" color="dim">
         id가 UUID-like일 때 announceItem으로 스크린리더 발음 개선
       </Text>
-      <Text variant="captionSm" color="dim" style={{ marginTop: -4 }}>
+      <Text variant="micro" color="dim" style={{ marginTop: -4 }}>
         기본: "b3f9-a01 항목을 잡았습니다..." → 개선: "슬라이드 1 항목을 잡았습니다..."
       </Text>
       <SortableList
@@ -191,7 +191,7 @@ export const WithAnnounceItem = () => {
           copy.splice(to, 0, moved);
           setItems(copy);
         }}
-        renderItem={(item, idx, args) => (
+        renderItem={(item, _idx, args) => (
           <div
             ref={args.setNodeRef}
             style={{
@@ -229,7 +229,7 @@ export const Disabled = () => {
         getKey={(it) => it.id}
         disabled
         onReorder={() => {}}
-        renderItem={(item, idx, args) => (
+        renderItem={(item, _idx, args) => (
           <div
             ref={args.setNodeRef}
             style={{
