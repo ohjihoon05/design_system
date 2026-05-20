@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-19 (Layer A 마지막 폴리시 패스 완료 — **Layer A 완벽 상태 도달**. trial 13으로 atom 23 dogfood closure + 인디고 잔재 제거 + atom 후보 4종 동결 + F30 publish 정책 정착. Layer B 진입 준비 완료, 사내 URL 결정만 대기)
+**최종 갱신**: 2026-05-20 (Layer A polish #1 closure — `SortableList` announceItem prop 추가, web 331 tests, changeset minor 대기. 직전 2026-05-19 마감의 hygiene 후속 패스. Layer B 진입 준비 완료, 사내 URL 결정만 대기)
 
 ---
 
