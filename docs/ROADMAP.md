@@ -89,6 +89,7 @@
 | doc #2 | AI semantic purple ADR — `--color-status-processed-text: #7C3AED` 의미 확장(AI 처리)을 ADR-007에 짧게 추가 (F19) | 15분 | 중간 |
 | (선택) sub-component dogfood | PromptRefineChat / AiChatPanel — ToggleGroup 추가 evidence 가능성 | 30분~ | 낮음 (Layer A 이미 마감) |
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
+| polish #1 | `SortableList` announcement override prop — 한국어 a11y 문장에 raw `active.id`(UUID 등) 노출되는 한계. host가 의미있는 label(`{label}/{index}` 등) 주입할 수 있게 `announceItem?: (id, items) => string` prop 추가. minor changeset | 30분 | 낮음 (host evidence 1자리, 발음만 어색하지 흐름 동작) |
 
 ---
 
@@ -228,5 +229,5 @@
   - Layer B 결정: **018** (지금 시야 외, 마지막 phase에 다시 진입)
 - host 사용 가이드: [`QUICKSTART.md`](./QUICKSTART.md)
 - 외부 install 가이드: [`INSTALL.md`](./INSTALL.md)
-- dogfood 사이클: `dogfood-trial-1.md` ~ `dogfood-trial-11.md` (+ trial-3-recapture)
+- dogfood 사이클: `dogfood-trial-1.md` ~ `dogfood-trial-13.md` (+ trial-3-recapture)
 - 옵시디언 메타인지 노트: `Knowledge-Gaps/Design-System/`
