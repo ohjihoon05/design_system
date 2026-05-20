@@ -6,5 +6,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", ".ladle"]
+  "include": ["src", ".storybook"]
 }

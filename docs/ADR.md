@@ -904,6 +904,6 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 
 - [x] `radius.panelHeader` 제거 (`spacing.ts`, `build-css.ts`, `UI_GUIDE.md`).
 - [x] `docs/TOKEN_DTCG_COMPAT.md` 작성 — 매핑표 + 예외.
-- [x] `apps/ladle/build/` gitignore 처리 (관련 cleanup, 별 이슈는 아님).
+- [x] 카탈로그 static build output(`apps/storybook/storybook-static/`) gitignore 처리 (관련 cleanup, 별 이슈는 아님).
 - [ ] 새 토큰 PR 리뷰 시 본 ADR 룰 1·2·3 check.
 - [ ] DTCG 변환기는 외부 trigger 시(Figma Variables / Style Dictionary / 사외 디자이너 요청) 그때 작성.

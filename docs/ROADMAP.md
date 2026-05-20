@@ -71,7 +71,7 @@
 | 컬렉션 | `SortableList` |
 
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
-> → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Ladle 도입 완료 (2026-05-19, phase 22)** — `pnpm -F ladle dev`로 atom 카탈로그 + 토큰 시각화. Chromatic은 사내 진입 시(CI 의존) 별도.
+> → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Storybook 카탈로그 (phase 22 Ladle 도입 → 2026-05-20 Storybook 교체)** — `pnpm -F storybook-app dev`로 atom 카탈로그 + 토큰 시각화 + a11y addon. Chromatic은 사내 진입 시(CI 의존) 별도.
 > 잔여 M2.b 후보: Tabs(자리 약함 평가), Select(자리 부족).
 
 ---
