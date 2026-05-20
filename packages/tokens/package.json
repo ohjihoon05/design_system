@@ -1,6 +1,6 @@
 {
   "name": "@wonik/tokens",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "WONIK IPS Design System — 디자인 토큰 (색·타이포·spacing·radius). WARP 시안에서 추출한 base + 공식 CI brand color.",
   "license": "UNLICENSED",
   "repository": {
@@ -28,7 +28,7 @@
   ],
   "publishConfig": {
     "access": "restricted",
-    "registry": "https://npm.pkg.github.com/RESOLVE_BEFORE_PUBLISH"
+    "registry": "http://127.0.0.1:14873/"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts",

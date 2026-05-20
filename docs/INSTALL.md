@@ -33,7 +33,9 @@ pnpm add @wonik/web @wonik/tokens
 # yarn: yarn add @wonik/web @wonik/tokens
 ```
 
-`@wonik/web`는 `@wonik/tokens`를 peer 의존성으로 명시한다(`^0.1.0`). host product가 직접 install하는 것이 표준이며, 토큰 CSS를 import해 cascade 기본값을 활성화하기 위해 필요.
+> ⚠️ **두 패키지 모두 host에서 직접 install 필수** (ADR-019 peer-only contract). `@wonik/web`만 install해도 `@wonik/tokens`는 자동으로 따라오지 **않습니다** — peer 의존성이라 host가 명시해야 함. 이는 토스 TDS / Material UI / Radix UI 등이 채택한 표준 패턴.
+
+`@wonik/web`는 `@wonik/tokens`를 peer 의존성으로 명시한다(`^0.1.0`). host가 토큰 CSS를 import해 cascade 기본값을 활성화하기 위해서도 host install이 필요.
 
 React 18·19 dual peer 지원. host product의 React 버전 그대로 사용 (별도 dedupe 불필요).
 

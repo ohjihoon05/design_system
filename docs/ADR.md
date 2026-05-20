@@ -60,6 +60,8 @@
 **이유**: (a) 회사 공식 brand 가이드가 실재하므로 자체 결정보다 공식 source가 우선. WONIK BLUE는 "future, youth, vitality"를, WONIK GRAY는 "advanced technology foundation"을 상징. 사내 프로덕트가 이 brand 위에서 일관되게 보이려면 단 하나의 정확한 hex만 통용돼야 한다. (b) 자산 CSS의 `#273D7F`는 사용자가 공식 brand로 마이그레이션 시도하던 잔재였고 G/B 채널이 약간 drift된 상태였다 — 이 PR로 정확한 값으로 통일. (c) 컴포넌트 코드에 사용 중인 `#2B7FFF`는 구 brand color로, 정리 대상.
 **트레이드오프**: (1) 모든 컴포넌트(`StatusIndicator`, `Toolbar`, `DataPanel` 등)의 hex 일괄 변경. (2) Derived primary 토큰(`--color-primary-bg`, `--color-primary-stroke`, `--color-primary-pale`, `--color-primary-selected`)을 새 base에서 다시 계산해 보정. (3) `--color-primary`가 status용 도트·텍스트 색에도 쓰이므로(예: Run 상태) 새 색의 contrast/가독성 재검토 필요 — `#273E82`는 RGB 채널 합이 `#2B7FFF`보다 훨씬 어두워 light 배경 위 가독성은 유리하지만 dark toolbar 위 active state 강조도는 떨어질 수 있음. (4) Status semantic colors (ok=green, warn=amber, alarm=red, init=yellow, processed=purple)는 brand color가 아니므로 변경 없음.
 
+**보강 (2026-05-15, trial 11 F19)**: `status.processed = #7C3AED` (보라)는 *AI 처리 semantic*으로 의도 채택. brand color 아닌 status 카테고리 — ADR-007 변경 없음. trial 11에서 ppt Presentation의 "AI 수정" Button이 임의 hex `#8b5cf6`을 사용하던 anti-pattern을 제거하고 `var(--color-status-processed-text)` token으로 흡수. 다른 host에서 AI/처리 의미 표현 시 이 token 사용 — raw 보라 hex 금지.
+
 ---
 
 ### ADR-008: React peer는 `^18 || ^19` dual 지원 (토스 OSS 표준 + Figma Make Kit 호환)
@@ -733,7 +735,8 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 1. **메타데이터** — 두 패키지 `package.json`에 description / repository / homepage / license(`UNLICENSED`) / version(`0.1.0`) / publishConfig.access(`restricted`) / sideEffects / files(`["dist"]`) 추가. `private: true` 제거.
 2. **publish 가드** — `prepublishOnly: "pnpm build && pnpm test"` — 깨진 artifact publish 불가.
 3. **placeholder URL 방어** — publishConfig.registry가 명백한 placeholder(`RESOLVE_BEFORE_PUBLISH`)이므로 실수 publish 시 404 즉시 fail. 결정 후 교체 필수.
-4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). dependency도 유지(workspace:*는 publish 시 자동 변환). host가 직접 token CSS를 import해 cascade 활성화 가능.
+4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). ~~dependency도 유지(workspace:*는 publish 시 자동 변환).~~ host가 직접 token CSS를 import해 cascade 활성화 가능.
+   > **🔄 Superseded by ADR-019 (2026-05-15)**: trial 7 dogfood(ppt 0.0.0 → 0.1.0 마이그레이션)에서 `dependencies."@wonik/tokens"` 유지가 `ERR_PNPM_FETCH_404`를 유발함을 확인. 사내 npm registry 미정 상태에서는 broken contract. ADR-019에서 `dependencies` 제거 + `devDependencies` (`workspace:*`)로 dev link만 보존하는 peer-only 패턴으로 변경.
 5. **install 가이드** — `docs/INSTALL.md` 신설 (인증 / install / import / cascade override / FAQ).
 6. **`.npmrc.example` + `.gitignore`** — 실제 token이 git history에 남지 않도록 보호.
 
@@ -780,3 +783,127 @@ Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/T
 5. ppt가 published 버전으로 install 전환 → dual-direction 입증
 6. (선택) CI 자동 publish workflow
 
+**Verdaccio dry run 보강 (2026-05-15, trial 12)**:
+
+집에서 Verdaccio(localhost:14873)로 옵션 A 흐름을 *전체 cycle* 시뮬레이션 완료. 사용자 통찰("집에 구성을 회사에서 할 수 있는 것처럼 할 수 있잖아? 나 컴퓨터 안 꺼")에서 출발. 자세한 결과는 `docs/dogfood-trial-12.md`. 핵심:
+
+- 8 step 한 바퀴 (Verdaccio setup → 첫 publish → ppt install → dual-direction patch) 모두 성공.
+- 첫 publish: `@wonik/tokens@0.2.0` + `@wonik/web@1.0.0`. 누적 8개 changeset 적용 결과(F28).
+- ppt 마이그레이션: `file:vendor/...tgz` → `^0.2.0`/`^1.0.0` (3.7초). dual-direction patch 0.2.1: `pnpm update` 1.5초.
+- **사내 진입 시 교체 위치 = 정확히 2 곳**:
+  - `design_system/.npmrc`의 `@wonik:registry=...` + `_authToken`
+  - `tokens/web/package.json`의 `publishConfig.registry`
+- Verdaccio 표준 4873은 Windows excluded port range(4866-4965)에 잡혀 14873 사용. 사내 서버는 다른 머신이라 무관.
+- **ADR-019 peer-only contract publish 시도 정합 입증**: web의 `@wonik/tokens` peer가 publish 과정에서 `^0.1.0` → `^0.2.0`으로 자동 caret 갱신.
+- **changeset publish 자동 skip 검증**: tokens patch 시 web은 자동 제외.
+
+→ 옵션 A 1순위 reaffirm. 사내 진입 시 *URL만 교체*하면 즉시 작동 상태.
+
+**Verdaccio 재기동 보강 (2026-05-19, trial 13 F29)**:
+
+trial 13 사이클 재현 시 `npx verdaccio --listen 14873` 단축 표기가 **IPv6 `::1`만 bind** → `.npmrc`/`publishConfig.registry`의 `127.0.0.1`(IPv4) publish 시 `ECONNREFUSED`. 해결: **`--listen 0.0.0.0:14873`** 명시 (IPv4 + IPv6 둘 다 listen). 사내 서버 셋업 시 `listen: 0.0.0.0:<port>` 또는 명확한 IP 지정 필요 — default `localhost` 단축 표기는 IPv4-only 가정 host에서 실패.
+
+**Publish prep 체크리스트 (2026-05-19, trial 13 F30)**:
+
+trial 13 publish 시 web `1.0.0 → 2.0.0` major 점프 관찰. 누적 7개 changeset 모두 minor 확인 (config의 `linked`/`fixed`/`linked` 빈 상태). 원인 가설 — changesets의 stable 1.0.0 이후 minor 누적 합산 동작 또는 추적 못 한 deleted changeset. 본질 원인 진단은 시간 비용 大 → 정책으로 정착:
+
+**Layer B 진입 전 publish prep 표준 절차**:
+1. `pnpm changeset status` 실행 — 예상 bump 사전 확인 (각 패키지 현재 → 다음 version 출력)
+2. 의도 외 major 발견 시 `.changeset/*.md` frontmatter 정정 후 retry
+3. dry-run 가능: `pnpm changeset version --snapshot dry-run` (실제 파일 수정 없음)
+
+**Semver 연속성보다 신뢰 우선**: 1.x → 2.x 한 라인 건너뛴 비용 수용. semver는 *최대 신뢰* 표기이지 *연속성 보장*이 아님. 단 의도 외 major는 host product에 caret semver 자동 흡수 안 됨(major bump는 명시 update 필요) → 반드시 사전 확인.
+
+---
+
+## ADR-019 — `@wonik/web` packaging: peer-only token contract (Supersedes ADR-018 #4 일부)
+
+**날짜**: 2026-05-15
+**상태**: 결정 완료. 구현 + ppt dogfood trial 7로 검증.
+
+**Context**:
+
+ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **peer + dependency 둘 다** 두는 패턴을 채택했다. 동기는 "peer는 host에 install을 요구, dependency는 monorepo workspace dev 시점 link". `workspace:*`는 publish 시 자동 변환된다고 가정.
+
+2026-05-15 dogfood trial 7(ppt에 `@wonik/web` 0.0.0 → 0.1.0 마이그레이션)에서 이 가정이 깨짐:
+
+- `pnpm pack`이 `workspace:*` → `0.1.0`으로 변환은 정상.
+- 그러나 ppt에서 `pnpm install` 시 pnpm이 `@wonik/tokens@0.1.0`을 **공개 npm registry에서** lookup → `ERR_PNPM_FETCH_404` 즉시 fail.
+- 사내 npm registry 미정 상태(layer B 결정 보류)에서는 dependency 선언 자체가 broken contract. host의 `pnpm.overrides`로 우회 가능하나 변칙적 + lockfile cache와 충돌.
+
+**결정**:
+
+`@wonik/web`은 `@wonik/tokens`를 **`peerDependencies` + `devDependencies` 조합으로만** 선언한다. `dependencies` 섹션에서 제거.
+
+```json
+{
+  "peerDependencies": {
+    "@wonik/tokens": "^0.1.0"
+  },
+  "devDependencies": {
+    "@wonik/tokens": "workspace:*"
+  }
+  // dependencies에서 @wonik/tokens 제거
+}
+```
+
+**효과**:
+
+1. **host 계약 명시화**: `@wonik/web`을 받는 host는 누구든 `@wonik/tokens`를 직접 install해야 한다는 강제. 이는 토스 TDS / Material UI / Radix UI / shadcn 등 모든 진짜 design system이 채택한 패턴.
+2. **dev 시점 동작 보존**: monorepo 안에서는 `devDependencies`의 `workspace:*`로 link되어 `@wonik/web` 내부에서 `@wonik/tokens` import 정상 동작. `devDependencies`는 tarball에 포함되지 않음(pnpm pack 표준 동작) — host 영향 없음.
+3. **registry 무관**: host가 tokens를 어떤 경로(file: / sha-pinned / 사내 registry)로 install하든 web은 신경쓰지 않음. layer B 옵션 결정과 독립적으로 동작.
+4. **lockfile 충돌 제거**: pnpm.overrides 같은 우회 메커니즘 불필요. ppt도 평범한 dependency 두 개로 정상화.
+
+**검증**:
+
+- design_system: `pnpm install` 통과(monorepo 안 web 내부 import 동작) + `pnpm -F @wonik/web build` 통과 + sandbox 정상 동작 (`apps/web-sandbox`).
+- packed tarball: `tar -xzOf wonik-web-0.1.0.tgz package/package.json` → `dependencies` 섹션 부재, `peerDependencies.@wonik/tokens: ^0.1.0`만 존재.
+- ppt: `pnpm install` 통과(`+ @wonik/tokens 0.1.0 / + @wonik/web 0.1.0`) + `pnpm dev` HMR 통과 + Alert 첫 import 동작.
+
+**Trade-offs / 위험**:
+
+- **R1 host가 tokens install 누락**: pnpm이 unmet peer warning 출력. ESLint/TS 단계까지 가면 import 자체 실패로 즉시 발견. host 인지 비용 ↑이지만 명시적이라 실수 적음.
+- **R2 tokens 버전 불일치**: host가 `@wonik/tokens@0.0.5`처럼 낮은 버전 install하면 cascade 변수 부재로 시각 깨짐. peer range `^0.1.0`이 minimum 보장.
+- **R3 ADR-018 문서 drift**: ADR-018 항목 #4의 "dependency도 유지" 문구가 본 ADR과 모순. ADR-018은 history로 유지하되 본 ADR이 supersede 명시. INSTALL.md / QUICKSTART.md도 갱신 필요.
+
+**거부된 대안**:
+
+1. **`pnpm.overrides` 영구 사용**: trial 7에서 lockfile cache와 충돌하며 깨짐. 변칙적, host 인지 비용 동일하면서 실수 여지 ↑.
+2. **`bundledDependencies` 로 tokens 함께 packing**: tarball 크기 ↑, 토큰 변경 시 web도 매번 재pack 필요, host가 cascade 위해 별도 import 불가능.
+3. **공개 npm registry에 tokens 먼저 publish**: 사내 IP 노출(ADR-018 거부 대안 #1과 동일 사유).
+
+**후속 변경 항목**:
+
+- [ ] `docs/INSTALL.md` 갱신: host에서 `@wonik/tokens`도 명시적 `pnpm add` 필요 명시.
+- [ ] `docs/QUICKSTART.md` 갱신: 같은 반영.
+- [ ] ADR-018 항목 #4에 본 ADR-019 supersede 마커 추가 (별도 commit).
+- [ ] sandbox `package.json`은 이미 토스 패턴(`@wonik/tokens` 직접 dep)이라 변경 불필요.
+
+---
+
+### ADR-020: DTCG JSON 미채택, 토큰 구조만 1:1 매핑 호환 유지
+**결정**: 토큰을 [DTCG (Design Tokens Community Group) draft format](https://tr.designtokens.org/format/) JSON으로 emit하거나 변환 스크립트를 작성하지 **않는다**. 다만 `packages/tokens/src/theme-light.ts`·`theme-dark.ts`의 raw hex source 구조를 **DTCG와 1:1 매핑 가능한 형태로 유지**한다. 변환이 필요해질 때(예: Figma Variables import, Style Dictionary 도입, 사외 디자이너 협업 도구 연결) 30분 내 변환기를 작성할 수 있는 형태가 보장된다. 운영 가이드는 [`docs/TOKEN_DTCG_COMPAT.md`](./TOKEN_DTCG_COMPAT.md) 참조.
+
+**이유**: (a) **YAGNI** — 현재 consumer가 ppt 하나뿐인 단계에서 DTCG JSON publish는 사용처 없음. 변환 스크립트 작성·테스트·CI 시간보다 매핑 호환만 보장하는 게 비용 1/10. (b) **미래 호환 비용 0** — 구조가 1:1 매핑되면 변환은 mechanical `Object.fromEntries` loop이라 30분 작업. 지금 안 만들어도 잃을 게 없다. (c) **외부 도구 trigger 시 신속 대응** — Figma Variables가 DTCG import 지원하거나, 사외 디자이너가 Style Dictionary 워크플로우를 요청하는 순간 즉시 만들 수 있도록 길만 열어둠. (d) **구조 깨짐을 사전 차단** — 본 ADR이 없으면 future tokens에 `'10px 10px 0 0'` 같은 shorthand나 `\`${x}px\`` 합성 값이 들어가 매핑이 깨질 수 있음. 룰을 박아두면 추가 시 자연스럽게 leaf 1개 = $value 1개를 지키게 됨.
+
+**룰 (간략)**:
+1. Source-of-truth = `theme-light.ts` + `theme-dark.ts`의 raw hex object. `colors.ts`/`status.ts`/`graph.ts`의 `var(--color-X)` runtime export는 DTCG source 아님.
+2. Leaf 1개 = $value 1개. shorthand 값(`'10px 10px 0 0'`), template literal 합성(`\`${a}px\``) 금지.
+3. 한 group 안에 같은 `$type`만 (color group 전부 color, dimension group 전부 dimension).
+4. theme-light / theme-dark는 키셋 **1:1** 유지 (DTCG `$themes`로 publish할 때 양쪽이 같은 path를 가져야 함).
+
+**예외 (변환 시 special-case 1줄로 처리)**:
+- `fontFamily.base`: comma-separated string(`"'Segoe UI', 'Inter', system-ui, sans-serif"`)으로 유지. DTCG는 array를 기대하지만, CSS `font-family` property가 comma-separated string을 그대로 받기 때문에 소스 안정성을 우선. 변환기는 `.split(',').map(trim+unquote)` 1줄로 array 생성.
+
+**트레이드오프**: (1) Figma Variables가 갑자기 DTCG import를 정식 지원해도 즉시 publish 불가 — 변환기 작성 30분 + CI 연결 작업 필요. 다만 길은 열려있음. (2) `radius.panelHeader`처럼 dead token이 shorthand로 들어와있던 케이스는 본 ADR 시점에 제거 (사용처 0).
+
+**Supersedes/Affects**:
+- 본 ADR을 인지하지 않은 채로 추가된 dead token `radius.panelHeader` 제거 (consumer 0개 확인 후).
+
+**후속 변경 항목**:
+
+- [x] `radius.panelHeader` 제거 (`spacing.ts`, `build-css.ts`, `UI_GUIDE.md`).
+- [x] `docs/TOKEN_DTCG_COMPAT.md` 작성 — 매핑표 + 예외.
+- [x] `apps/ladle/build/` gitignore 처리 (관련 cleanup, 별 이슈는 아님).
+- [ ] 새 토큰 PR 리뷰 시 본 ADR 룰 1·2·3 check.
+- [ ] DTCG 변환기는 외부 trigger 시(Figma Variables / Style Dictionary / 사외 디자이너 요청) 그때 작성.
