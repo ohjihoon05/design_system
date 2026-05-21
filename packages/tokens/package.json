@@ -33,8 +33,8 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts",
     "test": "echo 'no tests yet'",
-    "lint": "echo 'no lint yet'",
-    "prepublishOnly": "pnpm build && pnpm test"
+    "lint": "eslint src",
+    "prepublishOnly": "pnpm lint && pnpm build && pnpm test"
   },
   "devDependencies": {
     "tsup": "^8.3.5",

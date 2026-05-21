@@ -1029,3 +1029,21 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - 장비 상태색 `Idle`~`Sleep2`·`Color1`~`None` (~41개) — 충돌 4·5 기결정대로 **보류**.
 
 **제약 준수**: 새 토큰 추가 → Changeset minor(ADR-020 룰). 각 leaf = `$value` 1개, group당 동일 `$type`(전부 color) → DTCG 1:1 호환(ADR-020). key set은 light↔dark 1:1.
+
+---
+
+### ADR-026: ESLint 도입 — flat config + recommended 룰셋
+**결정**: 그동안 `echo 'no lint yet'` placeholder였던 `@wonik/tokens`·`@wonik/web`의 lint 스크립트를 실제 ESLint 실행으로 교체한다. 루트에 ESLint flat config(`eslint.config.mjs`) 하나를 두고 **검증된 recommended 룰셋만** 채택한다 — `@eslint/js` recommended + `typescript-eslint` recommended(non-type-checked) + `eslint-plugin-react-hooks`의 `rules-of-hooks`(error)·`exhaustive-deps`(warn). 루트 `lint`는 `eslint .`, 각 패키지 `lint`는 `eslint src`.
+
+**이유**: (a) 디자인 시스템은 남이 import해 쓰는 패키지인데 정적 검사가 0이었다 — placeholder lint는 CI 게이트로서 무의미. (b) **recommended 세트만 채택 = 룰을 직접 만들지 않는다.** 1인 유지보수 원칙(본 문서 철학 §3) — 커스텀 룰셋 관리 부담 회피. (c) flat config 1개를 루트에 두면 monorepo 전체를 `eslint .` 한 번으로 검사 — 패키지별 config 복제 없음. (d) type-checked 룰(`recommendedTypeChecked`)은 **의도적으로 제외** — `parserOptions.project` 배선이 필요하고 느리다. 첫 도입은 단순·빠르게, 타입 안전은 이미 `tsc strict`가 담당.
+
+**도입 결과**: `@wonik/tokens`·`@wonik/web` src — 에러 0(무수정 통과, 코드 품질 방증). monorepo 전체 — 에러 1건(`apps/storybook` `overlay-Modal.stories.tsx`의 story `render`가 소문자 함수 안에서 `useState` 호출 → `rules-of-hooks` 위반). hook을 `OpensOnClickStory` 컴포넌트로 추출해 해소. 현재 `eslint .` green.
+
+**제약/범위**: ESLint 10 / typescript-eslint 8 / eslint-plugin-react-hooks 7, 루트 devDependencies. `react-hooks`는 플러그인 버전별 `configs` 형태 차이에 영향받지 않도록 핵심 2룰만 직접 지정. ignore: `dist`·`storybook-static`·`*.d.ts`·`pkg-out`·WARP 시안 폴더(ADR-004 reference-only)·`color_token`·`.gstack`. `eslint-plugin-react`(stylistic)는 미채택 — 실버그 차단은 `react-hooks`로 충분, 스타일 룰은 과함. 토큰/컴포넌트 변경이 아니므로 Changeset 불필요(chore).
+
+**후속 변경 항목**:
+- [x] `eslint.config.mjs` + 루트 devDeps + lint 스크립트 3개(루트·web·tokens) 실제화.
+- [x] storybook story 1건 `rules-of-hooks` 위반 수정.
+- [x] `prepublishOnly`에 `pnpm lint` 추가 — `@wonik/web`·`@wonik/tokens` publish 게이트로 승격 완료.
+- [ ] pre-commit hook 또는 CI에서 `pnpm lint` 자동 실행 — 현재 `.github/` CI 없음. 도입은 ADR 철학 §3(자동화 전 단순함) 고려한 별도 결정.
+- [ ] 안정화 후 type-checked 룰 / `eslint-plugin-storybook` 도입 검토.
