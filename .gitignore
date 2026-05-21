@@ -8,8 +8,12 @@ tsconfig.tsbuildinfo
 dist/
 *.tsbuildinfo
 
+# Storybook static build output
+apps/storybook/storybook-static/
+
 # Tarball pack outputs (dogfood install용 임시 산출물)
 pkg-out/
+*.tgz
 
 # pnpm
 .pnpm-store/
@@ -42,5 +46,10 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# npm registry auth token — .npmrc.example만 commit, 실제 token 금지
+.npmrc
+
 # Claude
 .claude/settings.local.json
+.claude/ralph-loop.local.md
+.claude/scheduled_tasks.lock

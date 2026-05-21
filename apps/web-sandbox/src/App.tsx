@@ -3,6 +3,7 @@ import {
   Button, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
   Spinner, Skeleton,
+  Card, Badge, Alert,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -11,6 +12,8 @@ import type {
   InputSize,
   CheckboxSize, SwitchSize, RadioSize,
   SpinnerSize,
+  CardVariant, CardPadding,
+  BadgeVariant,
 } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -30,6 +33,15 @@ const checkboxSizes: CheckboxSize[] = ['sm', 'md', 'lg'];
 const switchSizes: SwitchSize[] = ['sm', 'md', 'lg'];
 const radioSizes: RadioSize[] = ['sm', 'md', 'lg'];
 const spinnerSizes: SpinnerSize[] = ['sm', 'md', 'lg'];
+const cardVariants: CardVariant[] = ['surface', 'elevated'];
+const cardPaddings: CardPadding[] = ['none', 'sm', 'md', 'lg'];
+const badgeVariants: BadgeVariant[] = ['neutral', 'primary'];
+const badgeSamples: { label: string; content: string }[] = [
+  { label: 'short label', content: 'layout' },
+  { label: 'count number', content: '8장' },
+  { label: 'single digit', content: '1' },
+  { label: 'mixed', content: 'Draft v1.0' },
+];
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -47,7 +59,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            11 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton) + form 합성 + light/dark 테마.
+            14 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge / Alert) + form 합성 + light/dark 테마.
           </Text>
         </Stack>
         <ThemeToggle />
@@ -72,7 +84,96 @@ export function App() {
       <SkeletonMatrixSection />
       <LoadingScenarioSection />
 
+      {/* phase 12 — Card */}
+      <CardMatrixSection />
+
+      {/* phase 14 — Badge */}
+      <BadgeMatrixSection />
+
+      {/* phase 16 — Alert */}
+      <AlertMatrixSection />
+
       <BeforeAfterSection />
+    </Stack>
+  );
+}
+
+function AlertMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Alert</Text>
+      <Text color="secondary" variant="labelSm">
+        error-only 단일 variant (Trial 4+5+6 누적 3회 evidence). onDismiss 제공 시 × 닫기 버튼 자동 렌더. role="alert" 강제 (screen reader 알림).
+      </Text>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">짧은 메시지 — dismiss 없음</Text>
+        <Alert>네트워크 오류</Alert>
+      </Stack>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">짧은 메시지 — dismiss 있음</Text>
+        <Alert onDismiss={() => console.log('dismissed')}>네트워크 연결 실패</Alert>
+      </Stack>
+      <Stack direction="column" gap={3}>
+        <Text variant="label" color="secondary" as="h3">긴 메시지 — dismiss 있음</Text>
+        <Alert onDismiss={() => console.log('dismissed')}>
+          서버에서 응답을 받지 못했습니다. 잠시 후 다시 시도해주세요. 문제가 계속 발생하면 관리자에게 문의하세요.
+        </Alert>
+      </Stack>
+    </Stack>
+  );
+}
+
+function BadgeMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Badge</Text>
+      <Text color="secondary" variant="labelSm">
+        variant 2 × 컨텐츠 4 = 8셀. neutral은 subtle label (Trial 4 OutlineCard layout 패턴), primary는 attention count/tag (Trial 5 Home slideCount 패턴). 단일 sm 크기.
+      </Text>
+      {badgeVariants.map((variant) => (
+        <Stack key={variant} direction="column" gap={3}>
+          <Text variant="label" color="secondary" as="h3">{variant}</Text>
+          <Stack direction="row" align="center" gap={5} style={{ flexWrap: 'wrap' }}>
+            {badgeSamples.map((sample) => (
+              <Stack key={sample.label} direction="column" gap={2} align="start">
+                <Badge variant={variant}>{sample.content}</Badge>
+                <Text variant="labelSm" color="secondary">{sample.label}</Text>
+              </Stack>
+            ))}
+          </Stack>
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
+
+function CardMatrixSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Card</Text>
+      <Text color="secondary" variant="labelSm">
+        variant 2 × padding 4 = 8개 조합. surface는 1px border, elevated는 light에서 약한 그림자(dark에선 그림자 0 — ADR-009 정신).
+      </Text>
+      {cardVariants.map((variant) => (
+        <Stack key={variant} direction="column" gap={3}>
+          <Text variant="label" color="secondary" as="h3">{variant}</Text>
+          <Stack direction="row" align="start" gap={5} style={{ flexWrap: 'wrap' }}>
+            {cardPaddings.map((padding) => (
+              <Card
+                key={padding}
+                variant={variant}
+                padding={padding}
+                style={{ minWidth: 160 }}
+              >
+                <Stack direction="column" gap={2}>
+                  <Text variant="label" weight="medium">{variant}/{padding}</Text>
+                  <Text color="secondary" variant="labelSm">Card content</Text>
+                </Stack>
+              </Card>
+            ))}
+          </Stack>
+        </Stack>
+      ))}
     </Stack>
   );
 }
@@ -428,7 +529,7 @@ function FormExampleSection() {
               placeholder="예: ATM-3000"
             />
             {nameInvalid && (
-              <Text variant="labelSm" color="brand" weight="medium" style={{ color: '#CC0000' }}>
+              <Text variant="labelSm" weight="medium" style={{ color: 'var(--color-status-alarm-text)' }}>
                 장비 이름은 필수입니다.
               </Text>
             )}

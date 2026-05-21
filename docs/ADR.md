@@ -60,6 +60,8 @@
 **이유**: (a) 회사 공식 brand 가이드가 실재하므로 자체 결정보다 공식 source가 우선. WONIK BLUE는 "future, youth, vitality"를, WONIK GRAY는 "advanced technology foundation"을 상징. 사내 프로덕트가 이 brand 위에서 일관되게 보이려면 단 하나의 정확한 hex만 통용돼야 한다. (b) 자산 CSS의 `#273D7F`는 사용자가 공식 brand로 마이그레이션 시도하던 잔재였고 G/B 채널이 약간 drift된 상태였다 — 이 PR로 정확한 값으로 통일. (c) 컴포넌트 코드에 사용 중인 `#2B7FFF`는 구 brand color로, 정리 대상.
 **트레이드오프**: (1) 모든 컴포넌트(`StatusIndicator`, `Toolbar`, `DataPanel` 등)의 hex 일괄 변경. (2) Derived primary 토큰(`--color-primary-bg`, `--color-primary-stroke`, `--color-primary-pale`, `--color-primary-selected`)을 새 base에서 다시 계산해 보정. (3) `--color-primary`가 status용 도트·텍스트 색에도 쓰이므로(예: Run 상태) 새 색의 contrast/가독성 재검토 필요 — `#273E82`는 RGB 채널 합이 `#2B7FFF`보다 훨씬 어두워 light 배경 위 가독성은 유리하지만 dark toolbar 위 active state 강조도는 떨어질 수 있음. (4) Status semantic colors (ok=green, warn=amber, alarm=red, init=yellow, processed=purple)는 brand color가 아니므로 변경 없음.
 
+**보강 (2026-05-15, trial 11 F19)**: `status.processed = #7C3AED` (보라)는 *AI 처리 semantic*으로 의도 채택. brand color 아닌 status 카테고리 — ADR-007 변경 없음. trial 11에서 ppt Presentation의 "AI 수정" Button이 임의 hex `#8b5cf6`을 사용하던 anti-pattern을 제거하고 `var(--color-status-processed-text)` token으로 흡수. 다른 host에서 AI/처리 의미 표현 시 이 token 사용 — raw 보라 hex 금지.
+
 ---
 
 ### ADR-008: React peer는 `^18 || ^19` dual 지원 (토스 OSS 표준 + Figma Make Kit 호환)
@@ -409,3 +411,499 @@ hover state(`--color-surface-hover`·`--color-primary-hover`)·primary 색조 �
 - **ADR-012 §brand hex 재사용 정책 일치** — `signalReference.line` `#ACACAC`은 WONIK GRAY와 raw hex 복제. `surface`는 paler 톤이므로 brand 토큰과 hex 일치 없음.
 - **ADR-007 일치** — brand secondary(WONIK GRAY) 정체성 보존.
 - **ADR-001 부합** — 추상화 아닌 의미축 대칭 정규화.
+
+---
+
+### ADR-015: Card 컴포넌트 — surface/elevated × none/sm/md/lg, interfaceColors 의존
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`)에서 needs ✅ 강함(한 페이지 4 reps)으로 확정. Phase 12로 1차 도입.
+
+**맥락**:
+
+Trial 4 ppt Outline dogfood 결과, *rounded border + surface bg + 내부 padding* 패턴이 한 페이지에서 4회 반복(OutlineCard ×3 + loading wrapper + generation wrapper)되었다. CLAUDE.md 원칙 "한 페이지에서 4회 반복되는 패턴 = 디자인 시스템이 own해야 하는 영역"에 따라 1단계 layer A 1차 채움 마지막 컴포넌트 후보 중 가장 강한 evidence를 갖는다.
+
+Phase 11에서 부상한 다른 후보(IconButton/Badge — mid needs, Alert/EmptyState — 약함 또는 inconclusive)는 모두 *Card 도입 이후* Trial 5에서 누적 측정하기로 보류.
+
+**결정**:
+
+`@wonik/web`에 `Card` 컴포넌트 1개만 추가. signature:
+
+```tsx
+type CardVariant = 'surface' | 'elevated';
+type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: CardVariant;    // default 'surface'
+  padding?: CardPadding;    // default 'md'
+  as?: ElementType;         // default 'div'
+}
+```
+
+시각 매핑:
+
+| variant | background | border | boxShadow (light) | boxShadow (dark) |
+|---|---|---|---|---|
+| `surface` (default) | `interfaceColors.surface` | `1px solid ${interfaceColors.border}` | none | none |
+| `elevated` | `interfaceColors.surface` | none | `0 1px 3px rgba(0,0,0,0.08)` | **none** (data-theme="dark"에서 box-shadow 강제 0) |
+
+padding 매핑: `none=0` / `sm=space[4]=10px` / `md=space[6]=16px` / `lg=space[8]=32px`. md=16px는 Trial 4의 ppt Tailwind `p-4`에 자연 대응.
+
+border-radius: `radius.md` = 10px (Skeleton/Button과 일관, WARP 시안 톤).
+
+dark theme 그림자 분기는 module-scope CSS 1회-inject 패턴(`ensureCssInjected()` + `data-wonik-card` style tag + `[data-theme="dark"] .wonik-card-elevated { box-shadow: none }`) — Button/Spinner/Skeleton과 동일.
+
+`as` prop은 Box 패턴 답습 (polymorphic ElementType). `forwardRef`는 미사용 — Box도 ref 없이 운영 중이고 사용처에서 ref needs가 부상하면 minor bump로 추가 가능.
+
+**대안 (검토 후 거부)**:
+
+1. **`Card.Header` / `Card.Body` / `Card.Footer` subcomponent compound 패턴**
+   - 거부: Trial 4 evidence 0. ppt OutlineCard는 명확한 구획 없는 자유 컨테이너 패턴 — subcomp를 미리 만들면 추정 over-engineering. CLAUDE.md "첫 customer 없이 추상화 금지" 위반. 미래 needs 부상 시 minor bump로 추가 가능(compound는 breaking change 아님).
+
+2. **interactive Card** (`onClick` 시 hover state·focus ring)
+   - 거부: Trial 4에서 클릭 가능 카드 패턴 0회. needs 부상 시 별도 ADR.
+
+3. **`shadow.sm/md/lg` 토큰 신설 + `interfaceColors.shadow` interface variable 격상**
+   - 거부: 그림자 사용처가 elevated variant 1개뿐. 토큰화는 사용처 2+ 부상 시 (별도 ADR + minor bump). 지금은 컴포넌트 내부 상수.
+
+4. **`forwardRef<HTMLDivElement>` + `as` polymorphic 결합**
+   - 거부: TS 타입 복잡도(`forwardRef`의 generic ElementType inference)와 1단계 가치 균형이 안 맞음. Skeleton은 ref만, Box는 `as`만 — 본 Card는 Box 답습. ref needs 부상 시 minor bump.
+
+5. **dark theme에서 elevated에 강한 box-shadow(`rgba(0,0,0,0.4)`)**
+   - 거부: ADR-009 정신("dark는 surface bg로 elevation 표현")과 충돌. CLARIFY로 사용자가 (c) `none` 선택.
+
+6. **image media slot / cover image variant**
+   - 거부: Trial 4 evidence 0. YAGNI.
+
+**결과**:
+
+- `packages/web/src/Card/{Card.tsx,Card.test.tsx,types.ts,index.ts}` 신규.
+- 14 tests 추가, 163+14=177 passing 기대. 회귀 0.
+- 컴포넌트 코드 안에 hex 리터럴 0, bare px 리터럴 0 (boxShadow `'0 1px 3px rgba(0,0,0,0.08)'`는 elevation 명시 주석 부착한 예외 1줄).
+- `interfaceColors` 사용으로 host product의 `--color-surface`/`--color-border` 정의 시 자동 흡수(ADR-010 cascade).
+- module-scope CSS inject 패턴(ADR-011 답습).
+- `@wonik/web` minor bump (신규 컴포넌트 = minor).
+- sandbox에 2×4 매트릭스 섹션 + light/dark 캡쳐 evidence.
+
+**관계**:
+
+- **ADR-001 부합** — 첫 customer(Trial 4 4 reps)로 입증된 후 도입. 추정 over-engineering 0.
+- **ADR-008 부합** — React 19-only API 미사용. peer `^18 || ^19` dual 호환.
+- **ADR-009 부합** — dark theme에서 elevated 그림자 0(surface bg로 elevation 표현).
+- **ADR-010 답습** — `interfaceColors.surface`/`interfaceColors.border` reference + cascade fallback.
+- **ADR-011 답습** — module-scope CSS 1회-inject + `data-wonik-card` 셀렉터.
+
+**후속**:
+
+- Trial 5(별도 phase, ppt 다른 페이지 dogfood)로 Card 다중-페이지 호환 측정. IconButton/Badge needs 누적 시 합쳐 Phase 13. 누적 안 됨 → **layer A 1차 채움 종료 → layer B(사내 npm registry 배포 인프라) 진입.**
+- subcomponent(Header/Body/Footer) / interactive Card / shadow 토큰 / forwardRef 추가는 *needs 부상 후* 별도 minor bump.
+
+---
+
+### ADR-016: Badge 컴포넌트 — primary/neutral × inline span + interfaceColors 의존
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`) + Trial 5(`docs/dogfood-trial-5.md`) 누적 4회 evidence로 needs ✅ 확정. Phase 14로 1차 도입.
+
+**맥락**:
+
+Trial 4 ppt OutlineCard layout 표시 3회 + Trial 5 ppt Home slideCount "{N}장" 1회 = **누적 4회**. 한 페이지 4회 반복(Card)이든 여러 페이지 4회 누적(Badge)이든 동일 threshold — "디자인 시스템이 own해야 하는 영역".
+
+Phase 14 시점에 같이 측정한 다른 후보:
+- IconButton: Trial 4 mid + Trial 5 0회 → **Outline-local로 격하**.
+- Alert/Banner: Trial 4 inconclusive + Trial 5 1회 = 2회 → Trial 6 누적 후 결정.
+- ToggleGroup/SegmentedControl: Trial 5 1회 H4 신규 → Trial 6 누적 후 결정.
+- Select wrapper, EmptyState, Card variant=outline w/ dashed: 1회씩 — YAGNI.
+
+이 중 Badge만 threshold 통과 — 단독 Phase 14.
+
+**결정**:
+
+`@wonik/web`에 `Badge` 컴포넌트 1개. signature:
+
+```tsx
+type BadgeVariant = 'neutral' | 'primary';
+
+interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, never> {
+  variant?: BadgeVariant;   // default 'neutral'
+  as?: ElementType;          // default 'span'
+}
+```
+
+시각 매핑:
+
+| variant | background | text color | border |
+|---|---|---|---|
+| `neutral` (default) | `interfaceColors.surface` | `interfaceColors.text` | `1px solid ${interfaceColors.border}` |
+| `primary` | `interfaceColors.primary` | `surfaces.surfaceWhite` | none |
+
+공통 시각 토큰:
+- padding: `${space[1]} ${space[3]}` = 4px 8px
+- borderRadius: `radius.sm` = 5px
+- fontSize: `fontSize.label` = 12px (ppt `text-xs` 대응)
+- fontWeight: `fontWeight.medium` = 500
+- lineHeight: `lineHeight.tight` = 1
+- display: inline-flex + alignItems center
+- fontVariantNumeric: tabular-nums (count·숫자 width 일관)
+
+default variant **`neutral`** — Trial 4 layout label 패턴(누적 3회) > Trial 5 slideCount 1회. 더 보편이 default.
+
+dark theme 분기 CSS **불필요** — Badge에 box-shadow 0, interfaceColors가 cascade 자동 처리. Card·Button과 달리 module-scope CSS 1회-inject 패턴 **생략**.
+
+**대안 (검토 후 거부)**:
+
+1. **size prop (sm/md/lg)**
+   - 거부: Trial 4+5 evidence 모두 sm 단일. 미리 추가는 preemption. needs 부상 시 minor bump 추가는 non-breaking.
+
+2. **semantic 색 variant (info/success/warning/danger)**
+   - 거부: Trial 4+5 evidence 0. `status` 토큰은 graph 도메인 전용. 사내 product에 status badge needs 부상 시 별도 ADR.
+
+3. **icon slot (`leadingIcon`/`trailingIcon` prop)**
+   - 거부: needs 0. children으로 자유롭게 `<Badge><svg/>label</Badge>` 가능. prop은 over-engineering.
+
+4. **dismissable Badge (`onClose`)**
+   - 거부: needs 0. interactive Badge는 별도 컴포넌트(예: Chip)로 분리하는 것이 깔끔.
+
+5. **count truncation (`max={99}` "99+")**
+   - 거부: needs 0. 사용처에서 host가 `String(Math.min(count, 99))` 같은 1줄 가능.
+
+6. **fontWeight.bold (700) 토큰 추가 + Badge에 적용**
+   - 거부: medium(500)도 12px size에서 충분 emphasis. ppt 원본 bold와 시각 차이는 dogfood로 측정 후 needs 부상 시 bold 토큰 신설.
+
+7. **radius.pill (999px) 토큰 추가**
+   - 거부: ppt 시각은 `rounded-md`(Tailwind 6px) — `radius.sm`(5px)가 가장 가까움. 풀 pill 형태는 evidence 0.
+
+8. **forwardRef<HTMLSpanElement>**
+   - 거부: Card 답습. host가 Badge DOM ref 필요한 use case 0. needs 부상 시 minor bump.
+
+**결과**:
+
+- `packages/web/src/Badge/{Badge.tsx,Badge.test.tsx,types.ts,index.ts}` 신규.
+- 9 tests 추가, 177+9=186 passing 기대. 회귀 0.
+- 컴포넌트 코드 안에 hex 리터럴 0. bare px 리터럴은 표준 `1px solid` border width 1회 (Card와 동일 관례).
+- `interfaceColors`·`surfaces`·`space`·`radius`·`fontSize`·`fontWeight`·`lineHeight` 토큰만 사용.
+- `@wonik/web` minor bump (신규 컴포넌트 = minor).
+- sandbox에 2 variant × 4 컨텐츠 매트릭스 + 캡쳐 evidence (`pkg-out/phase-14-badge-matrix.png`).
+
+**관계**:
+
+- **ADR-001 부합** — Trial 4+5 누적 evidence(4회)로 입증된 후 도입.
+- **ADR-008 부합** — React 19-only API 0, peer `^18 || ^19` dual.
+- **ADR-010 답습** — `interfaceColors.surface`/`border`/`text`/`primary` cascade.
+- **ADR-015 패턴 답습** — `as` polymorphic, types.ts 분리, className 합성, style spread 마지막.
+
+**후속**:
+
+- **Trial 6 (Phase 15 후보, 별도 phase)**: ppt Presentation 또는 History 페이지 dogfood — Badge 적용 + Alert/ToggleGroup 누적 측정.
+- Trial 6 결과로 Phase 15 = Alert OR ToggleGroup 결정. 둘 다 강하면 ranking 후 한쪽.
+- size prop, semantic 색, icon slot 추가는 *needs 부상 후* 별도 minor bump.
+
+---
+
+### ADR-017: Alert 컴포넌트 — error-only(strict YAGNI) + onDismiss + statusTokens.alarm
+
+**상태**: Trial 4(`docs/dogfood-trial-4.md`) + Trial 5(`docs/dogfood-trial-5.md`) + Trial 6(`docs/dogfood-trial-6.md`) 누적 3회 evidence로 needs ✅ 확정. Phase 16으로 1차 도입.
+
+**맥락**:
+
+- Trial 4 ppt Outline error inconclusive (코드상 1회 등장)
+- Trial 5 ppt Home form error 1회
+- Trial 6 ppt Presentation error 1회 = **누적 3회**
+
+모두 동일 패턴: `role="alert"` + light red bg + red border + red text + 우측 dismiss 텍스트 버튼 ("닫기"). variant 다양성 0 — 전부 error.
+
+Trial 4·5·6에서 같이 측정된 다른 후보들의 운명:
+- IconButton: Trial 4 mid + Trial 5 0 + Trial 6 partial 격하 → **격하 유지**.
+- ToggleGroup: Trial 5 1 + Trial 6 0 → **약함, YAGNI**.
+- Card variant=outline w/ dashed: 누적 2회지만 outline+dashed는 시각 약한 needs → **YAGNI**.
+
+Alert만 3회 누적 threshold 통과.
+
+**결정**:
+
+`@wonik/web`에 `Alert` 컴포넌트 1개 (variant prop **없음**). signature:
+
+```tsx
+interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role'> {
+  onDismiss?: () => void;
+  as?: ElementType;
+}
+```
+
+`role="alert"`는 컴포넌트가 *강제* (consumer override 차단). 시각: 단일 error 변형.
+
+시각 매핑:
+
+| 속성 | 토큰 |
+|---|---|
+| background | `statusTokens.alarm.bg` |
+| border | `1px solid ${statusTokens.alarm.border}` |
+| color | `statusTokens.alarm.text` |
+| padding | `${space[5]} ${space[6]}` = 12px 16px |
+| borderRadius | `radius.md` = 10px |
+| fontSize | `fontSize.titleSm` = 14px (ppt `text-sm` 대응) |
+| lineHeight | `lineHeight.tight` = 1 |
+| display | flex + alignItems center, gap space[3] |
+| justifyContent | space-between (when onDismiss provided) |
+
+dismiss × 버튼: native `<button>` + inline style reset (background transparent, border none, padding `space[1]`, fontSize 동일), `aria-label="닫기"` (한국어 default, i18n needs 부상 시 prop).
+
+dark theme: statusTokens가 CSS variable이라 `theme-dark.ts`의 status-alarm-* 정의로 자동 분기.
+
+**대안 (검토 후 거부)**:
+
+1. **variant prop ('info' | 'warning' | 'error' | 'success')**
+   - 거부 (strict YAGNI): Trial 4+5+6 evidence 모두 error만. info/warning/success는 0회. Card·Badge precedent — variant당 1+ evidence가 원칙. needs 부상 시 minor bump 추가 (non-breaking).
+
+2. **interfaceColors.alertBg 같은 신규 interface variable 신설**
+   - 거부: host product가 alert 색을 own할 needs 0. statusTokens.alarm은 이미 존재 + 적합. 추후 needs 부상 시 별도 ADR로 격상.
+
+3. **dismissable boolean + onClose 분리**
+   - 거부: `onDismiss` callback 유무로 분기 충분. 중복 API.
+
+4. **dismiss 버튼 텍스트 "닫기" (한글) — × icon 대신**
+   - 거부: 시각 footprint 큼. × (unicode U+00D7) + aria-label="닫기"로 시각 작고 a11y 충분.
+
+5. **dismissLabel prop으로 i18n 지원**
+   - 거부 (1단계 YAGNI): 사내 한국어 default. needs 부상 시 minor bump.
+
+6. **leading icon prop (`<Alert icon={<svg/>}>...`)**
+   - 거부: children으로 자유롭게 `<Alert><svg/>메시지</Alert>` 가능. prop 추가 = over-engineering.
+
+7. **title + description split**
+   - 거부: ppt 3개 trial 모두 단일 메시지. compound 패턴은 needs 부상 후.
+
+8. **auto-dismiss timer (자동 사라짐)**
+   - 거부: needs 0. Toast 패턴과 혼동. Alert는 명시적 dismiss만.
+
+9. **animation 등장/사라짐**
+   - 거부: slop 위험(UI_GUIDE.md). needs 부상 시 별도.
+
+10. **forwardRef<HTMLDivElement>**
+    - 거부: Card·Badge 답습. ref needs 부상 시 minor bump.
+
+**결과**:
+
+- `packages/web/src/Alert/{Alert.tsx, Alert.test.tsx, types.ts, index.ts}` 신규.
+- 12 tests 추가, 186+12=198 passing. 회귀 0.
+- 컴포넌트 코드에 hex 리터럴 0. bare px 리터럴은 표준 `1px solid` 1회 (Card·Badge 동일 관례).
+- `statusTokens.alarm` + `space` + `radius` + `fontSize` + `lineHeight` 토큰만 사용.
+- `@wonik/web` minor bump.
+- sandbox에 3 케이스(짧음 dismiss 무 / 짧음 dismiss 유 / 긺 dismiss 유) + 캡쳐 evidence (`pkg-out/phase-16-alert-matrix.png`).
+
+**관계**:
+
+- **ADR-001 부합** — Trial 4+5+6 누적 evidence(3회)로 입증 후 도입.
+- **ADR-008 부합** — React 19-only API 0.
+- **ADR-009 부합** — statusTokens가 theme-dark.ts 정의로 dark 자동 분기.
+- **ADR-015·016 패턴 답습** — `as` polymorphic, types.ts 분리, className 합성, style spread 마지막, forwardRef 미사용.
+
+**후속**:
+
+- **layer A 1차 채움 종료 후보**: Alert 추가로 atoms 14개 도달. PRD.md "layer A의 1차 채움 + ppt dogfood 검증" 두 조건 충족 후보. 다음 단계는 (a) **layer A 종료 선언 → layer B(사내 npm registry 배포 인프라) 진입** 또는 (b) Trial 7+ 신규 needs 추가 측정. 사용자 결정 영역.
+- variant 확장(info/warning/success), title/description split, leading icon, auto-dismiss 등은 *needs 부상 후* 별도 minor bump.
+
+## ADR-018 — layer B 진입: publish-ready 전환 + registry 옵션 비교 (결정 보류)
+
+**상태**: 결정 보류 (사내 IT 협의 결과 대기). 본 phase는 publish-ready 인프라까지 완료. 실제 첫 publish 시 본 ADR의 "결정" 섹션을 후속 minor phase가 확정.
+
+**Context**:
+
+Phase 01~16에서 layer A 1차 채움이 끝났다. 14 atoms (Button/Box/Stack/Text/Input/Textarea/Checkbox/Switch/Radio/Spinner/Skeleton/Card/Badge/Alert) × ppt 3페이지 (Outline/Home/Presentation) dogfood × interface variable cascade(ADR-010) 입증. PRD 도달점 layer 정의에 따르면 다음은 layer B(사내 패키지 배포). 본 ADR은 layer B 진입 시 결정해야 할 *registry 옵션*과 *준비 작업*을 정리한다.
+
+**옵션 비교**:
+
+| 옵션 | 인프라 | scope | token 발급 | IT 의존성 | publish 자동화 | 1순위 후보 가능성 |
+|---|---|---|---|---|---|---|
+| **A. 사내 npm registry (Verdaccio 호스팅 등)** | 사내 서버 + Verdaccio/Nexus 등 | `@wonik` 그대로 유지 가능 | IT가 발급 (사내 계정 연동) | ★★★ (셋업 자체가 IT 작업) | manual 시작 → CI 추후 | ◯ (사내 표준화 관점 best) |
+| **B. GitHub Packages** | GitHub org 또는 personal | scope = GitHub username/org와 매칭 필요 → `@wonik` 쓰려면 GitHub `wonik` org 필요 | GitHub PAT (개인 token, scope: read/write:packages) | ★ (GitHub org 생성만) | GitHub Actions 자연스러움 | ◯ (가장 빠른 진입) |
+| **C. Tarball via GitHub Release** | GitHub Release asset | scope 무관 | 없음 (public release) | 0 | 자동 가능 (gh release) | △ (host install 매번 URL 직접 지정 — 학습 곡선 ↑) |
+
+**거부된 대안**:
+
+1. **공개 npm registry**(npmjs.com에 public publish) — 사내 전용 디자인 시스템이 외부 노출. 보안/IP 관점 부적합. `restricted` access로 publish해도 npmjs.com 자체가 공개 인덱스에 메타데이터 등록.
+2. **공유 폴더 + file: 의존성** — 진짜 "패키지 배포"가 아니라 link. version pinning 불가. 본 phase의 목표(host product가 `pnpm add`로 install)와 어긋남.
+3. **Verdaccio를 본인 노트북에서 호스팅** — 가용성 0. 사내 인프라가 아니므로 다른 팀원 install 불가.
+4. **scope 이름 변경 (`@wonik` → `@ohjihoon05` 등)** — host product의 모든 import path 재작성 비용 + 사내 정체성 상실. 사내 IT가 `@wonik` org를 GitHub에 만들거나 사내 registry가 scope 제약 없으면 회피 가능.
+
+**1순위 권장 + 2순위 fallback**:
+
+- **1순위**: 옵션 A (사내 npm registry). 사내 정체성 유지, scope 제약 없음, 사내 SSO 연동 자연스러움. 비용은 IT 셋업 시간 — 협의 후 일정 확정.
+- **2순위 fallback**: 옵션 B (GitHub Packages). 사내 registry 셋업이 N주 이상 지연되면 GitHub `wonik` org 생성 + 임시 publish. scope 매칭만 풀면 즉시 진입 가능.
+- **결정 보류 명시**: 본 phase에서는 어느 옵션도 *확정하지 않는다*. publish-ready 메타데이터 (publishConfig.registry는 placeholder URL `https://npm.pkg.github.com/RESOLVE_BEFORE_PUBLISH`)로 두고, 결정 후 후속 phase에서 실제 URL로 교체.
+
+**본 phase에서 완료한 publish-ready 준비**:
+
+1. **메타데이터** — 두 패키지 `package.json`에 description / repository / homepage / license(`UNLICENSED`) / version(`0.1.0`) / publishConfig.access(`restricted`) / sideEffects / files(`["dist"]`) 추가. `private: true` 제거.
+2. **publish 가드** — `prepublishOnly: "pnpm build && pnpm test"` — 깨진 artifact publish 불가.
+3. **placeholder URL 방어** — publishConfig.registry가 명백한 placeholder(`RESOLVE_BEFORE_PUBLISH`)이므로 실수 publish 시 404 즉시 fail. 결정 후 교체 필수.
+4. **peer contract** — `@wonik/web`이 `@wonik/tokens`를 peer로 명시 (`^0.1.0`). ~~dependency도 유지(workspace:*는 publish 시 자동 변환).~~ host가 직접 token CSS를 import해 cascade 활성화 가능.
+   > **🔄 Superseded by ADR-019 (2026-05-15)**: trial 7 dogfood(ppt 0.0.0 → 0.1.0 마이그레이션)에서 `dependencies."@wonik/tokens"` 유지가 `ERR_PNPM_FETCH_404`를 유발함을 확인. 사내 npm registry 미정 상태에서는 broken contract. ADR-019에서 `dependencies` 제거 + `devDependencies` (`workspace:*`)로 dev link만 보존하는 peer-only 패턴으로 변경.
+5. **install 가이드** — `docs/INSTALL.md` 신설 (인증 / install / import / cascade override / FAQ).
+6. **`.npmrc.example` + `.gitignore`** — 실제 token이 git history에 남지 않도록 보호.
+
+**결정해야 할 항목 (후속 phase가 닫음)**:
+
+| 항목 | default | 비고 |
+|---|---|---|
+| registry 옵션 | A (사내 npm) | B/C는 fallback |
+| 실제 registry URL | TBD | `RESOLVE_BEFORE_PUBLISH` 자리 교체 |
+| `@wonik` scope 매핑 | 사내 namespace 그대로 | GitHub Packages 선택 시 `wonik` org 필요 |
+| token 발급 정책 | 사내 SSO 기반 | IT가 발급 흐름 정의 |
+| CI 자동 publish | 1단계는 manual | GitHub Actions changeset/action은 후속 검토 |
+| 첫 publish 후 monorepo dogfood 절차 | ppt가 workspace:* → 실제 `@wonik/web@0.1.0`으로 install 전환 | dual-direction 입증 |
+
+**Trade-offs / 위험**:
+
+- **R1 실수 publish**: placeholder URL + prepublishOnly로 이중 방어.
+- **R2 workspace:* 미변환**: changeset publish가 자동 변환. dry-run report에서 명시적 확인 (Step 4).
+- **R3 scope 충돌**: 옵션 B에서만 발생. 옵션 A 채택 시 회피.
+- **R4 license `UNLICENSED` 경고**: 일부 tool이 warning. `private`/`restricted` 조합으로 host install엔 영향 없음.
+- **R5 publish 후 host product workflow**: 첫 publish 성공 후 ppt가 `workspace:*` → 실제 버전으로 전환할 때 dual-direction (local dev는 link, prod는 published version) 검증 필요. 별도 phase.
+
+**거부된 대안의 결정 근거 (요약)**:
+
+- 공개 npm: 사내 IP 보호 ✗
+- file: 의존성: version 관리 ✗, 본 phase 목적 ✗
+- 본인 노트북 Verdaccio: 가용성 ✗
+- scope 변경: host 마이그레이션 비용 ↑, 정체성 ✗
+
+**POC 결과 (2026-05-14 보강)**:
+
+회사 PC에서 GitHub Release tarball 경로로 install이 *기술적으로 작동*함을 검증 완료. 자세한 결과는 `phases/17-distribution/poc-result.md` 참조. 핵심:
+
+- Release `v0.1.0-poc`를 회사 PC 브라우저에서 다운로드 → `pnpm add` 성공 (Done in 899ms) → `node_modules/@wonik/{web,tokens}/dist` 정상.
+- 회사 SSL inspection으로 `winget`이 막혀(`0x8a15005e`) `gh` CLI 정식 설치는 차단됐지만, *브라우저로 release asset 직접 다운로드*는 통과. → 옵션 C(tarball-via-release)가 *최소한의 우회 경로*로도 작동함을 입증.
+- IT 협의 시 추가 요청 항목: **winget 허용 또는 회사 root CA 신뢰 추가**(`gh` 같은 CLI 도구 사용 위해).
+
+**후속 phase 예상 흐름**:
+
+1. IT 협의 → 옵션 확정
+2. registry URL/token 발급
+3. `publishConfig.registry`를 실제 URL로 교체 + changeset 항목 추가
+4. `pnpm publish` 첫 실행 (manual)
+5. ppt가 published 버전으로 install 전환 → dual-direction 입증
+6. (선택) CI 자동 publish workflow
+
+**Verdaccio dry run 보강 (2026-05-15, trial 12)**:
+
+집에서 Verdaccio(localhost:14873)로 옵션 A 흐름을 *전체 cycle* 시뮬레이션 완료. 사용자 통찰("집에 구성을 회사에서 할 수 있는 것처럼 할 수 있잖아? 나 컴퓨터 안 꺼")에서 출발. 자세한 결과는 `docs/dogfood-trial-12.md`. 핵심:
+
+- 8 step 한 바퀴 (Verdaccio setup → 첫 publish → ppt install → dual-direction patch) 모두 성공.
+- 첫 publish: `@wonik/tokens@0.2.0` + `@wonik/web@1.0.0`. 누적 8개 changeset 적용 결과(F28).
+- ppt 마이그레이션: `file:vendor/...tgz` → `^0.2.0`/`^1.0.0` (3.7초). dual-direction patch 0.2.1: `pnpm update` 1.5초.
+- **사내 진입 시 교체 위치 = 정확히 2 곳**:
+  - `design_system/.npmrc`의 `@wonik:registry=...` + `_authToken`
+  - `tokens/web/package.json`의 `publishConfig.registry`
+- Verdaccio 표준 4873은 Windows excluded port range(4866-4965)에 잡혀 14873 사용. 사내 서버는 다른 머신이라 무관.
+- **ADR-019 peer-only contract publish 시도 정합 입증**: web의 `@wonik/tokens` peer가 publish 과정에서 `^0.1.0` → `^0.2.0`으로 자동 caret 갱신.
+- **changeset publish 자동 skip 검증**: tokens patch 시 web은 자동 제외.
+
+→ 옵션 A 1순위 reaffirm. 사내 진입 시 *URL만 교체*하면 즉시 작동 상태.
+
+**Verdaccio 재기동 보강 (2026-05-19, trial 13 F29)**:
+
+trial 13 사이클 재현 시 `npx verdaccio --listen 14873` 단축 표기가 **IPv6 `::1`만 bind** → `.npmrc`/`publishConfig.registry`의 `127.0.0.1`(IPv4) publish 시 `ECONNREFUSED`. 해결: **`--listen 0.0.0.0:14873`** 명시 (IPv4 + IPv6 둘 다 listen). 사내 서버 셋업 시 `listen: 0.0.0.0:<port>` 또는 명확한 IP 지정 필요 — default `localhost` 단축 표기는 IPv4-only 가정 host에서 실패.
+
+**Publish prep 체크리스트 (2026-05-19, trial 13 F30)**:
+
+trial 13 publish 시 web `1.0.0 → 2.0.0` major 점프 관찰. 누적 7개 changeset 모두 minor 확인 (config의 `linked`/`fixed`/`linked` 빈 상태). 원인 가설 — changesets의 stable 1.0.0 이후 minor 누적 합산 동작 또는 추적 못 한 deleted changeset. 본질 원인 진단은 시간 비용 大 → 정책으로 정착:
+
+**Layer B 진입 전 publish prep 표준 절차**:
+1. `pnpm changeset status` 실행 — 예상 bump 사전 확인 (각 패키지 현재 → 다음 version 출력)
+2. 의도 외 major 발견 시 `.changeset/*.md` frontmatter 정정 후 retry
+3. dry-run 가능: `pnpm changeset version --snapshot dry-run` (실제 파일 수정 없음)
+
+**Semver 연속성보다 신뢰 우선**: 1.x → 2.x 한 라인 건너뛴 비용 수용. semver는 *최대 신뢰* 표기이지 *연속성 보장*이 아님. 단 의도 외 major는 host product에 caret semver 자동 흡수 안 됨(major bump는 명시 update 필요) → 반드시 사전 확인.
+
+---
+
+## ADR-019 — `@wonik/web` packaging: peer-only token contract (Supersedes ADR-018 #4 일부)
+
+**날짜**: 2026-05-15
+**상태**: 결정 완료. 구현 + ppt dogfood trial 7로 검증.
+
+**Context**:
+
+ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **peer + dependency 둘 다** 두는 패턴을 채택했다. 동기는 "peer는 host에 install을 요구, dependency는 monorepo workspace dev 시점 link". `workspace:*`는 publish 시 자동 변환된다고 가정.
+
+2026-05-15 dogfood trial 7(ppt에 `@wonik/web` 0.0.0 → 0.1.0 마이그레이션)에서 이 가정이 깨짐:
+
+- `pnpm pack`이 `workspace:*` → `0.1.0`으로 변환은 정상.
+- 그러나 ppt에서 `pnpm install` 시 pnpm이 `@wonik/tokens@0.1.0`을 **공개 npm registry에서** lookup → `ERR_PNPM_FETCH_404` 즉시 fail.
+- 사내 npm registry 미정 상태(layer B 결정 보류)에서는 dependency 선언 자체가 broken contract. host의 `pnpm.overrides`로 우회 가능하나 변칙적 + lockfile cache와 충돌.
+
+**결정**:
+
+`@wonik/web`은 `@wonik/tokens`를 **`peerDependencies` + `devDependencies` 조합으로만** 선언한다. `dependencies` 섹션에서 제거.
+
+```json
+{
+  "peerDependencies": {
+    "@wonik/tokens": "^0.1.0"
+  },
+  "devDependencies": {
+    "@wonik/tokens": "workspace:*"
+  }
+  // dependencies에서 @wonik/tokens 제거
+}
+```
+
+**효과**:
+
+1. **host 계약 명시화**: `@wonik/web`을 받는 host는 누구든 `@wonik/tokens`를 직접 install해야 한다는 강제. 이는 토스 TDS / Material UI / Radix UI / shadcn 등 모든 진짜 design system이 채택한 패턴.
+2. **dev 시점 동작 보존**: monorepo 안에서는 `devDependencies`의 `workspace:*`로 link되어 `@wonik/web` 내부에서 `@wonik/tokens` import 정상 동작. `devDependencies`는 tarball에 포함되지 않음(pnpm pack 표준 동작) — host 영향 없음.
+3. **registry 무관**: host가 tokens를 어떤 경로(file: / sha-pinned / 사내 registry)로 install하든 web은 신경쓰지 않음. layer B 옵션 결정과 독립적으로 동작.
+4. **lockfile 충돌 제거**: pnpm.overrides 같은 우회 메커니즘 불필요. ppt도 평범한 dependency 두 개로 정상화.
+
+**검증**:
+
+- design_system: `pnpm install` 통과(monorepo 안 web 내부 import 동작) + `pnpm -F @wonik/web build` 통과 + sandbox 정상 동작 (`apps/web-sandbox`).
+- packed tarball: `tar -xzOf wonik-web-0.1.0.tgz package/package.json` → `dependencies` 섹션 부재, `peerDependencies.@wonik/tokens: ^0.1.0`만 존재.
+- ppt: `pnpm install` 통과(`+ @wonik/tokens 0.1.0 / + @wonik/web 0.1.0`) + `pnpm dev` HMR 통과 + Alert 첫 import 동작.
+
+**Trade-offs / 위험**:
+
+- **R1 host가 tokens install 누락**: pnpm이 unmet peer warning 출력. ESLint/TS 단계까지 가면 import 자체 실패로 즉시 발견. host 인지 비용 ↑이지만 명시적이라 실수 적음.
+- **R2 tokens 버전 불일치**: host가 `@wonik/tokens@0.0.5`처럼 낮은 버전 install하면 cascade 변수 부재로 시각 깨짐. peer range `^0.1.0`이 minimum 보장.
+- **R3 ADR-018 문서 drift**: ADR-018 항목 #4의 "dependency도 유지" 문구가 본 ADR과 모순. ADR-018은 history로 유지하되 본 ADR이 supersede 명시. INSTALL.md / QUICKSTART.md도 갱신 필요.
+
+**거부된 대안**:
+
+1. **`pnpm.overrides` 영구 사용**: trial 7에서 lockfile cache와 충돌하며 깨짐. 변칙적, host 인지 비용 동일하면서 실수 여지 ↑.
+2. **`bundledDependencies` 로 tokens 함께 packing**: tarball 크기 ↑, 토큰 변경 시 web도 매번 재pack 필요, host가 cascade 위해 별도 import 불가능.
+3. **공개 npm registry에 tokens 먼저 publish**: 사내 IP 노출(ADR-018 거부 대안 #1과 동일 사유).
+
+**후속 변경 항목**:
+
+- [ ] `docs/INSTALL.md` 갱신: host에서 `@wonik/tokens`도 명시적 `pnpm add` 필요 명시.
+- [ ] `docs/QUICKSTART.md` 갱신: 같은 반영.
+- [ ] ADR-018 항목 #4에 본 ADR-019 supersede 마커 추가 (별도 commit).
+- [ ] sandbox `package.json`은 이미 토스 패턴(`@wonik/tokens` 직접 dep)이라 변경 불필요.
+
+---
+
+### ADR-020: DTCG JSON 미채택, 토큰 구조만 1:1 매핑 호환 유지
+**결정**: 토큰을 [DTCG (Design Tokens Community Group) draft format](https://tr.designtokens.org/format/) JSON으로 emit하거나 변환 스크립트를 작성하지 **않는다**. 다만 `packages/tokens/src/theme-light.ts`·`theme-dark.ts`의 raw hex source 구조를 **DTCG와 1:1 매핑 가능한 형태로 유지**한다. 변환이 필요해질 때(예: Figma Variables import, Style Dictionary 도입, 사외 디자이너 협업 도구 연결) 30분 내 변환기를 작성할 수 있는 형태가 보장된다. 운영 가이드는 [`docs/TOKEN_DTCG_COMPAT.md`](./TOKEN_DTCG_COMPAT.md) 참조.
+
+**이유**: (a) **YAGNI** — 현재 consumer가 ppt 하나뿐인 단계에서 DTCG JSON publish는 사용처 없음. 변환 스크립트 작성·테스트·CI 시간보다 매핑 호환만 보장하는 게 비용 1/10. (b) **미래 호환 비용 0** — 구조가 1:1 매핑되면 변환은 mechanical `Object.fromEntries` loop이라 30분 작업. 지금 안 만들어도 잃을 게 없다. (c) **외부 도구 trigger 시 신속 대응** — Figma Variables가 DTCG import 지원하거나, 사외 디자이너가 Style Dictionary 워크플로우를 요청하는 순간 즉시 만들 수 있도록 길만 열어둠. (d) **구조 깨짐을 사전 차단** — 본 ADR이 없으면 future tokens에 `'10px 10px 0 0'` 같은 shorthand나 `\`${x}px\`` 합성 값이 들어가 매핑이 깨질 수 있음. 룰을 박아두면 추가 시 자연스럽게 leaf 1개 = $value 1개를 지키게 됨.
+
+**룰 (간략)**:
+1. Source-of-truth = `theme-light.ts` + `theme-dark.ts`의 raw hex object. `colors.ts`/`status.ts`/`graph.ts`의 `var(--color-X)` runtime export는 DTCG source 아님.
+2. Leaf 1개 = $value 1개. shorthand 값(`'10px 10px 0 0'`), template literal 합성(`\`${a}px\``) 금지.
+3. 한 group 안에 같은 `$type`만 (color group 전부 color, dimension group 전부 dimension).
+4. theme-light / theme-dark는 키셋 **1:1** 유지 (DTCG `$themes`로 publish할 때 양쪽이 같은 path를 가져야 함).
+
+**예외 (변환 시 special-case 1줄로 처리)**:
+- `fontFamily.base`: comma-separated string(`"'Segoe UI', 'Inter', system-ui, sans-serif"`)으로 유지. DTCG는 array를 기대하지만, CSS `font-family` property가 comma-separated string을 그대로 받기 때문에 소스 안정성을 우선. 변환기는 `.split(',').map(trim+unquote)` 1줄로 array 생성.
+
+**트레이드오프**: (1) Figma Variables가 갑자기 DTCG import를 정식 지원해도 즉시 publish 불가 — 변환기 작성 30분 + CI 연결 작업 필요. 다만 길은 열려있음. (2) `radius.panelHeader`처럼 dead token이 shorthand로 들어와있던 케이스는 본 ADR 시점에 제거 (사용처 0).
+
+**Supersedes/Affects**:
+- 본 ADR을 인지하지 않은 채로 추가된 dead token `radius.panelHeader` 제거 (consumer 0개 확인 후).
+
+**후속 변경 항목**:
+
+- [x] `radius.panelHeader` 제거 (`spacing.ts`, `build-css.ts`, `UI_GUIDE.md`).
+- [x] `docs/TOKEN_DTCG_COMPAT.md` 작성 — 매핑표 + 예외.
+- [x] 카탈로그 static build output(`apps/storybook/storybook-static/`) gitignore 처리 (관련 cleanup, 별 이슈는 아님).
+- [ ] 새 토큰 PR 리뷰 시 본 ADR 룰 1·2·3 check.
+- [ ] DTCG 변환기는 외부 trigger 시(Figma Variables / Style Dictionary / 사외 디자이너 요청) 그때 작성.

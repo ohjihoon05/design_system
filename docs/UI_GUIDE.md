@@ -143,7 +143,6 @@ Scale은 form factor에 따라 다름 — Web/HMI section 참조.
 | `--radius-sm` | 5px | 작은 버튼·아이콘 박스 |
 | `--radius-md` | 10px | 패널·카드 |
 | `--radius-full` | 50% | 도트·원형 |
-| `--radius-panel-header` | 10px 10px 0 0 | 패널 header (top corners only) |
 
 ---
 
@@ -216,6 +215,15 @@ Brand의 status 색을 사용하되 Web에서는 더 ergonomic하게 — `height
 - **데스크톱 우선**: 1280px+ 기본 viewport. 모바일 반응형은 1단계 외 (ADR-005).
 - **콘텐츠 max-width**: TBD (디자이너 결정). 후보 — `max-w-7xl` (1280px) / `max-w-6xl` (1152px) / `max-w-5xl` (1024px).
 - **정렬**: 좌측 정렬 기본. 중앙 정렬은 hero/onboarding 같은 특수 케이스에만.
+
+### Layout 함정 가드 (Flex / Grid)
+
+flex item·grid item의 기본 `min-width: auto`는 콘텐츠 min-content 이상으로 트랙을 부풀린다. 두 방향 함정 모두 가드 필요:
+
+- **자식이 부모 밖으로 over-grow**: `flex: 1`만 준 자식은 콘텐츠로 부풀음. 줄어들어도 되는 자식엔 `min-width: 0`, 절대 안 줄어드는 자식(아이콘·칩·숫자)엔 `flex-shrink: 0`. 두 짝으로 박는다. 사례: `apps/demo-fab-monitor/src/components/EquipmentRow.tsx`.
+- **자식이 한 글자씩 세로로 over-shrink**: grid `'minmax(0, 1fr)'`은 fr 트랙을 0까지 squeeze 허용 → 부모가 좁으면 콘텐츠 보호 없이 column이 죽고 글자가 세로로 흘러내림. 좁은 화면용 1-column fallback: `gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))'` (auto-fit이 자동 wrap). 사례: `apps/demo-fab-monitor/src/pages/AlarmsPage.tsx`.
+
+새 페이지·복합 layout 작성 시 두 함정 모두 의식. `Stack` 컴포넌트가 `direction="row"`일 때 자식 `min-width: 0`을 default로 줄지는 미정 — 결정 시 ADR로.
 
 ## Web 애니메이션
 

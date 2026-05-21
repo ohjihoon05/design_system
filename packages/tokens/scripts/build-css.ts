@@ -128,11 +128,7 @@ const staticVarLines = (): string[] => {
   // Radius
   section('Radius');
   for (const [key, value] of Object.entries(radius)) {
-    if (key === 'panelHeader') {
-      push('--radius-panel-header', value);
-    } else {
-      push(`--radius-${camelToKebab(key)}`, value);
-    }
+    push(`--radius-${camelToKebab(key)}`, value);
   }
 
   // Component sizes

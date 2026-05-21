@@ -13,7 +13,6 @@ export const radius = {
   sm: '5px',
   md: '10px',
   full: '50%',
-  panelHeader: '10px 10px 0 0',
 } as const;
 
 export const componentSize = {

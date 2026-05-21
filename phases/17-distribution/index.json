@@ -1,0 +1,14 @@
+{
+  "phase": "17-distribution",
+  "status": "completed",
+  "started_at": "2026-05-13T16:00:00+0900",
+  "completed_at": "2026-05-13T16:10:00+0900",
+  "steps": [
+    { "id": 0, "name": "준비", "status": "completed" },
+    { "id": 1, "name": "package.json publish-ready", "status": "completed" },
+    { "id": 2, "name": "INSTALL.md + npmrc.example + ADR-018", "status": "completed" },
+    { "id": 3, "name": "PRD 업데이트", "status": "completed" },
+    { "id": 4, "name": "빌드 + dry-run report", "status": "completed" },
+    { "id": 5, "name": "Finalize", "status": "completed" }
+  ]
+}

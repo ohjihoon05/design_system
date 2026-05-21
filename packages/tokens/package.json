@@ -1,7 +1,14 @@
 {
   "name": "@wonik/tokens",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.3.0",
+  "description": "WONIK IPS Design System — 디자인 토큰 (색·타이포·spacing·radius). WARP 시안에서 추출한 base + 공식 CI brand color.",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohjihoon05/design_system.git",
+    "directory": "packages/tokens"
+  },
+  "homepage": "https://github.com/ohjihoon05/design_system#readme",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -13,13 +20,21 @@
     },
     "./tokens.css": "./dist/tokens.css"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "http://127.0.0.1:14873/"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts",
     "test": "echo 'no tests yet'",
-    "lint": "echo 'no lint yet'"
+    "lint": "echo 'no lint yet'",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "devDependencies": {
     "tsup": "^8.3.5",

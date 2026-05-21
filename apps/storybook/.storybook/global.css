@@ -1,0 +1,11 @@
+html, body, #storybook-root {
+  background: var(--color-canvas);
+  color: var(--color-text-dark);
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
