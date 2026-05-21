@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-20 (Layer A polish #1 closure — `SortableList` announceItem prop 추가, web 331 tests, changeset minor 대기. 직전 2026-05-19 마감의 hygiene 후속 패스. Layer B 진입 준비 완료, 사내 URL 결정만 대기)
+**최종 갱신**: 2026-05-21 (Figma 정합 트랙 등록 — `/goal` "Figma를 디자인 시스템에 적용". ADR-021~025로 primitives·theme·button·table 색 토큰 정합 완료, chrome bar·장비 상태색은 보류. 직전 2026-05-20 Layer A polish #1 closure)
 
 ---
 
@@ -12,6 +12,8 @@
 > **🏁 Layer A 1차 사이클 마감 (2026-05-15)** — atom 14개 × ppt 3 main 페이지 적용 + 시각 정체성 통일 + evidence-driven cycle 한 바퀴 입증. 11 trial 누적.
 >
 > **다음 큰 단계**: **Layer B (publish & adopt 인프라)** — 집 시뮬레이션 한 바퀴 ✅ (trial 12, Verdaccio 14873). 사내 진입 시 *URL 2 곳만 교체*하면 즉시 작동 상태. ADR-018에 결정 누적.
+>
+> **병행 트랙 (2026-05-21~)**: **Figma 정합** — 사용자 Figma "UI/UX Standardization 2.0"을 토큰 single source of truth로 흡수. Layer A/B(컴포넌트·배포)와 직교. 1단계 색 토큰 적용 완료 (ADR-021~025). 아래 §🎨 참조.
 >
 > **집에서 가능한 작은 호흡**: cleanup 거리 + doc 갱신 + (선택) sub-component dogfood. 자세한 건 §4.
 
@@ -25,6 +27,7 @@
 | Layer A — 마지막 폴리시 패스 | ✅ 2026-05-19 — 인디고 잔재 제거(History.tsx) + trial-N 주석 22→0 + ADR-007 F19 / ADR-018 F29·F30 doc 정착 + atom 후보 4종 동결 |
 | ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — **Layer A 완벽 도달, 사내 URL 결정만 대기** |
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
+| ▷ Figma 정합 트랙 (2026-05-21 등록) | 🟢 1단계 색 토큰 적용 완료 (ADR-021~025) — §🎨 참조 |
 
 ---
 
@@ -73,6 +76,44 @@
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
 > → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Storybook 카탈로그 (phase 22 Ladle 도입 → 2026-05-20 Storybook 교체)** — `pnpm -F storybook-app dev`로 atom 카탈로그 + 토큰 시각화 + a11y addon. Chromatic은 사내 진입 시(CI 의존) 별도.
 > 잔여 M2.b 후보: Tabs(자리 약함 평가), Select(자리 부족).
+
+---
+
+## 🎨 Figma 정합 트랙 (2026-05-21 등록)
+
+> **목적**: 사용자 Figma 파일 "UI/UX Standardization 2.0"을 디자인 시스템 토큰의 single source of truth로 흡수 — design↔code gap 닫기. `/goal`로 시작된 트랙.
+> **Layer A/B와 직교** — Layer A는 컴포넌트 채움, Layer B는 배포 인프라, 본 트랙은 **토큰 정합**. 셋 다 병행 가능.
+> **상세 계획**: [`FIGMA_SEMANTIC_MAPPING_PLAN.md`](./FIGMA_SEMANTIC_MAPPING_PLAN.md) (충돌 6건 분석 + §8 결정).
+
+### 진행 상태
+
+| Phase | 내용 | ADR | 상태 |
+|---|---|---|---|
+| P0 | semantic 매핑 계획 — 충돌 6건 분석·결정 | — | ✅ 계획서 §8 |
+| P1a | Primitives 127색 도입 (`primitives.ts`) | 021 | ✅ |
+| P1b | `theme-dark` 전수 정합 (Figma Dark 디자인 값) | 022 | ✅ |
+| P1c | `theme-light` drift 6건 교정 | 024 | ✅ |
+| P2a | `buttonTokens` — `button/*` 16색 component 토큰 | 023 | ✅ |
+| P2b | `tableTokens` — `table/*` 25색 component 토큰 | 025 | ✅ |
+| P3 | chrome bar (`tob/buttom/menu bar` 35색) | — | ⏸ 보류 — 앱 셸 chrome, HMI 인접(ADR-001). consumer 컴포넌트 등장 시 |
+| P4 | 장비 상태색 ~41색 (`Idle`~`Sleep2` 등) | — | ⏸ 보류 — HMI form factor(ADR-001), 계획서 충돌 4·5 기결정 |
+
+### 결론 — 1단계 범위 내 Figma 색 토큰 적용 완료
+
+Figma 컬렉션 246색(Primitives 127 + Standardization 2.0 119) 전수 확인 결과:
+
+- 1단계 web 범위 토큰(primitives + theme surfaces/text/borders + button + table)은 **모두 적용**.
+- 남은 76색(chrome bar 35 + 장비 상태색 41)은 **의도적 보류** — HMI 앱 셸 영역이라 ADR-001 범위 밖. 진짜 HMI/Fab product 등장 시 재평가.
+- Figma 파일에 `primary/*`·`status/*`·`graph/*` semantic 그룹은 **부재**. 우리 `primary`(ADR-007 WONIK BLUE)·`statusTokens`(WARP 시안 유래)·`graphTokens`(graph 시안 유래)는 별개 출처라 본 트랙 정합 대상 아님 (ADR-024 후속 항목에 기록).
+
+### Changeset 대기
+
+ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/dark/button/table = minor, light drift = patch. Layer B 사내 진입 시 `@wonik/tokens` 버전 bump에 함께 반영.
+
+### 다음 후보 (트랙 내)
+
+- chrome bar 토큰은 소비 컴포넌트(TopBar/MenuBar 등)가 없어 지금 당기지 않음. demo-fab-monitor가 앱 셸을 토큰화할 자리를 만들면 그때 P3 진입.
+- Figma 파일의 변수명 오타(`tob bar`→top, `buttom bar`→bottom, `oborted`→aborted)는 코드에선 교정됨 — Figma 파일 자체 갱신은 디자이너 작업으로 권장(계획서 §8 충돌 2).
 
 ---
 
