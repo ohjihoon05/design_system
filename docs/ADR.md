@@ -1002,4 +1002,30 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 
 **후속 변경 항목**:
 - [x] `theme-light.ts` 6개 값 교정 + Changeset.
-- [ ] `primary`/`status`/`graph` 색도 `Standardization 2.0` 기준으로 맞출지 결정 (primary는 ADR-007 얽힘).
+- [x] `primary`/`status`/`graph` 색도 `Standardization 2.0` 기준으로 맞출지 결정 → **결론: 불가**. `Standardization 2.0`(119색)을 전수 확인한 결과 `primary/*`·`status/*`·`graph/*` semantic 그룹이 **존재하지 않는다**. 컬렉션은 컴포넌트 영역(`table/`·`button/`·`tob bar/` 등) + 장비 상태색으로만 구성. `primaryLight`(WONIK BLUE, ADR-007)·`statusTokens`(WARP HMI 시안 유래)·`graphTokens`(ADR-013·014, graph 시안 유래)는 이 Figma 파일과 별개 출처라 정합 대상이 아니다 (ADR-025 §범위 참조).
+
+### ADR-025: `tableTokens` 신설 — Figma `Standardization 2.0` Table 컴포넌트 토큰
+**결정**: Figma `Standardization 2.0`의 `table/*` 변수 25개를 `tableTokens` component 토큰으로 신설한다. hex source-of-truth는 `theme-light.ts`(`tableTokensLight`)·`theme-dark.ts`(`tableTokensDark`), runtime `var()` 참조는 `packages/tokens/src/table.ts`. `build-css.ts`는 `--color-table-*` CSS 변수를 emit한다.
+
+**배경**: `FIGMA_SEMANTIC_MAPPING_PLAN.md` §8 충돌 1 결정(hybrid)에 따라, 진짜 컴포넌트 고유 상태는 role 토큰에 흡수하지 않고 component 토큰으로 둔다. Table 셀의 점유 상태(ready/manual/occupied/processed/aborted/empty)는 `statusTokens`(장비 process 상태)와 의미가 겹쳐 보이나 실제로는 Fab 슬롯 점유 상태라 별개 도메인이다. buttonTokens(ADR-023)와 동일한 패턴.
+
+**구조** (group → property, 양 theme 1:1 — leaf 25개):
+
+| group | property | 비고 |
+|-------|----------|------|
+| `surface` | bg, text, outline, titleBg, titleBox, title, littleTable, littleTableOutline | table frame chrome |
+| `ready` / `manual` | base, circle | 점유 상태 + 원형 인디케이터 |
+| `information` | circle | 원형 인디케이터만 |
+| `empty` / `occupied` / `processed` / `aborted` | text, bg, outline | 셀 칩 스타일 |
+
+**네이밍 교정 (충돌 2)**: Figma 변수 오타 `table/oborted` → 코드 `aborted`. Figma 파일 갱신 권장.
+
+**`#2B7FFF` 처리 (충돌 3 / ADR-007)**: `table/information(circle)` Dark 값이 `#2B7FFF`(금지색) → WONIK BLUE `#273E82`로 치환. Light 값 `#155DFC`는 `#2B7FFF`가 아니므로 Figma 값 유지(buttonTokens ADR-023과 동일한 "리터럴 `#2B7FFF`만 치환" 규칙).
+
+**중복 토큰 제외**: `table/` 그룹 밖 standalone `little table(outline)`(Light `#E1E1E4`)는 `table/outline`과 중복-성격이라 매핑 제외(계획서 §2 항목 C). `table/little table(outline)`(Light `#F0F0F3`)만 `surface.littleTableOutline`으로 채택.
+
+**범위 — 의도적 보류**: `Standardization 2.0`의 나머지 변수는 본 ADR 범위 밖.
+- `tob bar/*`·`buttom bar/*`·`menu bar/*` (35개) — 앱 셸 chrome. HMI/Fab 앱 셸 성격이 강해 ADR-001(다른 form factor 1단계 외)에 인접 → **보류**. 진짜 consumer 컴포넌트 등장 시 결정.
+- 장비 상태색 `Idle`~`Sleep2`·`Color1`~`None` (~41개) — 충돌 4·5 기결정대로 **보류**.
+
+**제약 준수**: 새 토큰 추가 → Changeset minor(ADR-020 룰). 각 leaf = `$value` 1개, group당 동일 `$type`(전부 color) → DTCG 1:1 호환(ADR-020). key set은 light↔dark 1:1.

@@ -5,3 +5,4 @@ export * from './spacing';
 export * from './status';
 export * from './graph';
 export * from './button';
+export * from './table';

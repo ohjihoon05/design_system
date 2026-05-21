@@ -87,6 +87,29 @@ export const buttonTokensDark = {
   },
 } as const;
 
+// Table component tokens — Figma "Standardization 2.0" Dark (ADR-025).
+// key set은 tableTokensLight과 1:1. information(circle)의 #2B7FFF는 ADR-007에
+// 따라 WONIK BLUE #273E82로 치환 — 그 외 blue shade는 Figma 값 유지.
+export const tableTokensDark = {
+  surface: {
+    bg: '#1E1E21',
+    text: '#D9D9DC',
+    outline: '#52525C',
+    titleBg: '#252528',
+    titleBox: '#313137',
+    title: '#676771',
+    littleTable: '#1E1E21',
+    littleTableOutline: '#52525C',
+  },
+  ready: { base: '#00D492', circle: '#07895E' },
+  manual: { base: '#D09804', circle: '#FE9A00' },
+  information: { circle: '#273E82' },
+  empty: { text: '#71717B', bg: '#29292F', outline: '#29292F' },
+  occupied: { text: '#8EC5FF', bg: '#1A2F53', outline: '#1D3F76' },
+  processed: { text: '#DAB2FF', bg: '#3A2153', outline: '#512877' },
+  aborted: { text: '#FFA2A2', bg: '#4E1A20', outline: '#701E24' },
+} as const;
+
 export const themeDark = {
   surfaces: surfacesDark,
   borders: bordersDark,
@@ -96,4 +119,5 @@ export const themeDark = {
   statusTokens: statusTokensDark,
   graphTokens: graphTokensDark,
   buttonTokens: buttonTokensDark,
+  tableTokens: tableTokensDark,
 } as const;

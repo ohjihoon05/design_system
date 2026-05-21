@@ -110,6 +110,30 @@ export const buttonTokensLight = {
   },
 } as const;
 
+// Table component tokens — Figma "Standardization 2.0" Light (ADR-025).
+// surface = table chrome, 나머지는 Fab 슬롯 점유 상태. Figma 오타 `oborted`는
+// `aborted`로 교정. table/information(circle) Dark의 #2B7FFF만 ADR-007에 따라
+// WONIK BLUE로 치환되며 Light 값(#155DFC)은 #2B7FFF가 아니므로 Figma 값 유지.
+export const tableTokensLight = {
+  surface: {
+    bg: '#FEFEFE',
+    text: '#71717B',
+    outline: '#E1E1E4',
+    titleBg: '#F4F5F5',
+    titleBox: '#EEEEF0',
+    title: '#B8B8C0',
+    littleTable: '#FEFEFE',
+    littleTableOutline: '#F0F0F3',
+  },
+  ready: { base: '#009966', circle: '#06BE80' },
+  manual: { base: '#E37D15', circle: '#FE9A00' },
+  information: { circle: '#155DFC' },
+  empty: { text: '#9F9FA9', bg: '#ECECEE', outline: '#EAEAEC' },
+  occupied: { text: '#1447E6', bg: '#DBEAFE', outline: '#BBDCFF' },
+  processed: { text: '#8200DB', bg: '#F3E8FF', outline: '#E9D1FF' },
+  aborted: { text: '#C10007', bg: '#FFE2E2', outline: '#FFCACA' },
+} as const;
+
 export const themeLight = {
   surfaces: surfacesLight,
   borders: bordersLight,
@@ -119,4 +143,5 @@ export const themeLight = {
   statusTokens: statusTokensLight,
   graphTokens: graphTokensLight,
   buttonTokens: buttonTokensLight,
+  tableTokens: tableTokensLight,
 } as const;

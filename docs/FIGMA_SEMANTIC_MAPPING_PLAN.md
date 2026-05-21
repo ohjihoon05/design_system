@@ -1,7 +1,7 @@
 # Figma `Standardization 2.0` Semantic 토큰 매핑 계획
 
-> 상태: **Phase 1 진행 중** (§4 충돌 1·2·4 결정 완료 — §8 참조)
-> 작성: 2026-05-20 · 선행: ADR-021 (Primitives 도입 완료)
+> 상태: **Phase 1·2 완료** (Phase 1 surfaces/text/borders → ADR-022·024, Phase 2 buttonTokens → ADR-023 + tableTokens → ADR-025). Phase 3(chrome bar)·4(장비 상태색)는 보류.
+> 작성: 2026-05-20 · 갱신: 2026-05-21 · 선행: ADR-021 (Primitives 도입 완료)
 
 ## 1. 배경 & 목표
 
@@ -102,13 +102,13 @@ semantic 값 대부분이 이미 `Primitives` hex와 일치(예: `button default
 
 각 단계 = ADR 1개 + Changeset 1개 (CLAUDE.md 규칙).
 
-| Phase | 내용 | 선행 |
-|-------|------|------|
-| **0** | 본 계획서 리뷰 — 충돌 1·4·5 결정 | — |
-| **1** | role 매핑: `surfaces`/`text`/`borders`를 Figma Light/Dark 값으로 확장·정합 + `theme-dark.ts` 임시값 대체 | Phase 0 |
-| **2** | component 토큰: `buttonTokens`(3-state), `tableTokens`(셀 상태) 신설 | Phase 1 |
-| **3** | signal·기타 잔여 토큰 정리 | Phase 2 |
-| **4** | 장비 상태색 41개 — 범위 IN 결정 시에만 | 충돌 4 결정 |
+| Phase | 내용 | 선행 | 상태 |
+|-------|------|------|------|
+| **0** | 본 계획서 리뷰 — 충돌 1·4·5 결정 | — | ✅ §8 |
+| **1** | role 매핑: `surfaces`/`text`/`borders`를 Figma Light/Dark 값으로 확장·정합 + `theme-dark.ts` 임시값 대체 | Phase 0 | ✅ ADR-022·024 |
+| **2** | component 토큰: `buttonTokens`(3-state), `tableTokens`(셀 상태) 신설 | Phase 1 | ✅ ADR-023·025 |
+| **3** | chrome bar(`tob/buttom/menu bar`)·signal 잔여 토큰 | Phase 2 | ⏸ 보류 — 앱 셸 chrome, HMI 인접(ADR-001). consumer 컴포넌트 등장 시 |
+| **4** | 장비 상태색 41개 — 범위 IN 결정 시에만 | 충돌 4 결정 | ⏸ 보류 (충돌 4·5) |
 
 ## 7. 미해결 질문 (디자이너/사용자 확인 필요)
 

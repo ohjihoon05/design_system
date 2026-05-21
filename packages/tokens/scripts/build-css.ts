@@ -93,6 +93,15 @@ const colorVarLines = (theme: Theme): string[] => {
     }
   }
 
+  // Table (component — Figma Standardization 2.0)
+  section('Table (component)');
+  for (const [groupKey, group] of Object.entries(theme.tableTokens)) {
+    const groupKebab = camelToKebab(groupKey);
+    for (const [propKey, value] of Object.entries(group as Record<string, string>)) {
+      push(`--color-table-${groupKebab}-${camelToKebab(propKey)}`, value);
+    }
+  }
+
   // Interface Variables (ADR-010, ADR-011) — host product와의 contract.
   // host(ppt 등)가 같은 이름을 정의하면 cascade로 host 우선.
   // 미정의 시 우리 internal token으로 fallback.
