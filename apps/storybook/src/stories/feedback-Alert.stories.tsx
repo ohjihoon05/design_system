@@ -7,7 +7,7 @@ export const Basic = () => (
   <Alert>
     <Stack gap={1}>
       <Text variant="titleSm" weight="medium" style={{ color: 'inherit' }}>3 unacknowledged critical alarms</Text>
-      <Text variant="labelSm" style={{ color: 'inherit', opacity: 0.85 }}>· CVD-01, ETCH-02, ALD-01</Text>
+      <Text variant="labelSm" style={{ color: 'inherit' }}>· CVD-01, ETCH-02, ALD-01</Text>
     </Stack>
   </Alert>
 );
