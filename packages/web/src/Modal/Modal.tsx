@@ -155,6 +155,7 @@ function ModalImpl({
   const mergedClassName = className ? `wonik-modal ${className}` : 'wonik-modal';
 
   return createPortal(
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- backdrop click is mouse-only convenience for dismiss; keyboard dismiss (ESC) is handled by the inner role="dialog" panel via onKeyDown. See ADR-027 escape-hatch policy.
     <div
       className="wonik-modal-backdrop"
       style={backdropStyle}

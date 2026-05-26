@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Input, Stack, Text } from '@wonik/web';
 
-export default { title: 'input/Input' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'input/Input', parameters: { a11y: { test: 'todo' } } };
 
 export const Basic = () => {
   const [v, setV] = useState('');

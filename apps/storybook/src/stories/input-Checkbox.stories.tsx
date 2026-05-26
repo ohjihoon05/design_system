@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Checkbox, Stack, Text } from '@wonik/web';
 
-export default { title: 'input/Checkbox' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'input/Checkbox', parameters: { a11y: { test: 'todo' } } };
 
 export const Basic = () => {
   const [c, setC] = useState(false);
   return (
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control -- Checkbox is implicit-control inside <label>. See ADR-027.
     <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
       <Checkbox checked={c} onChange={(e) => setC(e.target.checked)} />
       <Text variant="label" color="dark">동의합니다</Text>

@@ -337,6 +337,7 @@ function InputMatrixSection() {
       <Stack direction="column" gap={3}>
         <Text variant="label" color="secondary" as="h3">focus (md, autoFocus)</Text>
         <Box style={{ width: 200 }}>
+          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- sandbox demo of autoFocus visual state; not shipping consumer code. See ADR-027. */}
           <Input size="md" defaultValue="autofocus" autoFocus />
         </Box>
       </Stack>

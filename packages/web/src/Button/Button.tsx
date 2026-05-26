@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react';
 import {
   surfaces,
-  text,
   statusTokens,
   space,
   radius,

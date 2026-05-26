@@ -160,6 +160,7 @@ export function InlineEditableText({
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={handleInputKeyDown}
         onBlur={handleInputBlur}
+        // eslint-disable-next-line jsx-a11y/no-autofocus -- intentional: entering edit mode requires immediate cursor focus, this is the entire UX promise of inline-editing. See ADR-027.
         autoFocus
       />
     );

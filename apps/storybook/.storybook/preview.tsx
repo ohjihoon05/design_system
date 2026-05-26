@@ -1,4 +1,5 @@
 import type { Decorator, Preview } from '@storybook/react-vite';
+import * as a11yAddonAnnotations from '@storybook/addon-a11y/preview';
 import { ThemeProvider, ToastProvider } from '@wonik/web';
 import '@wonik/tokens/tokens.css';
 import './global.css';
@@ -20,6 +21,9 @@ const withWonikProviders: Decorator = (Story, context) => {
 
 const preview: Preview = {
   decorators: [withWonikProviders],
+  // ADR-027: addon-a11y runs axe-core afterEach story render → throws on Serious violations.
+  // Storybook 10.4 exports plain `afterEach` (not `experimental_afterEach`). Spread the preview annotations.
+  ...a11yAddonAnnotations,
   initialGlobals: {
     theme: 'light',
   },

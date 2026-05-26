@@ -1,6 +1,7 @@
 import { ProgressBar, Stack, Text } from '@wonik/web';
 
-export default { title: 'display/ProgressBar' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'display/ProgressBar', parameters: { a11y: { test: 'todo' } } };
 
 export const Tones = () => (
   <Stack gap={4} style={{ maxWidth: 360 }}>

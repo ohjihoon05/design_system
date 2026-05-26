@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { InlineEditableText, Stack, Text, Button } from '@wonik/web';
 
-export default { title: 'input/InlineEditableText' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'input/InlineEditableText', parameters: { a11y: { test: 'todo' } } };
 
 export const Basic = () => {
   const [v, setV] = useState('Click me to edit');

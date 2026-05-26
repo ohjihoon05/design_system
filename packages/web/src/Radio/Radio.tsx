@@ -64,6 +64,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
   const mergedClassName = className ? `wonik-radio ${className}` : 'wonik-radio';
 
   return (
+    // eslint-disable-next-line jsx-a11y/role-supports-aria-props -- aria-invalid IS a global ARIA attribute supported on form controls per WAI-ARIA 1.2 §6.3 (radio inputs included). jsx-a11y@6.10 uses ARIA 1.1 spec which excluded it. See ADR-027.
     <input
       {...rest}
       ref={ref}

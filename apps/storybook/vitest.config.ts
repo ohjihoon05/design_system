@@ -35,6 +35,12 @@ export default defineConfig({
         },
         test: {
           name: 'storybook',
+          setupFiles: ['./.storybook/vitest.setup.ts'],
+          // ADR-027 backlog: overlay-Toast stories fail with a decorator runtime issue
+          // (useToast outside ToastProvider) that is unrelated to a11y — defer per
+          // backlog decision B until the decorator-in-vitest scoping is fixed.
+          // See TODOS.md "[a11y-gate-backlog]" section.
+          exclude: ['**/overlay-Toast.stories.tsx'],
           browser: {
             enabled: true,
             headless: true,

@@ -3,7 +3,8 @@ import type { StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { Switch, Stack, Text } from '@wonik/web';
 
-export default { title: 'input/Switch' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'input/Switch', parameters: { a11y: { test: 'todo' } } };
 
 export const Basic = () => {
   const [on, setOn] = useState(true);

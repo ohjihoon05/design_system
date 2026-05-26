@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { SortableList, Stack, Text, Card, Badge, InlineEditableText } from '@wonik/web';
 
-export default { title: 'layout/SortableList' };
+// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
+export default { title: 'layout/SortableList', parameters: { a11y: { test: 'todo' } } };
 
 type Item = { id: string; name: string };
 const SEED: Item[] = [
