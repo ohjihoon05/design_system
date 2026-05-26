@@ -1045,5 +1045,53 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - [x] `eslint.config.mjs` + 루트 devDeps + lint 스크립트 3개(루트·web·tokens) 실제화.
 - [x] storybook story 1건 `rules-of-hooks` 위반 수정.
 - [x] `prepublishOnly`에 `pnpm lint` 추가 — `@wonik/web`·`@wonik/tokens` publish 게이트로 승격 완료.
-- [ ] pre-commit hook 또는 CI에서 `pnpm lint` 자동 실행 — 현재 `.github/` CI 없음. 도입은 ADR 철학 §3(자동화 전 단순함) 고려한 별도 결정.
+- [x] pre-commit hook 자동 실행 — ADR-027 cycle에서 closure (`simple-git-hooks` + `lint-staged`, 2026-05-26).
+- [ ] CI에서 `pnpm lint` 자동 실행 — Phase C (사내 PC 진입 후) `.github/workflows/ci.yml` 작성 시 함께.
 - [ ] 안정화 후 type-checked 룰 / `eslint-plugin-storybook` 도입 검토.
+
+---
+
+### ADR-027: a11y 검출 loop 폐쇄 — `eslint-plugin-jsx-a11y` + Storybook `addon-a11y` test mode + pre-commit hook
+
+**결정**: a11y 검출을 "사람이 audit 할 때만 catch"에서 "machine-enforced at first push"로 승격한다. 세 layer:
+
+1. **정적(lint) 검사** — `eslint.config.mjs` flat config에 `eslint-plugin-jsx-a11y` recommended preset block 추가(TSX scope). `pnpm lint` 호출 시 jsx-a11y 룰셋이 자동 적용.
+2. **런타임(브라우저) 검사** — `@storybook/addon-a11y`의 `experimental_afterEach`(Storybook 10.4의 plain `afterEach`)를 `apps/storybook/.storybook/preview.tsx`에 spread. `@storybook/addon-vitest` + Chromium headless(Playwright)로 각 story 렌더 후 axe-core scan. Serious+ violation에서 throw → `pnpm -F storybook-app test` exit 1.
+3. **시점 검사(pre-commit)** — `simple-git-hooks` + `lint-staged`로 staged `packages/web/src/**/*.{ts,tsx}` + `apps/**/*.{ts,tsx}`에 ESLint `--max-warnings 0` 실행. violation 있으면 commit 자체 거부. `pnpm setup:hooks` 1회 호출로 fresh clone 설치(`prepare` script는 의도적으로 사용 안 함 — husky 류 자동-install 부작용 회피).
+
+**이유**: (a) **/design-review (2026-05-26)이 Button + Alert에 WCAG 2.1 AA color-contrast 위반(3.9:1, 4.5:1 미달)을 manual audit에서 catch.** `addon-a11y`는 이미 violation을 감지하고 있었으나 자동 gate가 없어 Accessibility 탭에서 무한정 방치 — 두 번 같은 패턴이 반복됐고, 세 번째도 시간 문제. detection→fix loop의 *enforce 단계까지 닫는* 것이 본 ADR의 본질. (b) **`pnpm lint`/`pnpm test:a11y`만으로는 부족** — 사람이 매번 호출해야 함 = 같은 실패 모드. pre-commit hook이 "잊어버려도 막힘"을 보장. (c) **3 layer는 각자 다른 class를 잡음** — lint는 *정적으로 추론 가능한* 구조 위반(autofocus, label association, role-supports-aria-props); 런타임 axe는 *실제 렌더 결과* 위반(color-contrast, dynamic ARIA); pre-commit은 *시점*을 잡음(local enforce가 늦은 발견을 막음). 셋 다 필요. (d) **`simple-git-hooks` 선택 이유** — `husky`는 `prepare` script로 자동 install되지만 그 부작용(`package.json` `prepare` 항목이 monorepo workspace install / CI / Docker build 등에서 예기치 못한 동작)이 커서 본 시스템 1인 운영 부담과 충돌. `simple-git-hooks`는 명시적 `pnpm setup:hooks` 1회 호출만 — opt-in. (e) **GitHub Actions wiring은 deferred** — atom count 23 + dogfood consumer 1 + spike에서 23 violation 발견 — 이 규모에서는 pre-commit + Storybook local이 80% 가치. CI는 atom count ≥40 OR 3rd violation slip OR 사내 PC 진입 (Phase C) 트리거 충족 시 ADR-028로 promote.
+
+**대안 검토**:
+- **Approach B (devex-first quick wins, a11y 나중)**: /autoplan dual-voice에서 reject — README + tokens warn polish 후 a11y gate 미루면 그동안 새 violation 누적. lake-boiling principle 역행.
+- **Approach C (한 PR에 a11y + README + CONTRIB + warn 묶음)**: reject — conventional commits 정신 위반(현재 1단계 commits 모두 single-concern), revert 위험.
+- **`husky` 대신**: reject — 1인 운영 부담.
+- **GitHub Actions만, pre-commit 없음**: reject — 사내 PC 진입 시점 미정. 그동안 gate 없음 = 현 상태.
+
+**도입 결과** (2026-05-26 verification):
+- 정적: `pnpm lint` → 0 errors. 6개 pre-existing finding 정리(Modal backdrop `no-static-element-interactions`, InlineEditableText `no-autofocus`, Radio `role-supports-aria-props`, demo-fab-monitor checkbox label, Storybook checkbox story, web-sandbox autoFocus demo — 모두 justified `// eslint-disable-next-line jsx-a11y/<rule> -- <justification>` 패턴).
+- 런타임: `pnpm -F storybook-app test` → 24 test files / 103 tests pass, 0 fail. 19개 pre-existing a11y violation (9개 story 파일)을 `parameters: { a11y: { test: 'todo' } }` 태그로 backlog 처리 — new violation만 gate fail, 옛 것은 burndown 대기(`TODOS.md` `[a11y-gate-backlog]` 섹션).
+- pre-commit: `.git/hooks/pre-commit` 설치 확인. dry-run 시 `lint-staged could not find any staged files matching configured tasks` (정상).
+- Toast 4개 story는 a11y 무관한 decorator runtime issue → `vitest.config.ts test.exclude`로 일단 분리(`TODOS.md` follow-up).
+
+**ESLint v10 vs jsx-a11y peer**: `eslint-plugin-jsx-a11y@6.10.2`는 `peerDependencies.eslint: "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9"`로 v10 미선언. **런타임은 v10에서 정상 작동** — cosmetic peer warning만 발생(`pnpm install` 시 1줄). jsx-a11y v7 release까지 워크어라운드 채택. v7 release 시 단순 bump.
+
+**escape-hatch policy** (정당화 disable 규칙):
+- **per-line**: `// eslint-disable-next-line jsx-a11y/<rule> -- <justification>` — 정당화 주석 필수. `packages/web/` 내부의 disable은 reviewer 승인 필요. 컨슈머 앱(`apps/demo-fab-monitor`/`apps/web-sandbox` 등)의 disable은 자유.
+- **per-story**: `parameters: { a11y: { config: { rules: [{ id: '<rule>', enabled: false }] } } }` — 토큰 swatch처럼 의도적 low-contrast preview에 사용. ADR reference 주석 필수.
+- **per-story `test: 'todo'`**: a11y 탭에서는 violation 보여주되 gate fail 안 함. backlog burndown 동안의 transition 상태. burndown 시 제거.
+
+**제약/범위**:
+- `eslint-plugin-jsx-a11y@^6.10.2`, `simple-git-hooks@^2.13.1`, `lint-staged@^17.0.5`, `@storybook/addon-vitest@^10.4.1`, `vitest@^4.1.7`, `@vitest/browser@^4.1.7`, `@vitest/browser-playwright@^4.1.7`, `playwright@^1.60.0` — 루트/`apps/storybook` devDependencies.
+- Storybook trio bump 10.4.0 → 10.4.1 (addon-vitest peer 요건).
+- 컨슈머 영향 0 — `@wonik/web` 빌드 산출물 unchanged. Changeset은 patch only (Button.tsx의 dead import 1줄 cleanup, Modal/InlineEditableText/Radio에 inline-disable 주석 추가).
+- Phase 1 범위 내. 새 토큰·새 컴포넌트 0.
+
+**후속 변경 항목**:
+- [x] `eslint-plugin-jsx-a11y` 도입 + 6개 finding 정리.
+- [x] Storybook addon-a11y test mode wiring + 19개 backlog 태그.
+- [x] `simple-git-hooks` + `lint-staged` pre-commit gate.
+- [x] `lint:a11y` / `test:a11y` / `setup:hooks` 스크립트 추가 (discoverability).
+- [ ] **19개 a11y backlog burndown** — `TODOS.md` `[a11y-gate-backlog]` 9개 파일별 우선순위로. burndown ≤ 5 시점에 H.7 fixture(고정 regression story) 재평가.
+- [ ] **`.github/workflows/ci.yml` PR gate** — Phase C (사내 PC 진입 후). `pnpm lint:a11y` + `pnpm test:a11y`를 PR 머지 조건으로.
+- [ ] **CONTRIBUTING.md** — pre-commit bypass(`--no-verify`) 정책 + escape-hatch 사용 가이드.
+- [ ] **ADR-028 (트리거: atom count ≥40 OR 3번째 violation slip)** — axe severity threshold를 Serious에서 Moderate로 tighten.
