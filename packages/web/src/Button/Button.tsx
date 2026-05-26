@@ -38,12 +38,12 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   },
   secondary: {
     background: interfaceColors.surface,
-    color: text.primary,
+    color: interfaceColors.text,
     border: `1px solid ${interfaceColors.border}`,
   },
   text: {
     background: 'transparent',
-    color: text.primary,
+    color: interfaceColors.text,
     border: 'none',
   },
   outline: {
