@@ -6,6 +6,33 @@
 
 ---
 
+## 큰 그림 한장
+
+```mermaid
+flowchart LR
+  subgraph monorepo["📦 이 monorepo"]
+    direction TB
+    T["@wonik/tokens<br/>━━━━━━━━━━━<br/>• 색 (#273E82 등)<br/>• spacing·radius<br/>• typography<br/>CSS 변수 + JS export"]
+    W["@wonik/web<br/>━━━━━━━━━━━<br/>24 atoms<br/>Button·Input·Modal<br/>Card·Alert·Switch<br/>...etc"]
+    T -->|토큰만 의존| W
+  end
+
+  H1["🖥️ ppt<br/>(첫 dogfood)"]
+  H2["🖥️ demo-fab-monitor<br/>(진행 중)"]
+  H3["🖥️ host product N..."]
+
+  W -->|import 컴포넌트| H1
+  W -->|import 컴포넌트| H2
+  W -->|import 컴포넌트| H3
+  T -.->|tokens.css 1회| H1
+  T -.->|tokens.css 1회| H2
+  T -.->|tokens.css 1회| H3
+```
+
+토큰이 컴포넌트에 흘러가고, 컴포넌트가 사내 host product 여러 개에 import됨. host는 자기 색을 갖고 싶으면 7개 interface 변수만 덮어쓰면 됨 (아래 cascade 섹션 참조).
+
+---
+
 ## 60초 시작
 
 > 본격 사용 가이드는 [`docs/QUICKSTART.md`](docs/QUICKSTART.md), 설치는 [`docs/INSTALL.md`](docs/INSTALL.md). 본 섹션은 빠른 미리보기.
@@ -91,6 +118,22 @@ WONIK CI 색: **#273E82** (BLUE, primary) + **#ACACAC** (GRAY, secondary) — AD
 ## host 색 덮어쓰기 (cascade)
 
 host product가 자체 색을 갖고 있으면 7개 interface 변수만 정의하면 자동으로 우리 컴포넌트가 그 색을 따라감.
+
+```mermaid
+flowchart LR
+  Q{"host product가<br/>--color-primary<br/>정의했나?"}
+  HOST["✅ host의 색 사용<br/>(예: #1E40AF)"]
+  INT["🎨 @wonik/tokens internal<br/>default 사용<br/>(예: #273E82 WONIK BLUE)"]
+  BTN["우리 컴포넌트<br/>(Button bg 등)"]
+
+  Q -->|있음| HOST --> BTN
+  Q -->|없음| INT -.-> BTN
+
+  classDef hostStyle fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+  classDef intStyle fill:#fef3c7,stroke:#f59e0b,color:#78350f
+  class HOST hostStyle
+  class INT intStyle
+```
 
 ```css
 :root {
