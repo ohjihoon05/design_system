@@ -25,7 +25,7 @@ export const Sizes = () => (
 
 export const VariantSizeMatrix = () => (
   <Stack gap={3}>
-    {(['primary', 'secondary', 'outline', 'danger'] as const).map((v) => (
+    {(['primary', 'secondary', 'text', 'outline', 'danger'] as const).map((v) => (
       <Stack key={v} gap={2}>
         <Text variant="labelSm" color="dim">variant="{v}"</Text>
         <Stack direction="row" gap={2} align="center">
