@@ -24,15 +24,15 @@
     "dist"
   ],
   "publishConfig": {
-    "access": "restricted",
-    "registry": "http://127.0.0.1:14873/"
+    "access": "restricted"
   },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src",
-    "prepublishOnly": "pnpm lint && pnpm build && pnpm test"
+    "preflight:publish": "node -e \"if(!process.env.WONIK_REGISTRY_OK){console.error('Set WONIK_REGISTRY_OK=1 to publish');process.exit(1)}\"",
+    "prepublishOnly": "pnpm preflight:publish && pnpm lint && pnpm build && pnpm test"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

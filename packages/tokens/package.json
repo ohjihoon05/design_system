@@ -27,14 +27,14 @@
     "dist"
   ],
   "publishConfig": {
-    "access": "restricted",
-    "registry": "http://127.0.0.1:14873/"
+    "access": "restricted"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts",
     "test": "echo 'no tests yet'",
     "lint": "eslint src",
-    "prepublishOnly": "pnpm lint && pnpm build && pnpm test"
+    "preflight:publish": "node -e \"if(!process.env.WONIK_REGISTRY_OK){console.error('Set WONIK_REGISTRY_OK=1 to publish');process.exit(1)}\"",
+    "prepublishOnly": "pnpm preflight:publish && pnpm lint && pnpm build && pnpm test"
   },
   "devDependencies": {
     "tsup": "^8.3.5",
