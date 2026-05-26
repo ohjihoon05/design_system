@@ -64,7 +64,16 @@ burndown 한 파일씩 끝나면 해당 파일의 `parameters: { a11y: { test: '
 - [x] 2026-05-26 H.0 spike (3개 precondition 검증 PASS)
 - [x] 2026-05-26 H.3 publishConfig 정리 (commit `cba3a46`)
 - [x] 2026-05-26 H.1 README (commit `6b858b3`)
-- [x] 2026-05-26 H.5 jsx-a11y ESLint wiring + 6 finding triage
-- [x] 2026-05-26 H.6 Storybook addon-a11y + vitest browser mode + 19 todo tag
+- [x] 2026-05-26 H.5 jsx-a11y ESLint wiring + 6 finding triage (commit `3e8f181`)
+- [x] 2026-05-26 H.6 Storybook addon-a11y + vitest browser mode + 19 todo tag (commit `3e8f181`)
+- [x] 2026-05-26 H.8 + H.10 pre-commit hook (simple-git-hooks + lint-staged) + `lint:a11y`/`test:a11y` scripts
 
-남은 cycle: H.7 (permanent regression fixture + a11y-gate test), H.8 (pre-commit hook), H.2 (tokens.css silent-failure warn), H.4 (ADR-027 본문 작성), H.11/H.12/H.13/H.14 (Storybook intro + CONTRIBUTING + 자잘한 finding).
+## [Deferred — 이번 cycle에서 의도적으로 skip]
+
+- **H.7 (permanent regression fixture + a11y-gate test)**: 원래 plan은 fixture story + vitest test + ESLint self-test 3개 파일이었으나, H.6 결과 19개 todo-tagged 스토리가 이미 *gate 작동의 산증거*로 backlog에 존재 → 별도 fixture는 중복. **재평가 트리거**: backlog burndown ≤ 5 시점, 그때 1개 fixture 남겨서 gate self-test.
+- **H.2 (tokens.css silent-failure warn)**: 다음 cycle. 사내 npm registry 결정 후로 미뤄도 OK — `pnpm` workspace 환경에서는 자동 link라 silent failure가 거의 안 일어남. 외부 publish 직전에 처리.
+- **H.4 (ADR-027 본문 작성)**: 다음 cycle. 현재 ADR-027 reference는 코드 주석 + TODOS placeholder만. 본문은 implementation 완료된 지금 한 호흡으로 쓰면 됨.
+- **H.11 (Storybook Introduction.mdx 랜딩)**: 다음 cycle. 30분 작업, findability 큰 win이지만 a11y cycle과 직교.
+- **H.12 (CONTRIBUTING.md)**: 다음 cycle. 1페이지, 3회 evidence rule + ADR + Changesets 흐름 + pre-commit bypass 정책.
+- **H.13 (stale story ID grep+fix)**: 다음 cycle. 10분 작업.
+- **H.14 (VariantSizeMatrix `text` row)**: 다음 cycle. 1줄 추가.
