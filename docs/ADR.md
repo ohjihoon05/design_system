@@ -907,3 +907,143 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - [x] 카탈로그 static build output(`apps/storybook/storybook-static/`) gitignore 처리 (관련 cleanup, 별 이슈는 아님).
 - [ ] 새 토큰 PR 리뷰 시 본 ADR 룰 1·2·3 check.
 - [ ] DTCG 변환기는 외부 trigger 시(Figma Variables / Style Dictionary / 사외 디자이너 요청) 그때 작성.
+
+### ADR-021: Figma `Primitives` 색 팔레트를 raw primitive layer로 도입
+**결정**: Figma "UI/UX Standardization 2.0" 파일의 `Primitives` 컬렉션(single mode, 127 color)을 `packages/tokens/src/primitives.ts`에 hue별 그룹(`white`/`gray`/`green`/`orange`/`blue`/`purple`/`red`/`cyan`/`yellow`/`pink`)으로 도입한다. leaf 이름은 Figma와 **faithful 1:1**로 유지한다(`100b`..`100j`, `500b`..`500d` 포함). 이 레이어는 의미(semantic)·테마(theme) 토큰이 **아니며**, 향후 semantic 토큰이 참조할 raw 참조 팔레트다.
+
+**이유**: (a) **2-tier 토큰 체계의 base** — 사용자가 Figma에서 정의한 raw 팔레트를 코드로 동기화해, 후속 semantic 매핑(`Standardization 2.0` Dark/Light 컬렉션)이 primitive를 참조하는 구조의 기반을 만든다. (b) **단계적 적용** — 사용자 결정(2026-05-20)으로 "Primitives부터" 먼저 정합하고 semantic 매핑은 다음 단계로 분리. (c) **Figma↔code 동기화 우선** — leaf 이름을 Figma 그대로 유지하면 디자인 파일과 코드 팔레트가 1:1 대응돼 향후 재추출·비교가 mechanical하다.
+
+**`#2B7FFF` 처리**: Figma `Blue/500 = #2B7FFF`는 해당 디자인 파일의 사실상 primary blue지만, **ADR-007이 `#2B7FFF`를 명시적으로 금지**한다(Primary = WONIK BLUE `#273E82`). 사용자 결정(2026-05-20: "WONIK BLUE로 매핑")에 따라 `primitives.blue['500']`을 `#273E82`로 치환한다. 코드 토큰이 canon이며 Figma 파일을 거기에 맞춘다. (`primitives.ts`에 inline 주석으로 근거 명시.)
+
+**DTCG (ADR-020 준수)**: leaf 1개 = `$value` 1개, 모든 group이 `color` $type, single mode라 light/dark 분리 없음. shorthand·template literal 없음.
+
+**범위/형태**: primitive는 mode-independent raw hex이므로 `theme-light.ts`/`theme-dark.ts`처럼 CSS 변수로 emit하지 않고 **TypeScript 상수로만** export한다(테마 전환 대상이 아님). semantic 토큰이 primitive를 참조하게 되는 시점에 필요하면 CSS emit을 검토한다.
+
+**트레이드오프**: (1) Figma 네이밍이 정돈된 ramp가 아니라(`100b`~`100j` 등 grab-bag) 가독성이 떨어진다 — faithful 유지를 택했으므로 정리는 후속 과제. (2) `blue.500`은 치환 결과 인접 `blue.400`/`blue.500b`(밝은 블루)와 톤이 튄다 — Figma 파일의 `Blue/500`도 `#273E82`로 갱신하면 디자인·코드가 완전히 일치한다(권장 후속).
+
+**후속 변경 항목**:
+- [x] `packages/tokens/src/primitives.ts` 작성 + `index.ts` re-export.
+- [~] `Standardization 2.0` Dark/Light semantic 토큰 매핑 — Phase 1(surfaces/borders/text Dark) ADR-022로 진행. button/table component 토큰은 Phase 2.
+- [ ] `theme-light.ts`/`theme-dark.ts`의 raw hex가 primitive를 참조하도록 리팩터(2-tier 완성).
+- [ ] (권장) Figma `Blue/500` 변수를 `#273E82`로 갱신해 디자인·코드 정합.
+
+### ADR-022: `theme-dark.ts` surfaces·borders·text를 Figma `Standardization 2.0` Dark 값으로 정합
+**결정**: `theme-dark.ts`의 `surfacesDark`(9)·`bordersDark`(4)·`textDark`의 `primary`/`secondary`/`dim`(3)을 Figma "UI/UX Standardization 2.0" 파일 `Standardization 2.0` 컬렉션의 **Dark 모드 디자인 값**으로 교체한다. 매핑 계획·결정 근거는 [`docs/FIGMA_SEMANTIC_MAPPING_PLAN.md`](./FIGMA_SEMANTIC_MAPPING_PLAN.md) 참조. semantic 토큰 적용의 **Phase 1**.
+
+**이유**: (a) `theme-dark.ts`는 도입 당시 주석이 명시했듯 ppt의 slate-900 계열 임시값이었고 "Refinable by designer later" 상태였다. Figma `Standardization 2.0`이 그 디자이너 refine 결과물이다. (b) `theme-light.ts`는 검토 결과 **이미 Figma Light 값과 정합**(`surface`=`table/bg` Light `#FEFEFE`, `surfaceSubtle`=`table/title bg` Light `#F4F5F5` 등)되어 변경 불필요 — 실질 gap은 Dark뿐. (c) hybrid 접근(매핑 계획서 §8 결정)에서 배경·외곽선·글자는 role 토큰으로 흡수하는 1차 대상.
+
+**매핑 (Figma `Standardization 2.0` Dark → role key)**:
+
+| role | key | Dark hex | Figma 출처 |
+|------|-----|----------|------------|
+| surfaces | canvas | `#343434` | `background` |
+| surfaces | surface | `#1E1E21` | `table/bg` |
+| surfaces | surfaceSubtle | `#252528` | `table/title bg` |
+| surfaces | surfaceInset | `#1F1F1F` | `menu bar/bg` · `buttom bar/bg` |
+| surfaces | surfaceMid | `#313137` | `table/title box` |
+| surfaces | surfaceWhite | `#FFFFFF` | (불변 — literal white, Switch thumb 등) |
+| surfaces | darkBase/Header/Hover | `#161619`/`#1B1B1F`/`#242429` | Primitives Gray/950·900g·900d (dark 패널 ladder) |
+| borders | light/mid/dark/panelDark | `#313137`/`#52525C`/`#676771`/`#52525C` | `table/title box` · `table/outline` · `table/title` |
+| text | primary/secondary/dim | `#E0E0E3`/`#D9D9DC`/`#71717B` | `tob bar/text` · `table/text` · `table/empty(text)` |
+
+**범위 밖 (후속 phase)**:
+- `textDark`의 `dark`/`onDark`/`onDarkVal`/`onDarkDim` — light↔dark surface 반전(inversion) 헬퍼라 Figma 영역 토큰과 직접 매핑 안 됨. 별도 pass.
+- `primaryDark`(WONIK BLUE dark 조정) — primary 색은 ADR-007 영역, 본 ADR 미변경.
+- `statusTokens`/`graphTokens` Dark — 현재 light와 공유. Dark 대비 튜닝은 후속.
+- `button`/`table` component 토큰 — Phase 2 (hybrid: 컴포넌트 고유 상태는 component 토큰 신설).
+- 장비 상태색 41개 — 매핑 계획서 §8 결정으로 보류.
+
+**제약 준수**: 값만 변경, key set 불변 → `theme-light`과 1:1 유지(ADR-020 룰 4, build-css.ts). DTCG 룰(leaf 1개 = $value 1개) 유지.
+
+**트레이드오프**: dark 패널 ladder(`darkBase`/`Header`/`Hover`)는 Figma에 대응 영역 토큰이 없어 Primitives Gray Dark 계열에서 선택 — 디자이너 재조정 여지 있음.
+
+**후속 변경 항목**:
+- [x] `theme-dark.ts` surfaces/borders/text(3) 갱신 + Changeset.
+- [ ] Phase 1b: `textDark` inversion 토큰(`dark`/`onDark*`) 정리.
+- [~] Phase 2: `button`/`table` component 토큰 신설 — button은 ADR-023으로 완료, table은 Phase 2b.
+
+### ADR-023: `buttonTokens` component 토큰 신설 — Figma `Standardization 2.0` button (Phase 2a)
+**결정**: Figma "UI/UX Standardization 2.0" `Standardization 2.0` 컬렉션의 `button` 토큰 16개를 `@wonik/tokens`에 **component 토큰**으로 신설한다. 3-state(`default`/`pressed`/`disabled`) × `{bg, outline, imageBg, image, text}` 구조이며 `pressed`만 `top`(상단 accent)을 추가로 갖는다. hex source는 `theme-light.ts`/`theme-dark.ts`(`buttonTokensLight`/`buttonTokensDark`), runtime `var()` export는 `button.ts`. 매핑 계획서 §5 hybrid 접근의 "컴포넌트 고유 상태 → component 토큰" 1차 적용.
+
+**이유**: (a) **hybrid 결정(매핑 계획서 §8)** — 버튼 3-state는 배경/글자처럼 role로 흩어 담을 수 없는 컴포넌트 고유 상태라 component 토큰이 맞다. (b) **기존 패턴 재사용** — `statusTokens`/`graphTokens`와 동일한 2-level(group→property) 구조 + `build-css.ts` 동일 loop로 `--color-button-{state}-{prop}` emit. 새 메커니즘 도입 없음.
+
+**`#2B7FFF` 처리**: `button pressed/outline`·`text`·`top`이 Figma에서 `#2B7FFF`(ADR-007 금지)다. 결정 3(2026-05-20)에 따라 `#273E82`(WONIK BLUE)로 치환. `pressed`의 그 외 blue shade(`bg #F4F8FF`, `imageBg #D6E6FF`, `image #165EFC` 등)는 금지 hex가 아니므로 **Figma 값 그대로 유지** — 사용자의 디자인 의도 보존. 결과적으로 `pressed`의 outline/text/top은 WONIK BLUE, 나머지는 Figma 원본이라 톤이 약간 섞인다. pressed 상태를 `primary` role 토큰에 완전 정렬할지는 디자이너 후속 결정 사항.
+
+**제약 준수**: `buttonTokensLight`/`buttonTokensDark` key set 1:1(ADR-020 룰 4). leaf 1개 = $value 1개, 각 state group은 전부 color $type(룰 2·3). component 토큰은 light/dark 값이 달라 dark는 별도 객체(`statusTokens`처럼 공유 아님).
+
+**범위 밖**: `table` component 토큰 — Phase 2b. `Button` 컴포넌트(`packages/web/src/Button/`)가 이 토큰을 실제 소비하도록 배선하는 것은 별도 작업(토큰 레이어 먼저, 컴포넌트 채택은 후속).
+
+**후속 변경 항목**:
+- [x] `buttonTokensLight`/`buttonTokensDark` + `button.ts` + `build-css.ts` emit + `index.ts` export.
+- [ ] Phase 2b: `table` component 토큰(셀 상태 ready/manual/occupied/processed/aborted).
+- [ ] `Button` 컴포넌트가 `buttonTokens`를 소비하도록 배선 검토.
+
+### ADR-024: `theme-light.ts` drift 교정 — Figma `Standardization 2.0` Light 전수 대조
+**결정**: `theme-light.ts`의 `surfacesLight`/`bordersLight`/`textLight`를 Figma `Standardization 2.0` Light + `Primitives`와 토큰별 전수 대조해, Figma 어느 컬렉션에도 없던 **drift 값 5개를 가장 가까운 Figma 값으로 교정**하고, `surfaceMid` 1개를 ADR-022(dark) 매핑과 정합되도록 조정한다.
+
+**배경 (ADR-022 정정)**: ADR-022는 "`theme-light`는 이미 Figma Light와 정합되어 변경 불필요"라고 기술했으나, 이는 값 일부 spot-check에 근거한 과한 단정이었다. 전수 대조 결과 핵심값(`surface`/`surfaceSubtle`/`surfaceInset`/`surfaceWhite`, `borders.light·mid`, `text.primary·secondary` 등)은 일치하나 6개 토큰이 어긋나 있었다. 본 ADR이 ADR-022의 그 판단을 정정·보완한다.
+
+**교정 내역**:
+
+| 토큰 | before | after | 분류 | 출처 |
+|------|--------|-------|------|------|
+| `surfaces.canvas` | `#E8E8EA` | `#E7E7E7` | drift | Std 2.0 `background` Light |
+| `surfaces.surfaceMid` | `#E7E7E7` | `#EEEEF0` | 정합 | Std 2.0 `table/title box` Light — `canvas` 교정 후 값 충돌 해소 + ADR-022 dark `surfaceMid`(`table/title box`)와 매핑 일치 |
+| `surfaces.darkHover` | `#2D2D31` | `#29292F` | drift | Primitives `Gray/900` |
+| `borders.dark` | `#5C5C5C` | `#5C5C66` | drift | Primitives `Gray/700` |
+| `text.dark` | `#303030` | `#323640` | drift | Std 2.0 `menu bar/text(pressed)` Light |
+| `text.onDarkDim` | `#D1D1D4` | `#D4D4D8` | drift | Primitives `Gray/200d` |
+
+**이유**: 사용자 목표는 light 모드가 본인 Figma `Standardization 2.0`을 그대로 반영하는 것. drift 값은 디자인 파일에 존재하지 않는 값이라 "디자인 = 코드" 원칙을 깬다. `Standardization 2.0`에 대응 semantic 토큰이 없는 경우(`darkHover`/`borders.dark`/`onDarkDim`)는 같은 Figma 파일의 `Primitives`에서 가장 가까운 값으로 교정.
+
+**불변 (이미 Figma 값 — drift 아님)**: `surface`·`surfaceSubtle`·`surfaceInset`·`surfaceWhite`·`darkBase`·`darkHeader`, `borders.light`·`mid`·`panelDark`, `text.primary`·`secondary`·`onDark`·`onDarkVal`. `text.dim`(`#52525C` = Primitives `Gray/700c`)도 Figma 값이라 불변.
+
+**제약 준수**: 값만 변경, key set 불변 → `theme-dark`과 1:1 유지(ADR-020 룰 4). `primaryLight`/`secondaryLight`/`statusTokensLight`/`graphTokensLight`은 별도 도메인 — 본 ADR 미변경.
+
+**후속 변경 항목**:
+- [x] `theme-light.ts` 6개 값 교정 + Changeset.
+- [x] `primary`/`status`/`graph` 색도 `Standardization 2.0` 기준으로 맞출지 결정 → **결론: 불가**. `Standardization 2.0`(119색)을 전수 확인한 결과 `primary/*`·`status/*`·`graph/*` semantic 그룹이 **존재하지 않는다**. 컬렉션은 컴포넌트 영역(`table/`·`button/`·`tob bar/` 등) + 장비 상태색으로만 구성. `primaryLight`(WONIK BLUE, ADR-007)·`statusTokens`(WARP HMI 시안 유래)·`graphTokens`(ADR-013·014, graph 시안 유래)는 이 Figma 파일과 별개 출처라 정합 대상이 아니다 (ADR-025 §범위 참조).
+
+### ADR-025: `tableTokens` 신설 — Figma `Standardization 2.0` Table 컴포넌트 토큰
+**결정**: Figma `Standardization 2.0`의 `table/*` 변수 25개를 `tableTokens` component 토큰으로 신설한다. hex source-of-truth는 `theme-light.ts`(`tableTokensLight`)·`theme-dark.ts`(`tableTokensDark`), runtime `var()` 참조는 `packages/tokens/src/table.ts`. `build-css.ts`는 `--color-table-*` CSS 변수를 emit한다.
+
+**배경**: `FIGMA_SEMANTIC_MAPPING_PLAN.md` §8 충돌 1 결정(hybrid)에 따라, 진짜 컴포넌트 고유 상태는 role 토큰에 흡수하지 않고 component 토큰으로 둔다. Table 셀의 점유 상태(ready/manual/occupied/processed/aborted/empty)는 `statusTokens`(장비 process 상태)와 의미가 겹쳐 보이나 실제로는 Fab 슬롯 점유 상태라 별개 도메인이다. buttonTokens(ADR-023)와 동일한 패턴.
+
+**구조** (group → property, 양 theme 1:1 — leaf 25개):
+
+| group | property | 비고 |
+|-------|----------|------|
+| `surface` | bg, text, outline, titleBg, titleBox, title, littleTable, littleTableOutline | table frame chrome |
+| `ready` / `manual` | base, circle | 점유 상태 + 원형 인디케이터 |
+| `information` | circle | 원형 인디케이터만 |
+| `empty` / `occupied` / `processed` / `aborted` | text, bg, outline | 셀 칩 스타일 |
+
+**네이밍 교정 (충돌 2)**: Figma 변수 오타 `table/oborted` → 코드 `aborted`. Figma 파일 갱신 권장.
+
+**`#2B7FFF` 처리 (충돌 3 / ADR-007)**: `table/information(circle)` Dark 값이 `#2B7FFF`(금지색) → WONIK BLUE `#273E82`로 치환. Light 값 `#155DFC`는 `#2B7FFF`가 아니므로 Figma 값 유지(buttonTokens ADR-023과 동일한 "리터럴 `#2B7FFF`만 치환" 규칙).
+
+**중복 토큰 제외**: `table/` 그룹 밖 standalone `little table(outline)`(Light `#E1E1E4`)는 `table/outline`과 중복-성격이라 매핑 제외(계획서 §2 항목 C). `table/little table(outline)`(Light `#F0F0F3`)만 `surface.littleTableOutline`으로 채택.
+
+**범위 — 의도적 보류**: `Standardization 2.0`의 나머지 변수는 본 ADR 범위 밖.
+- `tob bar/*`·`buttom bar/*`·`menu bar/*` (35개) — 앱 셸 chrome. HMI/Fab 앱 셸 성격이 강해 ADR-001(다른 form factor 1단계 외)에 인접 → **보류**. 진짜 consumer 컴포넌트 등장 시 결정.
+- 장비 상태색 `Idle`~`Sleep2`·`Color1`~`None` (~41개) — 충돌 4·5 기결정대로 **보류**.
+
+**제약 준수**: 새 토큰 추가 → Changeset minor(ADR-020 룰). 각 leaf = `$value` 1개, group당 동일 `$type`(전부 color) → DTCG 1:1 호환(ADR-020). key set은 light↔dark 1:1.
+
+---
+
+### ADR-026: ESLint 도입 — flat config + recommended 룰셋
+**결정**: 그동안 `echo 'no lint yet'` placeholder였던 `@wonik/tokens`·`@wonik/web`의 lint 스크립트를 실제 ESLint 실행으로 교체한다. 루트에 ESLint flat config(`eslint.config.mjs`) 하나를 두고 **검증된 recommended 룰셋만** 채택한다 — `@eslint/js` recommended + `typescript-eslint` recommended(non-type-checked) + `eslint-plugin-react-hooks`의 `rules-of-hooks`(error)·`exhaustive-deps`(warn). 루트 `lint`는 `eslint .`, 각 패키지 `lint`는 `eslint src`.
+
+**이유**: (a) 디자인 시스템은 남이 import해 쓰는 패키지인데 정적 검사가 0이었다 — placeholder lint는 CI 게이트로서 무의미. (b) **recommended 세트만 채택 = 룰을 직접 만들지 않는다.** 1인 유지보수 원칙(본 문서 철학 §3) — 커스텀 룰셋 관리 부담 회피. (c) flat config 1개를 루트에 두면 monorepo 전체를 `eslint .` 한 번으로 검사 — 패키지별 config 복제 없음. (d) type-checked 룰(`recommendedTypeChecked`)은 **의도적으로 제외** — `parserOptions.project` 배선이 필요하고 느리다. 첫 도입은 단순·빠르게, 타입 안전은 이미 `tsc strict`가 담당.
+
+**도입 결과**: `@wonik/tokens`·`@wonik/web` src — 에러 0(무수정 통과, 코드 품질 방증). monorepo 전체 — 에러 1건(`apps/storybook` `overlay-Modal.stories.tsx`의 story `render`가 소문자 함수 안에서 `useState` 호출 → `rules-of-hooks` 위반). hook을 `OpensOnClickStory` 컴포넌트로 추출해 해소. 현재 `eslint .` green.
+
+**제약/범위**: ESLint 10 / typescript-eslint 8 / eslint-plugin-react-hooks 7, 루트 devDependencies. `react-hooks`는 플러그인 버전별 `configs` 형태 차이에 영향받지 않도록 핵심 2룰만 직접 지정. ignore: `dist`·`storybook-static`·`*.d.ts`·`pkg-out`·WARP 시안 폴더(ADR-004 reference-only)·`color_token`·`.gstack`. `eslint-plugin-react`(stylistic)는 미채택 — 실버그 차단은 `react-hooks`로 충분, 스타일 룰은 과함. 토큰/컴포넌트 변경이 아니므로 Changeset 불필요(chore).
+
+**후속 변경 항목**:
+- [x] `eslint.config.mjs` + 루트 devDeps + lint 스크립트 3개(루트·web·tokens) 실제화.
+- [x] storybook story 1건 `rules-of-hooks` 위반 수정.
+- [x] `prepublishOnly`에 `pnpm lint` 추가 — `@wonik/web`·`@wonik/tokens` publish 게이트로 승격 완료.
+- [ ] pre-commit hook 또는 CI에서 `pnpm lint` 자동 실행 — 현재 `.github/` CI 없음. 도입은 ADR 철학 §3(자동화 전 단순함) 고려한 별도 결정.
+- [ ] 안정화 후 type-checked 룰 / `eslint-plugin-storybook` 도입 검토.
