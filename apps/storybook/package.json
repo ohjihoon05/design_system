@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "build": "storybook build",
-    "test-storybook": "vitest --project storybook run"
+    "build": "storybook build"
   },
   "dependencies": {
     "@wonik/tokens": "workspace:*",
@@ -16,16 +15,11 @@
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.4.0",
-    "@storybook/addon-vitest": "^10.4.0",
     "@storybook/react-vite": "^10.4.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "storybook": "^10.4.0",
     "typescript": "^5.7.0",
-    "vite": "^6.0.0",
-    "vitest": "^4.1.6",
-    "playwright": "^1.60.0",
-    "@vitest/browser-playwright": "^4.1.6",
-    "@vitest/coverage-v8": "^4.1.6"
+    "vite": "^6.0.0"
   }
 }
