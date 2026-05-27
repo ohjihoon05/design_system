@@ -130,3 +130,81 @@ semantic 값 대부분이 이미 `Primitives` hex와 일치(예: `button default
 ### Phase 1 실행 메모
 
 `theme-light.ts`는 검토 결과 **이미 Figma `Standardization 2.0` Light 값과 정합**돼 있다(`surface`=`table/bg` Light, `surfaceSubtle`=`table/title bg` Light 등). 따라서 Phase 1의 실질 작업은 임시값(ppt slate 계열)으로 채워진 **`theme-dark.ts`를 Figma Dark 디자인 값으로 교체**하는 것이다. 구현은 ADR-022 참조.
+
+---
+
+## 9. 2026-05-27 보류 점검 — Phase 3·4 trigger 도달 증거 발견
+
+> "메뉴 점검" 의도로 시작한 가벼운 reaffirm 작업이 **결정 변경 후보로 격상**됨. 사용자가 Figma 노드 링크([241:6897](https://www.figma.com/design/NQn6za8JrkYNi8hJj3lvwM/UI-UX-Standardization-2.0?node-id=241-6897))를 제공해 직접 확인한 결과.
+
+### 9.1 발견 — Fab 장비 모니터링 풀세트 화면
+
+노드 241:6897(1920×1080)은 **WONIK IPS HMI Fab 장비 모니터링 화면 풀세트**. 스크린샷 reference: [`figma-references/fab-monitoring-241-6897.png`](./figma-references/fab-monitoring-241-6897.png).
+
+화면 구성 — ADR-001에서 "1단계 외"로 보류한 HMI form factor 그 자체:
+
+| 영역 | 내용 |
+|---|---|
+| 상단 top bar | WONIK IPS 로고 + 시계 + WARP/ADMIN + 8개 icon button (SCO WAFER/PLAYBACK/TERMINAL/MODE/SYSINIT/ALARM/BUZZER/ABORT) |
+| 중앙 좌측 | 3D 챔버 도식 — PMC1/PMC2/PMC3/VTM1/UPC Fab 장비 layout |
+| 중앙 우측 | Load Port Information + Wafer Mapping Information (25 wafer slot 색 코딩 — Empty/Occupied/Processed/Aborted) |
+| 좌하단 Chamber State legend | Init / Ready / Run / Process End / Access Ready / Alarm / Abort — 장비 상태색 7개 |
+| 우측 사이드바 | CTC / PM1 / PM2 / PM3 (menu bar pressed state) |
+| 하단 bottom bar | CREATE/CONFIG/MANUAL/RECIPE/DATA LOG/UTILITY/MACRO/CALIBRATE |
+
+### 9.2 보류 사유 재평가
+
+| 충돌 | 5/20 결정 | 5/27 재평가 |
+|---|---|---|
+| 3 (chrome bar) trigger | "consumer 컴포넌트 등장 시" — 추상 미래 | **trigger 도달**. 디자이너가 chrome bar 풀세트 그렸음 = 구현 product 존재 |
+| 4 (장비 상태색) | "HMI product 등장 시" | **trigger 도달**. Chamber State legend 7개 + Wafer Mapping 4상태 색이 한 화면에 |
+| 5 (`Color1`~`None` 13개 의미 불명) | 디자이너 확인 필요 | **여전히 유효** — 본 화면에서는 사용 안 보임 |
+
+### 9.3 사용 중인 미흡수 토큰 inventory (이 화면 기준)
+
+`get_variable_defs` 결과에서 추출:
+
+| 그룹 | 개수 | 상태 |
+|---|---|---|
+| `button default/*` + `button pressed/*` | 10 | ✅ ADR-023 흡수됨 |
+| `table/*` + `little table(outline)` | 21 | ✅ ADR-025 흡수됨 |
+| **`tob bar/*` (top bar)** | **16** | ⏳ 미흡수 (P3 대상) |
+| **`menu bar/*`** | **4** | ⏳ 미흡수 (P3 대상) |
+| **`buttom bar/bg`** | **1** | ⏳ 미흡수 (P3 대상) |
+| **`background`** | **1** | ⏳ 미흡수 (P3 대상) |
+| 장비 상태색 legend (Init/Ready/Run/Process End/Access Ready/Alarm/Abort) | 7+ | ⏳ 미흡수 (P4 부분) |
+| Wafer Mapping 4상태 색 (Empty/Occupied/Processed/Aborted) | 일부 `table/*`와 중복 | ✅ 부분 흡수됨 |
+
+`#2b7fff`(ADR-007 위반 hex)가 chrome bar pressed state에서 활발 사용 — `tob bar/icon(pressed)`, `text(pressed)`, `circle(pressed)`, `top(pressed)`, `user icon`, `button pressed/*` 등. 충돌 3 결정(→ WONIK BLUE 매핑)이 P3 도입 시 발효해야 함.
+
+### 9.4 결정 — HMI는 나중 (보류 reaffirm), Table 컴포넌트는 별도 트랙(ADR-029)
+
+사용자 결정(2026-05-27): **"HMI는 나중에 하기로 했다"** — ADR-001(1단계 = web only) reaffirm. 화면 241:6897이 HMI form factor라는 점은 명확해졌지만, 1단계 범위 확장은 안 함.
+
+대신 사용자가 별도 제기한 요구: **"회사에서 grid/table 많이 사용한다 — 꼭 만들어야"**. 이건 HMI 영역이 아니라 **web/app 영역**에 해당 — "HMI는 이미지, web/app은 코드"라는 도메인 사실 위에. 그래서 Table 컴포넌트는 본 계획서(Figma 정합 트랙)와 *분리된 별도 트랙*으로 ADR-029에서 다룸. Phase 25 Table atom 추가 결정.
+
+| 영역 | 결정 |
+|---|---|
+| Phase 3 chrome bar (top/menu/bottom bar) | ⏸ **보류 reaffirm** — HMI 영역, 우리 React 컴포넌트 안 들어감 (HMI는 이미지 베이스) |
+| Phase 4 장비 상태색 (Idle~Sleep2 41색) | ⏸ **보류 reaffirm** — 동상 |
+| Phase 5 `Color1`~`None` 13개 | ⏸ 보류 — 디자이너 확인 필요 (충돌 5 유효) |
+| Table 컴포넌트 (`<Table>`) | 🟢 **Phase 25 신규 atom — ADR-029 (별도 트랙)** — web/app 영역, 사내 단순 조회 use case |
+
+### 9.5 트리거 도달 점검 — *해소된 상태*
+
+5/27 점검 시점에 "trigger 도달했나?"라는 질문이 일시 발생했으나, 사용자 결정으로 트리거의 의미가 갈라짐:
+
+| Phase 3·4 trigger ("consumer 컴포넌트 등장") | Table trigger ("회사에서 많이 쓴다") |
+|---|---|
+| HMI 화면 자체는 디자인 존재 (241:6897) | web/app 영역의 단순 조회 table은 사내 다수 |
+| 그러나 우리 React 컴포넌트는 HMI에 못 들어감 | React 컴포넌트가 직접 들어감 |
+| 토큰만 가져갈 수는 있으나 채택 의향 unknown → **보류 reaffirm** | 채택 강도 강함 (사용자 명시 "꼭 만들어야") → **Phase 25 atom 추가** |
+
+### 9.6 결과 — 5/27 점검 결론
+
+1. **Phase 3·4 보류 reaffirm** — HMI 영역, 1단계 범위 외 (ADR-001 유지)
+2. **Table 컴포넌트는 Phase 25 신규 atom** — Figma 정합 트랙이 아닌 Layer A 컴포넌트 트랙. ADR-029 참조. `tableTokens`(ADR-025) 이미 있음 → Table atom이 그걸 흡수
+3. **사내 진입 시 fact-finding** (Table evidence 자리 식별):
+   - 사내 product 중 단순 조회 table 자리 1~2개 sample 수집
+   - dogfood 첫 자리 결정
+   - 코드 작성(~50줄) + changeset minor + atom 24 도달

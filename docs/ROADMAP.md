@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-21 (Figma 정합 트랙 등록 — `/goal` "Figma를 디자인 시스템에 적용". ADR-021~025로 primitives·theme·button·table 색 토큰 정합 완료, chrome bar·장비 상태색은 보류. 직전 2026-05-20 Layer A polish #1 closure)
+**최종 갱신**: 2026-05-27 (① Figma 정합 P3·P4 **보류 reaffirm** — "HMI는 나중" 사용자 결정, ADR-001 유지. ② **Phase 25 Table atom — 코드 + 16 tests + 6 Storybook stories 완료** (B1: plain HTML + tableTokens, ADR-029). "HMI는 이미지 / web·app은 코드" 도메인 분리. atom 카운트 23 유지 — 사내 dogfood 1자리 도달 시 atom 24 closure. 직전 2026-05-21 Figma 정합 트랙 등록)
 
 ---
 
@@ -27,7 +27,8 @@
 | Layer A — 마지막 폴리시 패스 | ✅ 2026-05-19 — 인디고 잔재 제거(History.tsx) + trial-N 주석 22→0 + ADR-007 F19 / ADR-018 F29·F30 doc 정착 + atom 후보 4종 동결 |
 | ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — **Layer A 완벽 도달, 사내 URL 결정만 대기** |
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
-| ▷ Figma 정합 트랙 (2026-05-21 등록) | 🟢 1단계 색 토큰 적용 완료 (ADR-021~025) — §🎨 참조 |
+| ▷ Figma 정합 트랙 (2026-05-21 등록) | 🟢 1단계 색 토큰 적용 완료 (ADR-021~025). **P3·P4 보류 reaffirm (5/27, HMI 나중)** — §🎨 참조 |
+| ▷ Phase 25 Table atom (2026-05-27) | 🟢 코드 + 16 tests + 6 Storybook stories 완료 (집). ADR-029 (B1: plain HTML + tableTokens, props 4개). atom 카운트 23 유지 — **사내 dogfood 1자리 도달 시 atom 24 closure 표기** |
 
 ---
 
@@ -71,11 +72,13 @@
 | 표시 | `Card` · `Badge` · `Alert` · `ProgressBar` · `Avatar` |
 | 선택 | `FilterChip` |
 | 오버레이 | `Modal` · `Toast` · `Tooltip` (+ `ToastProvider`/`useToast`) |
-| 컬렉션 | `SortableList` |
+| 컬렉션 | `SortableList` · `Table`<sup>†</sup> |
 
 > 부가: `ThemeProvider` (provider, atom 카운트 외).
 > → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Storybook 카탈로그 (phase 22 Ladle 도입 → 2026-05-20 Storybook 교체)** — `pnpm -F storybook-app dev`로 atom 카탈로그 + 토큰 시각화 + a11y addon. Chromatic은 사내 진입 시(CI 의존) 별도.
 > 잔여 M2.b 후보: Tabs(자리 약함 평가), Select(자리 부족).
+>
+> <sup>†</sup> `Table`: Phase 25 (ADR-029, 2026-05-27). 코드 + 16 tests + 6 Storybook stories 완료. atom 카운트 23 유지 — 사내 dogfood 1자리 도달 시 atom 24 closure 표기.
 
 ---
 
@@ -95,8 +98,8 @@
 | P1c | `theme-light` drift 6건 교정 | 024 | ✅ |
 | P2a | `buttonTokens` — `button/*` 16색 component 토큰 | 023 | ✅ |
 | P2b | `tableTokens` — `table/*` 25색 component 토큰 | 025 | ✅ |
-| P3 | chrome bar (`tob/buttom/menu bar` 35색) | — | ⏸ 보류 — 앱 셸 chrome, HMI 인접(ADR-001). consumer 컴포넌트 등장 시 |
-| P4 | 장비 상태색 ~41색 (`Idle`~`Sleep2` 등) | — | ⏸ 보류 — HMI form factor(ADR-001), 계획서 충돌 4·5 기결정 |
+| P3 | chrome bar (`tob/buttom/menu bar` 35색) | — | ⏸ **보류 reaffirm** (5/27, "HMI 나중" 결정) — HMI는 이미지 베이스라 우리 React 컴포넌트 안 들어감. 토큰만 가져갈 가치도 채택 의향 unknown. 계획서 §9 |
+| P4 | 장비 상태색 ~41색 (`Idle`~`Sleep2` 등) | — | ⏸ **보류 reaffirm** (5/27) — 동상. `Color1`~`None` 13개는 여전히 디자이너 확인 필요 (충돌 5) |
 
 ### 결론 — 1단계 범위 내 Figma 색 토큰 적용 완료
 
@@ -112,7 +115,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 ### 다음 후보 (트랙 내)
 
-- chrome bar 토큰은 소비 컴포넌트(TopBar/MenuBar 등)가 없어 지금 당기지 않음. demo-fab-monitor가 앱 셸을 토큰화할 자리를 만들면 그때 P3 진입.
+- **5/27 점검 결론**: 노드 [241:6897](https://www.figma.com/design/NQn6za8JrkYNi8hJj3lvwM/UI-UX-Standardization-2.0?node-id=241-6897)(HMI Fab 모니터링 풀세트, 스크린샷 [`figma-references/fab-monitoring-241-6897.png`](./figma-references/fab-monitoring-241-6897.png))에서 chrome bar + 장비 상태색 풀세트 확인. 단 **"HMI는 나중" 사용자 결정 (ADR-001 유지)** → P3·P4 보류 reaffirm. HMI는 이미지 베이스라 우리 React 컴포넌트 안 들어감, 토큰만 가져갈 가치도 채택 의향 unknown. 별도로 **Table 컴포넌트는 web/app 영역**이라 Phase 25 신규 atom으로 분리 (ADR-029). 계획서 §9 참조.
 - Figma 파일의 변수명 오타(`tob bar`→top, `buttom bar`→bottom, `oborted`→aborted)는 코드에선 교정됨 — Figma 파일 자체 갱신은 디자이너 작업으로 권장(계획서 §8 충돌 2).
 
 ---
@@ -131,6 +134,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | (선택) sub-component dogfood | PromptRefineChat / AiChatPanel — ToggleGroup 추가 evidence 가능성 | 30분~ | 낮음 (Layer A 이미 마감) |
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
+| **🏢 사내 Phase 25 dogfood** | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 closure 표기 + commit | 30분~1h | 사내 진입 첫 거리 |
 
 ---
 

@@ -127,3 +127,6 @@ export type {
   SortableListDirection,
   SortableRenderItemArgs,
 } from './SortableList/types';
+
+export { Table } from './Table';
+export type { TableProps, TableOwnProps, Column } from './Table/types';

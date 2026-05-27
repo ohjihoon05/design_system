@@ -1095,3 +1095,70 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - [ ] **`.github/workflows/ci.yml` PR gate** — Phase C (사내 PC 진입 후). `pnpm lint:a11y` + `pnpm test:a11y`를 PR 머지 조건으로.
 - [ ] **CONTRIBUTING.md** — pre-commit bypass(`--no-verify`) 정책 + escape-hatch 사용 가이드.
 - [ ] **ADR-028 (트리거: atom count ≥40 OR 3번째 violation slip)** — axe severity threshold를 Serious에서 Moderate로 tighten.
+
+### ADR-029: Table atom — B1 (plain HTML + tableTokens, props 4개) 채택 + 확장 trigger 명시
+
+**결정**: `<Table>` atom 신설 — **plain HTML `<table>` 기반, `tableTokens`(ADR-025) 흡수, props 4개(`stickyHeader`/`zebra`/`emptyMessage`/`renderCell`)로 단순 조회 use case 커버**. TanStack Table 등 headless library는 채택 안 함. peer dep 0. 코드 ~50줄. Layer A 3차 추가 atom = Phase 25 (atom count 23 → 24).
+
+**props 시그니처** (확장 호환 interface):
+
+```ts
+interface Column<T> { id: string; header: ReactNode; accessor: keyof T | ((row: T) => unknown); cell?: (value: unknown, row: T) => ReactNode; }
+interface TableProps<T> {
+  columns: Column<T>[];
+  data: T[];
+  stickyHeader?: boolean;      // CSS position: sticky
+  zebra?: boolean;             // nth-child(even) bg
+  emptyMessage?: ReactNode;    // data.length === 0 fallback
+  renderCell?: (value: unknown, row: T, column: Column<T>) => ReactNode;  // 전역 cell renderer (column.cell이 우선)
+  caption?: string;            // a11y — <caption> 요소
+  className?: string;
+}
+```
+
+→ Column shape를 TanStack `ColumnDef`와 호환되는 `{ id, header, accessor, cell }` 4-key로 유지. 추후 TanStack 도입 시 props 안 바뀜.
+
+**이유**:
+- (a) **사용자 명시 요구** (2026-05-27): "회사에서 grid/table 많이 사용 — 꼭 만들어야". evidence-driven trigger 도달 (Layer A 1차 cycle은 ppt evidence 3회로 trigger, 본 경우는 사내 다수 product 사용 명시로 trigger 우회 정당화).
+- (b) **YAGNI 정직** — 사용자 확인: "단순 조회가 다수, sort는 가끔 필요". 1차 ship 요구(sticky+zebra+status badge cell)만 보면 plain HTML로 ~50줄 충분. TanStack 채택은 "추후 sort 필요해질 거니까"라는 hypothetical future requirement = CLAUDE.md "Don't add features... beyond what the task requires" 위반 회색지대. 정직한 길은 plain → sort 요구 실제 도착 시 ADR-029a로 promote.
+- (c) **`tableTokens`(ADR-025) 흡수 완료** — bg, title bg, outline, text, 상태색(ready/manual/occupied/processed/oborted/empty) 다 있음. 새 토큰 추가 0. component 토큰 layer가 이미 깔려 있어 Table atom은 그저 markup + 토큰 참조.
+- (d) **확장성은 *interface 선택*으로 달성** — Column shape를 TanStack 호환으로 유지하면 추후 TanStack 도입 시 consumer props 안 바뀜. *구현 미리 깔기*가 아니라 *호환 가능한 contract 선택*.
+- (e) **HMI 도메인 분리** (사용자 결정 "HMI는 나중"): HMI는 이미지 베이스(Siemens WinCC/Wonderware 류)라 우리 React 컴포넌트 안 들어감 → Table은 web/app 전용. Figma 정합 트랙 P3·P4(chrome bar/장비 상태색) 보류 reaffirm과 별개 트랙. `FIGMA_SEMANTIC_MAPPING_PLAN.md` §9 참조.
+
+**대안 검토**:
+- **B2 TanStack Table 처음부터 채택**: reject — YAGNI 회색지대. sort 요구 강도 약함("가끔 필요"). 1차 ship 비용 +50%(150줄+12KB peer dep) 대비 즉시 가치 0. 확장 trigger 도달 시 promote가 더 정직.
+- **B3 거대 단일 atom (sort/filter/page 다 박힘)**: reject — YAGNI 명확 위반. Layer A "evidence-driven cycle" 정신과 정면 충돌 (Layer A는 1단계에서 사용 0인 props·기능 누적을 명시적으로 피해 옴).
+- **HMI Phase 3·4(chrome bar/장비 상태색)와 묶음**: reject — 도메인 분리. HMI는 이미지 베이스, Table은 web/app 영역. 사용자 결정 "HMI 나중"으로 P3·P4는 보류 reaffirm, Table만 별도 트랙으로 진행.
+- **추가 보류 (사내 채택 의향 fact-finding 후 결정)**: reject — 사용자 요구 명시 강함("꼭 만들어야"). Table은 web/app 영역이라 fact-finding의 첫 step (React stack 확인)이 자동 통과. 보류 정당화 약함.
+
+**확장 trigger** (필요 시 ADR-029a로 promote, 기존 props 안 바뀜):
+
+| trigger | 추가 props | 내부 변경 |
+|---|---|---|
+| 사내 product 2자리 이상에서 정렬 요구 | `sortable?: boolean`, `defaultSort?` | TanStack `useReactTable` + `getSortedRowModel` 도입. 또는 native `<th onClick>` + 직접 sort 함수 |
+| 행 1000+ 성능 이슈 | `virtualizer?` | `@tanstack/react-virtual` |
+| 검색 필요 | `globalFilter?` | TanStack + `getFilteredRowModel` |
+| pagination | `pagination?` | TanStack + `getPaginationRowModel` |
+| 셀 편집 | `editable?`, `onCellChange?` | 자체 hook 또는 TanStack cell editing |
+| power user | `tableInstanceRef?` | TanStack `Table<T>` ref escape hatch (TanStack 도입 후) |
+
+**제약/범위**:
+- React 18+19 dual (ADR-008) — peer dep 0이라 자동 통과.
+- DTCG 1:1 매핑 (ADR-020) — Table은 atom이지 토큰 신설 아님 → 영향 없음. `tableTokens`(ADR-025)에서 참조.
+- stateless 원칙 (CLAUDE.md CRITICAL) — controlled (data·columns props) only. 글로벌 state lib 의존 0.
+- a11y (ADR-027 3-layer gate) — native `<table>` + `<caption>` + `<th scope="col">` + 필요 시 `aria-sort` (확장 시). jsx-a11y rule 자동 통과 예상. Storybook addon-a11y axe scan 통과 필수.
+- focus indicator (ADR-011) — interactive cell/header가 추가될 때만 module-scope CSS 1회 inject 패턴. 1차 ship은 정적이라 불필요.
+- 1단계 범위 (ADR-001) — web only. `@wonik/web/src/Table/`에 위치.
+
+**Layer A 카운트 영향**:
+- 결정 시점(2026-05-27): atom count 23 유지. *결정만 박음, 코드는 사내 dogfood 자리 식별 후*.
+- 코드 작성 + dogfood 1자리 완료 시: atom count 23 → **24**. 그때 ROADMAP §🧱 갱신 + Phase 25 closure 표기.
+- 본 ADR은 "Layer A 1차 사이클 마감(atom 23) + 새 host product evidence (사내 단순 조회 table) trigger → Layer A 3차 사이클 첫 atom" 흐름.
+
+**후속 변경 항목**:
+- [ ] **사내 진입 — Table dogfood 자리 식별** (사내 product 중 단순 조회 화면 1~2개 sample, columns·rows 구조 확인).
+- [ ] **Table 구현** (`packages/web/src/Table/index.tsx` ~50줄 + `Table.test.tsx` + `Table.stories.tsx`).
+- [ ] **첫 dogfood** — 식별된 사내 product 1자리에 적용. atom count 24 도달.
+- [ ] **Changeset** — `@wonik/web` minor (atom 추가).
+- [ ] **ROADMAP 갱신** — §🧱 atom 24 + Phase 25 closure 표기.
+- [ ] **확장 trigger 모니터링** — 사내 product 2자리 이상에서 정렬·필터 요구 도착 추적. 도달 시 ADR-029a로 promote.
