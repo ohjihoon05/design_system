@@ -138,6 +138,10 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
 | **🏢 사내 Phase 25 dogfood** | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 closure 표기 + commit | 30분~1h | 사내 진입 첫 거리 |
+| **T5** (plan-eng-review 5/29) | ADR-024 후속: token bump 정책 — value drift = patch 조건 (Figma 대조 스크린샷 + perceptible threshold 정의) | 30분 | 중간 |
+| **T6** (plan-eng-review 5/29) | ADR 신설 (ADR-030 후보): atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 rule retroactive 인정 honest 기록 | 40분 | 중간 |
+| **T7** (plan-eng-review 5/29) | ADR 신설 (ADR-031 후보): evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축 | 30분 | 중간 |
+| **T8** (Phase 2 hex 후속) | Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump | 1-2h | 중간 (Layer B 사내 진입 시점 결합 권장) |
 
 ---
 

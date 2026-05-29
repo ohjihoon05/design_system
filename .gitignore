@@ -57,3 +57,21 @@ Thumbs.db
 
 # Storybook debug log (Storybook이 broken build 시 dump)
 apps/storybook/debug-storybook.log
+
+# Claude Code 작업 디렉토리
+.claude/worktrees/
+
+# Obsidian graph state (자동 갱신)
+.obsidian/graph.json
+
+# 사용자 작업 컨텍스트 (spike 결과 / retros / design-audit dump)
+.context/
+
+# 사용자 vault 작업 사본 (본판은 OneDrive\문서\Obsidian Vault)
+Knowledge-Gaps/
+
+# Figma spike 잔재 (graph test PNG dump)
+color_token/
+
+# 사용자 일별 plan / report (개인 작업 노트)
+daily-plans/
