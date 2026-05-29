@@ -1004,6 +1004,28 @@ ADR-018 항목 #4 "peer contract"에서는 `@wonik/web`이 `@wonik/tokens`를 **
 - [x] `theme-light.ts` 6개 값 교정 + Changeset.
 - [x] `primary`/`status`/`graph` 색도 `Standardization 2.0` 기준으로 맞출지 결정 → **결론: 불가**. `Standardization 2.0`(119색)을 전수 확인한 결과 `primary/*`·`status/*`·`graph/*` semantic 그룹이 **존재하지 않는다**. 컬렉션은 컴포넌트 영역(`table/`·`button/`·`tob bar/` 등) + 장비 상태색으로만 구성. `primaryLight`(WONIK BLUE, ADR-007)·`statusTokens`(WARP HMI 시안 유래)·`graphTokens`(ADR-013·014, graph 시안 유래)는 이 Figma 파일과 별개 출처라 정합 대상이 아니다 (ADR-025 §범위 참조).
 
+#### 정책 후속 (2026-05-29, plan-eng-review 1.B) — token value drift = patch 조건
+
+**배경**: 본 ADR의 `light drift = patch` 분류 (ROADMAP §🎨 Changeset 대기 line 117)에 명시적 patch 허용 조건이 ADR 안에 적시되지 않아 visual regression gate 없이 silent drift 위험 발견 (plan-eng-review 2026-05-29 finding 1.B + adversarial review OV-3 보완). 본 정책은 그 gap을 명시적으로 닫는다.
+
+**결정**: 향후 모든 token **value drift** (key set 불변, 값만 변경)는 아래 3축 모두 만족 시 patch bump 허용. 조건 불충족 시 minor 강제.
+
+**patch 허용 조건** (3개 모두 만족):
+1. **Figma vs 코드 대조 스크린샷 첨부** — drift 양을 시각적으로 입증. Changeset 본문 또는 PR description에 before/after swatch 포함.
+2. **host가 'Figma = source of truth' 수용 명시** — drift 교정이 의도된 행동(host가 Figma 기준 따름)이라는 stated 합의. 본 ADR-024 case는 사용자 design source = Figma 명시로 통과.
+3. **차이 < perceptible threshold** — 색은 **ΔE ≤ 5** (CIE Lab perceptible diff 임계, 일반 viewing condition 기준), spacing/typography는 **1px 이내**. threshold 초과 시 minor.
+
+**ADR-020 룰과의 관계**: ADR-020은 "토큰 **추가/이름 변경/삭제** = minor 이상" — 구조 변경 영역. 본 정책은 "토큰 **value 변경** = 3축 만족 시 patch" — 값 변경 영역. 두 룰 충돌 없음 (orthogonal).
+
+**품질 게이트와의 관계**: ROADMAP §✅ 품질 게이트의 contrast AA 게이트는 별개 layer. value drift라도 contrast AA(WCAG 2.1) fail이면 patch 불가 — 게이트 자체 fail이 우선.
+
+**적용 예시**:
+- ADR-024 case (drift 6 hex 교정, ΔE < 5 추정, Figma 명시) → **patch 정합** ✅
+- 만약 future drift가 ΔE ≥ 5 (예: `surface.canvas #E7E7E7 → #C0C0C0` 같은 큰 변경) → **minor 강제** — host product에 visible해 explicit upgrade decision 필요.
+- key 추가/삭제 (예: `surface.canvasMuted` 신설) → ADR-020 기준 minor (본 정책 비적용 영역).
+
+**검증 점**: 본 정책 위반(스크린샷 없이 patch / threshold 측정 없이 patch / contrast fail인데 patch)은 changeset review에서 catch. CI 자동화는 future scope (예: `changeset publish` pre-hook으로 `--check-token-policy` 추가) — 1단계 범위 외, 수동 검증.
+
 ### ADR-025: `tableTokens` 신설 — Figma `Standardization 2.0` Table 컴포넌트 토큰
 **결정**: Figma `Standardization 2.0`의 `table/*` 변수 25개를 `tableTokens` component 토큰으로 신설한다. hex source-of-truth는 `theme-light.ts`(`tableTokensLight`)·`theme-dark.ts`(`tableTokensDark`), runtime `var()` 참조는 `packages/tokens/src/table.ts`. `build-css.ts`는 `--color-table-*` CSS 변수를 emit한다.
 

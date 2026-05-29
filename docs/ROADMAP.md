@@ -138,7 +138,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
 | **🏢 사내 Phase 25 dogfood** | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 closure 표기 + commit | 30분~1h | 사내 진입 첫 거리 |
-| **T5** (plan-eng-review 5/29) | ADR-024 후속: token bump 정책 — value drift = patch 조건 (Figma 대조 스크린샷 + perceptible threshold 정의) | 30분 | 중간 |
+| ~~T5~~ (plan-eng-review 5/29) | ~~ADR-024 후속: token bump 정책 — value drift = patch 조건~~ | ~~30분~~ | ✅ 2026-05-29 closure — ADR-024 본문에 "정책 후속" sub-section 추가 (3축 조건 + ΔE ≤ 5 threshold + ADR-020/품질 게이트와의 관계 명시). docs only, Changeset 불필요 |
 | **T6** (plan-eng-review 5/29) | ADR 신설 (ADR-030 후보): atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 rule retroactive 인정 honest 기록 | 40분 | 중간 |
 | **T7** (plan-eng-review 5/29) | ADR 신설 (ADR-031 후보): evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축 | 30분 | 중간 |
 | **T8** (Phase 2 hex 후속) | Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump | 1-2h | 중간 (Layer B 사내 진입 시점 결합 권장) |
@@ -370,7 +370,7 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - [x] **T2 (P1, human: ~10min / CC: ~2min)** — ROADMAP §🛣️ Layer B 표 Step 0 사전 audit 추가 (token rotation / supply-chain audit / consumer 식별 / SSO scope / **registry vendor & 인증 방식 confirm**) — surfaces 1.A + OV-3 — ✅ commit `bb296fd` (2026-05-29)
 - [x] **T3 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '품질 게이트': axe / contrast AA / dark / React 18·19 dual 4축 status — surfaces H — ✅ commit `bb296fd` (2026-05-29)
 - [x] **T4 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '사내 진입 freshness ritual': 분기별 dep audit + React/Tailwind 호환성 + dogfood 자리 재평가 + '진입 신호' 정의 — surfaces OV-2 — ✅ commit `bb296fd` (2026-05-29)
-- [ ] **T5 (P2, human: ~30min / CC: ~10min)** — ADR-024 후속: "token bump 정책" — value drift = patch 조건 명시 (Figma 대조 + perceptible threshold) — surfaces 1.B
+- [x] **T5 (P2, human: ~30min / CC: ~10min)** — ADR-024 후속: "token bump 정책" — value drift = patch 조건 명시 (Figma 대조 + perceptible threshold) — surfaces 1.B — ✅ ADR-024 본문에 sub-section 추가 (2026-05-29)
 - [ ] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (예: ADR-030): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5
 - [ ] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (예: ADR-031): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4
 - [ ] **T8 (P2, human: ~1-2h / CC: ~30min)** — Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump — surfaces Phase 2 후속 (Layer B 사내 진입 시점 결합 권장)
