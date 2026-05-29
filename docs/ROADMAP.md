@@ -366,13 +366,14 @@ critical gap 0개 — 7개 결정 모두 mitigation 동반.
 ### Implementation Tasks
 ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 
-- [ ] **T1 (P1, human: ~15min / CC: ~3min)** — ROADMAP — Phase 1-5 다크 검증 행 추가 (메타 + 현재 위치 + 진행표 3곳) — surfaces 1.D
-- [ ] **T2 (P1, human: ~10min / CC: ~2min)** — ROADMAP §🛣️ Layer B 표 Step 0 사전 audit 추가 (token rotation / supply-chain audit / consumer 식별 / SSO scope / **registry vendor & 인증 방식 confirm**) — surfaces 1.A + OV-3
-- [ ] **T3 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '품질 게이트': axe / contrast AA / dark / React 18·19 dual 4축 status — surfaces H
-- [ ] **T4 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '사내 진입 freshness ritual': 분기별 dep audit + React/Tailwind 호환성 + dogfood 자리 재평가 + '진입 신호' 정의 — surfaces OV-2
+- [x] **T1 (P1, human: ~15min / CC: ~3min)** — ROADMAP — Phase 1-5 다크 검증 행 추가 (메타 + 현재 위치 + 진행표 3곳) — surfaces 1.D — ✅ commit `bb296fd` (2026-05-29)
+- [x] **T2 (P1, human: ~10min / CC: ~2min)** — ROADMAP §🛣️ Layer B 표 Step 0 사전 audit 추가 (token rotation / supply-chain audit / consumer 식별 / SSO scope / **registry vendor & 인증 방식 confirm**) — surfaces 1.A + OV-3 — ✅ commit `bb296fd` (2026-05-29)
+- [x] **T3 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '품질 게이트': axe / contrast AA / dark / React 18·19 dual 4축 status — surfaces H — ✅ commit `bb296fd` (2026-05-29)
+- [x] **T4 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '사내 진입 freshness ritual': 분기별 dep audit + React/Tailwind 호환성 + dogfood 자리 재평가 + '진입 신호' 정의 — surfaces OV-2 — ✅ commit `bb296fd` (2026-05-29)
 - [ ] **T5 (P2, human: ~30min / CC: ~10min)** — ADR-024 후속: "token bump 정책" — value drift = patch 조건 명시 (Figma 대조 + perceptible threshold) — surfaces 1.B
 - [ ] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (예: ADR-030): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5
 - [ ] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (예: ADR-031): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4
+- [ ] **T8 (P2, human: ~1-2h / CC: ~30min)** — Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump — surfaces Phase 2 후속 (Layer B 사내 진입 시점 결합 권장)
 
 ### Worktree parallelization
 - **Lane A (sequential)**: T1 → T2 → T3 → T4 — 모두 ROADMAP.md 본문 수정, conflict 회피용 sequential
@@ -389,4 +390,9 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 없음 (전체 결정 받음).
 
 ### VERDICT
-**CLEARED** — ROADMAP eng review 완료. 1차 6 findings + outside voice 2 신규 angle (OV-2, OV-4) 모두 결정. critical gap 0, unresolved 0. T1~T7 implementation 진입 가능. Layer B 사내 진입 신호 도착 전까지 T1~T4·T6·T7는 집에서 가능, T5는 changeset 5건 누적 시점 결합 권장.
+**CLEARED** — ROADMAP eng review 완료. 1차 6 findings + outside voice 2 신규 angle (OV-2, OV-4) 모두 결정. critical gap 0, unresolved 0.
+
+**진행 상황** (2026-05-29 마감):
+- ✅ **T1-T4 완료** (commit `bb296fd`): ROADMAP 본문 4 결정 모두 반영 — 다크 검증 행 / Layer B Step 0 audit / 품질 게이트 / freshness ritual.
+- ⏳ **T5-T8 backlog 등록** (commit `8e33f2a`): §🛣️ 다음 호흡 표에 4행 추가 — ADR 신설 3건 (T5/T6/T7) + Phase 2 hex 조정 (T8). 별도 세션으로 분리.
+- 사내 진입 신호 도착 전까지 T6·T7·T8은 집에서 가능. T5·T8은 changeset 5건 누적 시점과 결합 권장.
