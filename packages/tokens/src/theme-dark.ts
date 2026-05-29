@@ -19,7 +19,12 @@ export const surfacesDark = {
 
 export const bordersDark = {
   light: '#313137',
-  mid: '#52525C',
+  // ADR-032 (2026-05-29): #52525C → #82828A. Phase 2 finding 1·2·8 fix —
+  // Input/Textarea/Button outline border가 surface(#1E1E21) 위 2.15, canvas(#343434)
+  // 위 1.61 (UI 3.0:1 미달). 새 값은 surface 위 ≈ 4.59, canvas 위 ≈ 3.41 통과.
+  // buttonTokens.default.outline·tableTokens.surface.outline·panelDark는 Figma 정합
+  // 별개 source라 변경 안 함 (ADR-023·025 source-of-truth).
+  mid: '#82828A',
   dark: '#676771',
   panelDark: '#52525C',
 } as const;
@@ -31,7 +36,11 @@ export const primaryDark = {
   pale: '#1F2A4D',
   bg: '#2A3556',
   stroke: '#4A65B8',
-  selected: '#6B82CC',
+  // ADR-032 (2026-05-29): #6B82CC → #8FA3DD. Phase 2 finding 6 fix — FilterChip
+  // active text on primaryDark.bg (#2A3556) 가 3.27 (Text 4.5:1 미달). 새 값은
+  // primaryDark.bg 위 ≈ 4.93 통과. base·stroke (#4A65B8)는 ADR-007 WONIK BLUE 의
+  // dark 적응 — brand 인지 영향이라 사내 design 협의 전까지 보류.
+  selected: '#8FA3DD',
 } as const;
 
 export const secondaryDark = {
@@ -44,7 +53,12 @@ export const secondaryDark = {
 export const textDark = {
   primary: '#E0E0E3',
   secondary: '#D9D9DC',
-  dim: '#71717B',
+  // ADR-032 (2026-05-29): #71717B → #A0A0A8. Phase 2 finding 3·4·5 fix —
+  // Input/Textarea placeholder + InlineEditableText muted text가 canvas(#343434)
+  // 위 2.58, surface(#1E1E21) 위 3.44 (Text 4.5:1 미달). 새 값은 canvas 위 ≈ 4.92,
+  // surface 위 ≈ 6.61 통과. tableTokensDark.empty.text (#71717B)는 Figma 정합 별개
+  // source라 변경 안 함 (ADR-025 source-of-truth).
+  dim: '#A0A0A8',
   dark: '#F1F5F9',
   onDark: '#303030',
   onDarkVal: '#1A2230',

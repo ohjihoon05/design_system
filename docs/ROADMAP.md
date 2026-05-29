@@ -142,7 +142,9 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | ~~T6~~ (plan-eng-review 5/29) | ~~ADR 신설: atom closure 조건~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-030** 신설 (first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven ↔ Figma-derived rule transition + Phase 25 retroactive 인정). docs only |
 | ~~T7~~ (plan-eng-review 5/29) | ~~ADR 신설: evidence trigger 후 결정 rubric~~ | ~~30분~~ | ✅ 2026-05-29 closure — **ADR-031** 신설 (3축 rubric: 우회 cost / 시각 정체성 / a11y impact + 결정 매트릭스 + Phase 18~25 retro 검증: **Tabs 재평가 trigger** 발견). docs only |
 | ~~T8a~~ (Phase 2 hex 후속 — ADR 작성) | ~~ADR-032 작성 — hex 조정 정책 + 방향 + Changeset 분류~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-032** 신설 (4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제). docs only |
-| **T8b** (Phase 2 hex 후속 — 실제 변경) | `packages/tokens/src/theme-dark.ts` 4 leaf hex 변경 (bordersDark.mid / textDark.dim / primaryDark.selected/bg) — precise contrast 측정 + Storybook 시각 확인 + Phase 2 finding 4개 closure + skip story unskip + Changeset `@wonik/tokens` minor bump. `primaryDark.base`는 사내 진입 + design 협의 후 별도 | 1.5-2h | 중간 (Layer B 사내 진입 시점 결합 권장) |
+| ~~T8b~~ (Phase 2 hex 후속 — 실제 변경) | ~~theme-dark.ts 3 leaf hex 변경~~ | ~~1.5-2h~~ | ✅ 2026-05-29 closure — 3 leaf hex 변경 (bordersDark.mid #52525C→#82828A, textDark.dim #71717B→#A0A0A8, primaryDark.selected #6B82CC→#8FA3DD), Phase 2 5/7 violations closure, 347 tests pass, Changeset `dark-contrast-fix.md` (minor). primaryDark.bg는 selected 변경만으로 4.5:1 충족이라 미변경. **`primaryDark.base` 보류 = T8c 후속** (사내 design 협의) |
+| **T8c** (Phase 2 finding #7 후속) | `primaryDark.base` `#4A65B8` brand 결정 + FilterChip active border / Button outline 의 a11y 보강 결정 (대안 1 = base 밝게 / 대안 2 = border 두께·dotted 분리) | 사내 진입 + design 협의 후 | 사내 진입 의존 |
+| **T8d** (a11y backlog burndown 후속) | Storybook 13개 skip stories 중 T8b로 통과 가능해진 stories unskip — Input/Textarea/InlineEditableText의 dark variant. axe-core 회귀 가드 자동 동작 확인 후. FilterChip ActiveDark는 finding #7 보류 영역이라 skip 유지 | 30분 | 낮음 (집에서 가능) |
 
 ---
 
@@ -375,7 +377,9 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - [x] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (**ADR-030**): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5 — ✅ 2026-05-29
 - [x] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (**ADR-031**): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4 — ✅ 2026-05-29 (sub-finding: Tabs 동결 결정 재평가 trigger 발견)
 - [x] **T8a (P2, human: ~40min / CC: ~15min)** — ADR 신설 (**ADR-032**): Phase 2 contrast 7 violations hex 조정 정책 — 4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제 분류 — ✅ 2026-05-29 (docs only)
-- [ ] **T8b (P2, human: ~1.5-2h / CC: ~30min)** — T8a 후속: `packages/tokens/src/theme-dark.ts` 4 leaf hex 변경 (bordersDark.mid / textDark.dim / primaryDark.selected/bg) + precise contrast 측정 + Storybook 시각 확인 + Phase 2 finding 4개 closure + skip story unskip + Changeset `@wonik/tokens` minor bump. `primaryDark.base`는 사내 진입 + design 협의 후 별도
+- [x] **T8b (P2, human: ~1.5-2h / CC: ~30min)** — T8a 후속: `packages/tokens/src/theme-dark.ts` 3 leaf hex 변경 (bordersDark.mid #52525C→#82828A / textDark.dim #71717B→#A0A0A8 / primaryDark.selected #6B82CC→#8FA3DD) + Phase 2 5/7 violations closure + 347 tests pass + Changeset `dark-contrast-fix.md` (minor). primaryDark.bg는 selected 변경만으로 4.5:1 충족이라 미변경 — ✅ 2026-05-29
+- [ ] **T8c (P2, human: pending sub 협의)** — `primaryDark.base` `#4A65B8` brand 결정 + FilterChip active border / Button outline a11y 보강 (대안 1: base 밝게 / 대안 2: border 두께·dotted 분리). Phase 2 finding #7 closure. 사내 진입 + design 협의 후
+- [ ] **T8d (P3, human: ~30min / CC: ~10min)** — Storybook a11y skip stories burndown: T8b로 통과 가능해진 stories (Input/Textarea/InlineEditableText dark variants) `parameters: { a11y: { test: 'todo' } }` 제거. axe-core 회귀 가드 자동 통과 확인. FilterChip ActiveDark는 #7 보류라 skip 유지
 
 ### Worktree parallelization
 - **Lane A (sequential)**: T1 → T2 → T3 → T4 — 모두 ROADMAP.md 본문 수정, conflict 회피용 sequential
@@ -398,4 +402,5 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - ✅ **T1-T4 완료** (commit `bb296fd`): ROADMAP 본문 4 결정 모두 반영 — 다크 검증 행 / Layer B Step 0 audit / 품질 게이트 / freshness ritual.
 - ✅ **T5 완료** (commit `3839862`): ADR-024 본문에 token bump 정책 후속 sub-section 추가 — value drift = patch 3축 조건 (Figma 대조 / source 수용 / ΔE ≤ 5 threshold).
 - ✅ **T6·T7·T8a 완료** (2026-05-29 자율 진행): ADR-030 (atom closure 조건) + ADR-031 (trigger 결정 rubric, **Tabs 재평가 trigger sub-finding**) + ADR-032 (Phase 2 hex 조정 정책). 모두 docs only.
-- ⏳ **T8b pending**: theme-dark.ts 4 leaf hex 실제 변경 + Changeset minor bump. Layer B 사내 진입 시점 결합 권장 (사내 changeset 5건 누적분과 함께 발행 후보).
+- ✅ **T8b 완료** (2026-05-29 자율 진행): theme-dark.ts 3 leaf hex 변경 + Phase 2 5/7 violations closure + 347 tests pass + Changeset `dark-contrast-fix.md` (minor). `primaryDark.base` 보류 → **T8c** 신설 (사내 design 협의 후).
+- ⏳ **T8c·T8d pending**: T8c (primaryDark.base brand 결정) = 사내 진입 의존. T8d (skip stories unskip burndown) = 집에서 가능 후속.

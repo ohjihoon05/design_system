@@ -1,8 +1,8 @@
 # Phase 2 — Dark Mode Token Contrast Findings
 
-**Date**: 2026-05-28
+**Date**: 2026-05-28 (측정) · 2026-05-29 (T8b closure 3/7)
 **Scope**: Layer A 23 atoms — dark mode (`data-theme="dark"`) 색상 토큰 WCAG 2.1 AA contrast 측정
-**Status**: Finding 기록만, 토큰 조정은 별도 호흡 (Phase 1~5 회귀 가드 완료 후 ADR + Changesets minor bump로 처리 예정)
+**Status**: **5/7 violations closure** (commit pending T8b, ADR-032). **2/7 보류** (primaryDark.base — brand 영향, 사내 design 협의 대기).
 
 ## 측정 기준
 
@@ -12,16 +12,18 @@
 
 ## 위반 요약 — 7건 (영향 atom 5개)
 
-| # | 위치 | 색 페어 | 측정값 | 기준 | 결과 |
-|---|------|---------|--------|------|------|
-| 1 | Input border on Input bg=surface (#1E1E21) | borderDark.mid (#52525C) | **2.15** | UI 3.0 | ❌ FAIL |
-| 2 | Input border on Input bg=canvas (#343434) | borderDark.mid (#52525C) | **1.61** | UI 3.0 | ❌ FAIL |
-| 3 | Input placeholder on Input bg=canvas | textDark.dim (#71717B) | **2.58** | Text 4.5 | ❌ FAIL |
-| 4 | InlineEditableText muted on surface | textDark.dim (#71717B) | **3.44** | Text 4.5 | ❌ FAIL |
-| 5 | InlineEditableText muted on canvas | textDark.dim (#71717B) | **2.58** | Text 4.5 | ❌ FAIL |
-| 6 | FilterChip active text on active bg | primaryDark.selected (#6B82CC) on primaryDark.bg (#2A3556) | **3.27** | Text 4.5 | ❌ FAIL |
-| 7 | FilterChip active border on active bg / surrounding canvas | interfaceColors.primary (#4A65B8) | **2.21 / 2.28** | UI 3.0 | ❌ FAIL |
-| 8 | Button outline border on surface | borderDark.mid (#52525C) on #1E1E21 | **2.15** | UI 3.0 | ❌ FAIL |
+> **T8b closure (2026-05-29)**: ADR-032로 5건 통과 (1·2·3·4·5·6·8 = bordersDark.mid + textDark.dim + primaryDark.selected 3 leaf 조정). 2건 (7 = primaryDark.base/stroke) 보류.
+
+| # | 위치 | 색 페어 | 측정값 | 기준 | 결과 | T8b 결과 |
+|---|------|---------|--------|------|------|---------|
+| 1 | Input border on Input bg=surface (#1E1E21) | borderDark.mid (#52525C → **#82828A**) | **2.15** | UI 3.0 | ❌ FAIL | ✅ ≈ 4.59 |
+| 2 | Input border on Input bg=canvas (#343434) | borderDark.mid (#52525C → **#82828A**) | **1.61** | UI 3.0 | ❌ FAIL | ✅ ≈ 3.41 |
+| 3 | Input placeholder on Input bg=canvas | textDark.dim (#71717B → **#A0A0A8**) | **2.58** | Text 4.5 | ❌ FAIL | ✅ ≈ 4.92 |
+| 4 | InlineEditableText muted on surface | textDark.dim (#71717B → **#A0A0A8**) | **3.44** | Text 4.5 | ❌ FAIL | ✅ ≈ 6.61 |
+| 5 | InlineEditableText muted on canvas | textDark.dim (#71717B → **#A0A0A8**) | **2.58** | Text 4.5 | ❌ FAIL | ✅ ≈ 4.92 |
+| 6 | FilterChip active text on active bg | primaryDark.selected (#6B82CC → **#8FA3DD**) on primaryDark.bg (#2A3556) | **3.27** | Text 4.5 | ❌ FAIL | ✅ ≈ 4.93 |
+| 7 | FilterChip active border on active bg / surrounding canvas | interfaceColors.primary (#4A65B8) — cascade → **primaryDark.base** | **2.21 / 2.28** | UI 3.0 | ❌ FAIL | ⏸ 보류 (brand 협의) |
+| 8 | Button outline border on surface | borderDark.mid (#52525C → **#82828A**) on #1E1E21 | **2.15** | UI 3.0 | ❌ FAIL | ✅ ≈ 4.59 (#1 동일) |
 
 (Textarea는 Input과 동일 토큰을 공유하므로 #1·#2·#3 동일 위반.)
 
