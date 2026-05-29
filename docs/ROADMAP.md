@@ -3,7 +3,7 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-27 (① Figma 정합 P3·P4 **보류 reaffirm** — "HMI는 나중" 사용자 결정, ADR-001 유지. ② **Phase 25 Table atom — 코드 + 16 tests + 6 Storybook stories 완료** (B1: plain HTML + tableTokens, ADR-029). "HMI는 이미지 / web·app은 코드" 도메인 분리. atom 카운트 23 유지 — 사내 dogfood 1자리 도달 시 atom 24 closure. 직전 2026-05-21 Figma 정합 트랙 등록)
+**최종 갱신**: 2026-05-29 (**다크 모드 전수 검증 ship** — Phase 1-5: 16 dark variants + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) + Phase 2 contrast 7 violations findings 문서화 + web-sandbox cascade override section. commit `26ed34b` + `ad8d141`. 직전 2026-05-27 Figma P3·P4 보류 reaffirm + Phase 25 Table atom 완료)
 
 ---
 
@@ -14,6 +14,8 @@
 > **다음 큰 단계**: **Layer B (publish & adopt 인프라)** — 집 시뮬레이션 한 바퀴 ✅ (trial 12, Verdaccio 14873). 사내 진입 시 *URL 2 곳만 교체*하면 즉시 작동 상태. ADR-018에 결정 누적.
 >
 > **병행 트랙 (2026-05-21~)**: **Figma 정합** — 사용자 Figma "UI/UX Standardization 2.0"을 토큰 single source of truth로 흡수. Layer A/B(컴포넌트·배포)와 직교. 1단계 색 토큰 적용 완료 (ADR-021~025). 아래 §🎨 참조.
+>
+> **🌙 직전 ship (2026-05-29)**: **다크 모드 전수 검증** — Phase 1-5 (16 dark variants × 17 active stories + addon-a11y preview spread 함정 해결 + Phase 2 contrast 7 violations 문서화 + cascade override section). commit `26ed34b` + `ad8d141`. §✅ 품질 게이트 참조.
 >
 > **집에서 가능한 작은 호흡**: cleanup 거리 + doc 갱신 + (선택) sub-component dogfood. 자세한 건 §4.
 
@@ -29,6 +31,7 @@
 | ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
 | ▷ Figma 정합 트랙 (2026-05-21 등록) | 🟢 1단계 색 토큰 적용 완료 (ADR-021~025). **P3·P4 보류 reaffirm (5/27, HMI 나중)** — §🎨 참조 |
 | ▷ Phase 25 Table atom (2026-05-27) | 🟢 코드 + 16 tests + 6 Storybook stories 완료 (집). ADR-029 (B1: plain HTML + tableTokens, props 4개). atom 카운트 23 유지 — **사내 dogfood 1자리 도달 시 atom 24 closure 표기** |
+| ▷ **다크 모드 전수 검증** (2026-05-29) | ✅ Phase 1-5 ship — 16 dark variants × 17 active stories (Phase 1·4) + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) (Phase 3) + Phase 2 contrast 7 violations findings 문서화 (hex 조정 후속 ADR + minor bump 보류) + web-sandbox cascade override section (Phase 5). commit `26ed34b` + `ad8d141` |
 
 ---
 
@@ -218,6 +221,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 | step | 작업 | 집 dry run 상태 | 사내 진입 시 |
 |---|---|---|---|
+| **0** | **사내 진입 사전 audit** — (a) token rotation 정책 (b) supply-chain audit (npm dep + license) (c) consumer 식별 (누가 install 가능 / 권한 분리) (d) SSO scope (어느 사용자/grp 인증) (e) **registry vendor & 인증 방식 confirm** (Verdaccio dry run 가정 — 사내가 Nexus/Artifactory면 auth/scope/TLS/proxy 차이 있음) | 적용 X (사내 의존) | IT 사전 협의로 5축 결정 — Step 1 진입 전 |
 | 1 | registry 옵션 확정 (A=사내 npm / B=GitHub Packages / C=Tarball) | A 채택 (Verdaccio) | IT 협의로 1순위 reaffirm 또는 변경 |
 | 2 | registry URL / token | `127.0.0.1:14873` + dev token | 사내 URL + 사내 SSO token |
 | 3 | `publishConfig.registry` + `.npmrc` `@wonik:registry` 교체 | ✅ 14873로 둘 다 교체 | URL 2 곳만 다시 교체 |
@@ -225,7 +229,48 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | 5 | host product `pnpm install` (vendor → registry) → dual-direction patch | ✅ ppt 3.7초 install + 1.5초 update | 동일 흐름 |
 | 6 | (선택) CI 자동 publish workflow | 보류 | GitHub Actions 추가 |
 
-> **진입 신호**: 사용자가 사내 환경 진입 알릴 때까지 ROADMAP에서 push 안 함. dry run 결과 commit은 집에서 가능.
+> **진입 신호**: 사용자가 사내 환경 진입 알릴 때까지 ROADMAP에서 push 안 함. dry run 결과 commit은 집에서 가능. **진입 신호 정의 + 무기한 대기 fallback** = 아래 §🔄 freshness ritual.
+
+---
+
+## ✅ 품질 게이트 (Layer A·B·Figma와 직교)
+
+> **목적**: 모든 phase가 ship 전 통과해야 할 4축 검증. Layer A/B/Figma와 직교 — 어떤 트랙이든 ship 시 4 게이트 확인.
+
+| 게이트 | 도구 | 상태 | 마지막 검증 |
+|---|---|---|---|
+| **axe-core / addon-a11y** | jsx-a11y ESLint + Storybook addon-a11y + pre-commit (ADR-027 3-layer) | ✅ 110 base + 16 dark variants (Phase 1) | 2026-05-29 |
+| **contrast AA** (WCAG 2.1) | manual + Phase 2 측정 | 🟡 light pass / dark 7 violations findings 문서화 (hex 조정 후속 ADR + minor bump 보류) | 2026-05-29 (Phase 2) |
+| **dark mode** (cascade) | ThemeProvider + ADR-009 dual + cascade override 회귀 | ✅ 16 dark variants × Storybook + web-sandbox CascadeOverrideSection | 2026-05-29 (Phase 3·5) |
+| **React 18/19 dual** | peer `^18 \|\| ^19` (ADR-008) | ✅ test 126 passed (110 base + 16 dark variants) | 2026-05-29 |
+
+> 각 phase ship 시 4 게이트 통과 확인. violation 발견 시 `parameters = { a11y: { test: 'todo' } }` skip 적용 + 후속 phase에 적시.
+> 4 게이트 자체 변경(예: WCAG 2.2 도달) 시 ADR 신설.
+
+---
+
+## 🔄 사내 진입 freshness ritual
+
+> **목적**: "사내 진입 신호 대기"가 무기한 hibernate되지 않도록 정기 fresh check. ADR-018 후속.
+> **trigger**: 분기별 + 사내 진입 신호 도달 시점.
+
+### "사내 진입 신호" 정의
+
+사용자가 **명시적 alert**로 "사내 환경 진입 시작"이라고 알릴 때. 외부 시스템 이벤트(IT 티켓 / SSO 발급 / 사내 commit 등) 자동 감지 X. 신호 부재 시 ROADMAP에서 Layer B는 default WAIT.
+
+### 분기 ritual checklist
+
+- [ ] **의존성 audit** — `pnpm audit` + `pnpm outdated` — high severity 또는 1 major 이상 drift 검토
+- [ ] **React/Tailwind 호환성 재확인** — peer range `^18 || ^19` 안에 새 minor/major 도달했는지, Tailwind v4 stability 변경 있는지
+- [ ] **dogfood candidate 자리 재평가** — Phase 25 Table 같은 "사내 dogfood 대기" atom들의 자리 가시성 변화. ppt 외 host product 등장?
+- [ ] **changeset 5건 누적 staleness check** — Figma alignment (ADR-021~025) 대응 changeset이 stale tokens 기준으로 작성됐는지
+
+### 무기한 대기 fallback (≥ 6개월)
+
+사내 진입이 6개월 이상 지연되면:
+- **Phase 25 Table 사내 dogfood 대기 → 새 host product 후보 발굴 트랙 활성화**: 집에서 가능한 다른 host (예: 사내 사이드 프로젝트 / 오픈소스 demo) 자리 만들기
+- changeset 5건은 그대로 보존 (재발행 시점 = 사내 진입 OR atom 변경 누적 시점)
+- React 19 stability major drift 있으면 ADR 추가 (peer range 재평가)
 
 ---
 
@@ -276,3 +321,68 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 - 외부 install 가이드: [`INSTALL.md`](./INSTALL.md)
 - dogfood 사이클: `dogfood-trial-1.md` ~ `dogfood-trial-13.md` (+ trial-3-recapture)
 - 옵시디언 메타인지 노트: `Knowledge-Gaps/Design-System/`
+
+---
+
+## GSTACK REVIEW REPORT
+
+**Review**: plan-eng-review (target: 본 ROADMAP.md, branch `main`)
+**Date**: 2026-05-29
+**Reviewers**: Claude Opus 4.7 (primary) + `ce-adversarial-document-reviewer` (outside voice)
+
+### Decisions (7)
+
+| # | Section | Finding | Confidence | Decision |
+|---|---|---|---|---|
+| 1.D | Architecture | Phase 1-5 다크 검증 작업(commit 26ed34b) ROADMAP 미반영 | 9/10 | 상단 메타 + 현재 위치 + 진행표 3곳에 1줄씩 추가 |
+| 1.A | Architecture | Layer B 사내 진입 step "URL/Token/Publish 3개로 축소" → 보안/SSO/audit 누락 | 7/10 | Step 0 사전 audit 행 추가 (**OV-3 통합**: registry vendor & 인증 방식 confirm 포함) |
+| 1.B | Architecture | Figma drift = patch bump (P1c, ADR-024) → visual regression gate 0 | 8/10 | ADR-024에 "value drift = patch 조건" 명시 정책 추가 |
+| 1.C | Architecture | Phase 25 Table dual-step counting (atom 23 → dogfood 시 24) 일관성 unclear | 6/10 | first dogfood evidence 정책 ADR 명시로 통일 (**OV-1+5 통합**: 모델 충돌 + Phase 25 rule retroactive 인정 honest 기록) |
+| F | Code Quality | doc DRY 위반 (phase 5군데 분산) | 7/10 | 이대로 유지 — multi-perspective 의도적 |
+| H | Test Review | 품질 게이트 (axe/contrast/dark/cross-version) tracking 부재 | 8/10 | ROADMAP 새 section '품질 게이트' 추가 |
+| OV-2 | Outside Voice | 사내 진입 무기한 대기 hedge 0개 → 6개월·1년 시 hibernate 위험 | 8/10 | ROADMAP에 '사내 진입 freshness ritual' section 추가 (분기별 dep audit + React 호환성 + dogfood 자리 재평가 + '진입 신호' 정의) |
+| OV-4 | Outside Voice | "dashed 3/3 본질 needs 약함" 격하에 rubric 없음 → trigger rule 변질 | 7/10 | ADR로 'trigger 도달 후 결정 rubric' 명시 (우회 cost / 시각 정체성 / a11y impact) |
+
+### NOT in scope
+- Storybook screenshot visual regression (Chromatic 등) 도입 — 1.B 옵션 C, 1단계 범위 확장이라 보류
+- doc lint script로 phase status cross-ref 자동 검증 — F 옵션 D, 의도적 유지로 불필요
+- evidence-driven cycle 폐기 + Figma source rule 통합 — OV-4 옵션 C, 서사 재작성 비용 큼
+
+### What already exists
+- ADR-021~025: Figma alignment 결정 누적 (1.B의 base)
+- ADR-018: Layer B publish & adopt 모델 (1.A의 base)
+- ADR-027: 3-layer a11y gate (jsx-a11y + addon-a11y + pre-commit) — H의 partial 인프라
+- 다크모드 검증 commit `26ed34b` + `ad8d141`: 16 dark variants + preview spread fix + Phase 2 contrast findings + cascade override (1.D의 source)
+- Verdaccio 14873 dry run trial 12: Layer B base case (1.A·OV-3의 reference)
+- `Storybook addon decorators spread 함정` 노트 (Knowledge-Gaps): 1.D root cause meta
+
+### Failure modes
+critical gap 0개 — 7개 결정 모두 mitigation 동반.
+
+### Implementation Tasks
+ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
+
+- [ ] **T1 (P1, human: ~15min / CC: ~3min)** — ROADMAP — Phase 1-5 다크 검증 행 추가 (메타 + 현재 위치 + 진행표 3곳) — surfaces 1.D
+- [ ] **T2 (P1, human: ~10min / CC: ~2min)** — ROADMAP §🛣️ Layer B 표 Step 0 사전 audit 추가 (token rotation / supply-chain audit / consumer 식별 / SSO scope / **registry vendor & 인증 방식 confirm**) — surfaces 1.A + OV-3
+- [ ] **T3 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '품질 게이트': axe / contrast AA / dark / React 18·19 dual 4축 status — surfaces H
+- [ ] **T4 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '사내 진입 freshness ritual': 분기별 dep audit + React/Tailwind 호환성 + dogfood 자리 재평가 + '진입 신호' 정의 — surfaces OV-2
+- [ ] **T5 (P2, human: ~30min / CC: ~10min)** — ADR-024 후속: "token bump 정책" — value drift = patch 조건 명시 (Figma 대조 + perceptible threshold) — surfaces 1.B
+- [ ] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (예: ADR-030): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5
+- [ ] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (예: ADR-031): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4
+
+### Worktree parallelization
+- **Lane A (sequential)**: T1 → T2 → T3 → T4 — 모두 ROADMAP.md 본문 수정, conflict 회피용 sequential
+- **Lane B (parallel)**: T5 / T6 / T7 — 각각 별도 ADR 파일, 병렬 가능
+- 실행 순서: Lane A·B 동시 시작, Lane A 내부만 sequential
+
+### Outside voice
+- `ce-adversarial-document-reviewer` 1회 호출 (병렬 reviewer는 1로 단순화)
+- 5 findings → OV-2·OV-4 별도 walk, OV-1·OV-3·OV-5는 기존 결정에 통합
+- Cross-model tension: 없음 (1차 review와 angle 일치 또는 보완)
+- 전반 패턴 reviewer 결론: "ROADMAP은 narrative 일관성 보존을 위해 rule을 사후 조정하는 패턴 누적" — Finding 1.D와 OV-1/4/5 root cause 공통
+
+### Unresolved
+없음 (전체 결정 받음).
+
+### VERDICT
+**CLEARED** — ROADMAP eng review 완료. 1차 6 findings + outside voice 2 신규 angle (OV-2, OV-4) 모두 결정. critical gap 0, unresolved 0. T1~T7 implementation 진입 가능. Layer B 사내 진입 신호 도착 전까지 T1~T4·T6·T7는 집에서 가능, T5는 changeset 5건 누적 시점 결합 권장.
