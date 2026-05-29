@@ -53,3 +53,7 @@ Thumbs.db
 .claude/settings.local.json
 .claude/ralph-loop.local.md
 .claude/scheduled_tasks.lock
+.gstack/
+
+# Storybook debug log (Storybook이 broken build 시 dump)
+apps/storybook/debug-storybook.log
