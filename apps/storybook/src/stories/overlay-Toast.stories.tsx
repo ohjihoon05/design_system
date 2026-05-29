@@ -53,3 +53,17 @@ export const StackOverflow = () => {
     </Button>
   );
 };
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const FourTonesDark = () => {
+  const toast = useToast();
+  return (
+    <Stack direction="row" gap={2}>
+      <Button onClick={() => toast.show({ tone: 'info', title: 'Info', description: '평범한 알림 메시지' })}>info</Button>
+      <Button onClick={() => toast.show({ tone: 'success', title: 'Saved', description: '설정이 저장되었습니다' })}>success</Button>
+      <Button onClick={() => toast.show({ tone: 'warning', title: 'Warning', description: 'Carrier gas pressure low' })}>warning</Button>
+      <Button variant="danger" onClick={() => toast.show({ tone: 'error', title: 'Boom', description: 'Critical alarm 발생' })}>error</Button>
+    </Stack>
+  );
+};
+FourTonesDark.globals = { theme: 'dark' };

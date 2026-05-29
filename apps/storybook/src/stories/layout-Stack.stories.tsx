@@ -74,3 +74,13 @@ export const Wrap = () => (
     ))}
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const ColumnDark = () => (
+  <Stack gap={3}>
+    <Sample n={1} />
+    <Sample n={2} />
+    <Sample n={3} />
+  </Stack>
+);
+ColumnDark.globals = { theme: 'dark' };

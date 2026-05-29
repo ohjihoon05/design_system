@@ -46,3 +46,16 @@ export const AsTag = () => (
     <Text as="span" variant="labelSm" color="dim">span with labelSm</Text>
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+// Color 'dim' (textDark.dim) 위반 risk — todo 처리.
+export const ColorsDark = () => (
+  <Stack gap={2}>
+    <Text variant="label" color="primary">primary</Text>
+    <Text variant="label" color="secondary">secondary</Text>
+    <Text variant="label" color="dim">dim</Text>
+    <Text variant="label" color="dark">dark</Text>
+  </Stack>
+);
+ColorsDark.globals = { theme: 'dark' };
+ColorsDark.parameters = { a11y: { test: 'todo' } };

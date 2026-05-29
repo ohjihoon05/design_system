@@ -32,3 +32,7 @@ export const Colors = () => (
     <Avatar name="D" color="var(--color-status-warning-text)" />
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const DefaultDark = () => <Avatar name="김기현" />;
+DefaultDark.globals = { theme: 'dark' };

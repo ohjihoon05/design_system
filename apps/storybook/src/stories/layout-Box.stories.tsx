@@ -38,3 +38,15 @@ export const Surfaces = () => (
     ))}
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const SurfacesDark = () => (
+  <Stack gap={3}>
+    {(['canvas', 'surface', 'surfaceSubtle', 'surfaceWhite'] as const).map((s) => (
+      <Box key={s} p={4} bg={s} border="light" rounded="sm">
+        <Text variant="labelSm" color="dark">bg="{s}"</Text>
+      </Box>
+    ))}
+  </Stack>
+);
+SurfacesDark.globals = { theme: 'dark' };

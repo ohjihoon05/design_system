@@ -33,3 +33,13 @@ export const CardPattern = () => (
     </Stack>
   </Card>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const TextDark = () => (
+  <Stack gap={2} style={{ maxWidth: 320 }}>
+    <Skeleton variant="text" />
+    <Skeleton variant="text" />
+    <Skeleton variant="text" style={{ width: '60%' }} />
+  </Stack>
+);
+TextDark.globals = { theme: 'dark' };

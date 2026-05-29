@@ -29,3 +29,12 @@ export const LongText = () => (
     <Badge variant="primary">99+ items</Badge>
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const VariantsDark = () => (
+  <Stack direction="row" gap={3} align="center">
+    <Badge variant="neutral">neutral</Badge>
+    <Badge variant="primary">primary</Badge>
+  </Stack>
+);
+VariantsDark.globals = { theme: 'dark' };

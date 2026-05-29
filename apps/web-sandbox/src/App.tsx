@@ -93,7 +93,76 @@ export function App() {
       {/* phase 16 — Alert */}
       <AlertMatrixSection />
 
+      {/* Phase 5 회귀 가드 — cascade override dark 모드 회귀 검증 (ADR-010/011) */}
+      <CascadeOverrideSection />
+
       <BeforeAfterSection />
+    </Stack>
+  );
+}
+
+/**
+ * Phase 5: cascade override가 dark mode에서 깨지지 않는지 검증하는 1자리 테스트.
+ * data-cascade-host attribute로 scope된 CSS variable override를 정의한 컨테이너 안에
+ * Button + FilterChip + Alert을 두고, 상단 ThemeToggle로 light/dark 토글 시
+ * host override(#FF6B35 — 눈에 띄는 주황) 색이 두 theme 모두에서 유지되는지 시각 검증.
+ *
+ * 통과 기준:
+ *   - light: Button primary 색 = #FF6B35 (host override 적용)
+ *   - dark : Button primary 색 = #FF6B35 (host override 유지 — internal dark token으로 깨지지 않음)
+ * 실패 시 cascade 흐름 어딘가에서 [data-theme="dark"] block이 host override를 덮어쓰는 것.
+ */
+function CascadeOverrideSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Phase 5 — cascade override 회귀 (light + dark)</Text>
+      <Text color="secondary" variant="labelSm">
+        host product 시뮬레이션: data-cascade-host scope 안에서 --color-primary와 --color-focus를 host orange(#FF6B35)로 override.
+        상단 dark 토글 시에도 같은 orange 유지되어야 cascade가 dark mode에서 안 깨진 것.
+      </Text>
+
+      <style>{`
+        [data-cascade-host="orange"] {
+          --color-primary: #FF6B35;
+          --color-focus: #FF6B35;
+          --color-primary-selected: #FF6B35;
+          --color-primary-bg: #FFE5D9;
+        }
+      `}</style>
+
+      <Box
+        {...{ 'data-cascade-host': 'orange' }}
+        p={6}
+        bg="surface"
+        border="mid"
+        rounded="md"
+      >
+        <Stack direction="column" gap={4}>
+          <Text variant="label" weight="medium" color="dark">host override scope (orange = #FF6B35)</Text>
+          <Stack direction="row" gap={3} align="center" wrap>
+            <Button variant="primary">primary button</Button>
+            <Button variant="secondary">secondary</Button>
+            <Button variant="outline">outline</Button>
+          </Stack>
+          <Text variant="labelSm" color="secondary">
+            ↑ light + dark 두 mode 모두에서 primary가 orange로 유지되어야 cascade가 dark mode에서 안 깨진 것.
+          </Text>
+        </Stack>
+      </Box>
+
+      <Box p={6} bg="surface" border="mid" rounded="md">
+        <Stack direction="column" gap={4}>
+          <Text variant="label" weight="medium" color="dark">scope 밖 (internal token 그대로)</Text>
+          <Stack direction="row" gap={3} align="center" wrap>
+            <Button variant="primary">primary button</Button>
+            <Button variant="secondary">secondary</Button>
+            <Button variant="outline">outline</Button>
+          </Stack>
+          <Text variant="labelSm" color="secondary">
+            ↑ scope 밖이라 light에선 WONIK BLUE(#273E82), dark에선 primaryDark(#4A65B8) 정상 적용.
+          </Text>
+        </Stack>
+      </Box>
     </Stack>
   );
 }

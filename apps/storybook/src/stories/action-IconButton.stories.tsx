@@ -87,3 +87,16 @@ export const WithBadge = () => (
     </Badge>
   </span>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const VariantsDark = () => (
+  <Stack direction="row" gap={3}>
+    <IconButton aria-label="bell outline dark">
+      <BellIcon />
+    </IconButton>
+    <IconButton aria-label="bell ghost dark" variant="ghost">
+      <BellIcon />
+    </IconButton>
+  </Stack>
+);
+VariantsDark.globals = { theme: 'dark' };

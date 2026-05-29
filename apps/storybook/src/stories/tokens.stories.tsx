@@ -34,6 +34,19 @@ export const Color_Brand = () => (
   </Stack>
 );
 
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const Color_BrandDark = () => (
+  <Stack gap={3} style={{ maxWidth: 480 }}>
+    <Text variant="titleSm" weight="medium" color="dark">Brand (dark)</Text>
+    <Swatch name="WONIK BLUE (dark)" varName="--color-primary" />
+    <Swatch name="Primary pale" varName="--color-primary-pale" />
+    <Swatch name="Primary bg" varName="--color-primary-bg" />
+    <Swatch name="Primary selected" varName="--color-primary-selected" />
+    <Swatch name="WONIK GRAY" varName="--color-brand-secondary" />
+  </Stack>
+);
+Color_BrandDark.globals = { theme: 'dark' };
+
 export const Color_Surface = () => (
   <Stack gap={3} style={{ maxWidth: 480 }}>
     <Text variant="titleSm" weight="medium" color="dark">Surface</Text>

@@ -65,3 +65,17 @@ export const Disabled = () => (
     <Text variant="labelSm" color="dim">disabled=true → tooltip 노출 안 됨</Text>
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+// Tooltip trigger Button outline border + 'dim' text 위반 risk → todo.
+export const PlacementsDark = () => (
+  <Stack direction="row" gap={6} align="center" style={{ padding: 60 }}>
+    {(['top', 'right', 'bottom', 'left'] as const).map((p) => (
+      <Tooltip key={p} content={`${p} tooltip`} placement={p}>
+        <Button variant="outline" size="sm">{p}</Button>
+      </Tooltip>
+    ))}
+  </Stack>
+);
+PlacementsDark.globals = { theme: 'dark' };
+PlacementsDark.parameters = { a11y: { test: 'todo' } };

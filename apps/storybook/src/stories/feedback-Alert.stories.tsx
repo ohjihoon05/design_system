@@ -29,3 +29,14 @@ export const LongText = () => (
     </Text>
   </Alert>
 );
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+export const BasicDark = () => (
+  <Alert>
+    <Stack gap={1}>
+      <Text variant="titleSm" weight="medium" style={{ color: 'inherit' }}>3 unacknowledged critical alarms</Text>
+      <Text variant="labelSm" style={{ color: 'inherit' }}>· CVD-01, ETCH-02, ALD-01</Text>
+    </Stack>
+  </Alert>
+);
+BasicDark.globals = { theme: 'dark' };

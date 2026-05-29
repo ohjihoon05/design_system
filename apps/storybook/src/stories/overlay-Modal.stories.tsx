@@ -130,3 +130,23 @@ export const OpensOnClick: StoryObj<typeof Modal> = {
     await expect(dialog).toBeVisible();
   },
 };
+
+// Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
+// Modal trigger Button은 outline border 위반 risk → todo 처리.
+export const BasicDark = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open modal</Button>
+      <Modal isOpen={open} onClose={() => setOpen(false)} title="Basic modal">
+        <Modal.Body>
+          <Text variant="label" color="dark">기본 modal — dark mode.</Text>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="text" onClick={() => setOpen(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+BasicDark.globals = { theme: 'dark' };

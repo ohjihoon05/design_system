@@ -4,27 +4,35 @@ import { ThemeProvider, ToastProvider } from '@wonik/web';
 import '@wonik/tokens/tokens.css';
 import './global.css';
 
-// Ladle .ladle/components.tsx 의 GlobalProvider 를 Storybook 데코레이터로 이식.
-// globalState.mode 토글 → Storybook globals.theme 토글로 대응.
 const withWonikProviders: Decorator = (Story, context) => {
   const mode = context.globals.theme === 'dark' ? 'dark' : 'light';
   return (
-    <ThemeProvider defaultTheme={mode} key={mode}>
-      <ToastProvider position="top-right">
-        <div style={{ padding: 24, fontFamily: 'inherit' }}>
+    <div
+      data-theme={mode}
+      style={{
+        background: 'var(--color-canvas)',
+        color: 'var(--color-text-dark)',
+        minHeight: '100vh',
+        padding: 24,
+      }}
+    >
+      <ThemeProvider theme={mode} scope="self">
+        <ToastProvider position="top-right">
           <Story />
-        </div>
-      </ToastProvider>
-    </ThemeProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </div>
   );
 };
 
+// addon-a11y가 자기 decorators / initialGlobals / parameters 를 export하므로
+// spread를 먼저 펼친 뒤 우리 값을 마지막에 합쳐야 a11y가 우리 설정을 silent하게 덮어쓰지 않는다.
+// (Storybook addon decorators spread 함정 — 2026-05-29 dark toggle 회귀 원인이었음.)
 const preview: Preview = {
-  decorators: [withWonikProviders],
-  // ADR-027: addon-a11y runs axe-core afterEach story render → throws on Serious violations.
-  // Storybook 10.4 exports plain `afterEach` (not `experimental_afterEach`). Spread the preview annotations.
   ...a11yAddonAnnotations,
+  decorators: [...(a11yAddonAnnotations.decorators ?? []), withWonikProviders],
   initialGlobals: {
+    ...(a11yAddonAnnotations.initialGlobals ?? {}),
     theme: 'light',
   },
   globalTypes: {
@@ -42,6 +50,7 @@ const preview: Preview = {
     },
   },
   parameters: {
+    ...(a11yAddonAnnotations.parameters ?? {}),
     layout: 'fullscreen',
   },
 };

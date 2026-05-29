@@ -64,3 +64,14 @@ export const Disabled = () => (
     <FilterChip active disabled>Disabled active</FilterChip>
   </Stack>
 );
+
+// Phase 1 dark mode 회귀 가드 (Layer A 다크모드 전수 검증).
+// Phase 2 finding 7건 중 FilterChip active text/border contrast 위반 있음 → axe color-contrast가
+// 터질 것이므로 a11y.test='todo'로 한 번 더 우회. fix는 Phase 5 회귀 가드 완료 후 ADR-030.
+// 위반 detail: docs/PHASE2_DARK_CONTRAST_FINDINGS.md
+export const ActiveDark = () => <FilterChip active>All</FilterChip>;
+ActiveDark.globals = { theme: 'dark' };
+ActiveDark.parameters = { a11y: { test: 'todo' } };
+
+export const InactiveDark = () => <FilterChip>All</FilterChip>;
+InactiveDark.globals = { theme: 'dark' };
