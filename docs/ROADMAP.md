@@ -139,9 +139,10 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
 | **🏢 사내 Phase 25 dogfood** | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 closure 표기 + commit | 30분~1h | 사내 진입 첫 거리 |
 | ~~T5~~ (plan-eng-review 5/29) | ~~ADR-024 후속: token bump 정책 — value drift = patch 조건~~ | ~~30분~~ | ✅ 2026-05-29 closure — ADR-024 본문에 "정책 후속" sub-section 추가 (3축 조건 + ΔE ≤ 5 threshold + ADR-020/품질 게이트와의 관계 명시). docs only, Changeset 불필요 |
-| **T6** (plan-eng-review 5/29) | ADR 신설 (ADR-030 후보): atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 rule retroactive 인정 honest 기록 | 40분 | 중간 |
-| **T7** (plan-eng-review 5/29) | ADR 신설 (ADR-031 후보): evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축 | 30분 | 중간 |
-| **T8** (Phase 2 hex 후속) | Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump | 1-2h | 중간 (Layer B 사내 진입 시점 결합 권장) |
+| ~~T6~~ (plan-eng-review 5/29) | ~~ADR 신설: atom closure 조건~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-030** 신설 (first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven ↔ Figma-derived rule transition + Phase 25 retroactive 인정). docs only |
+| ~~T7~~ (plan-eng-review 5/29) | ~~ADR 신설: evidence trigger 후 결정 rubric~~ | ~~30분~~ | ✅ 2026-05-29 closure — **ADR-031** 신설 (3축 rubric: 우회 cost / 시각 정체성 / a11y impact + 결정 매트릭스 + Phase 18~25 retro 검증: **Tabs 재평가 trigger** 발견). docs only |
+| ~~T8a~~ (Phase 2 hex 후속 — ADR 작성) | ~~ADR-032 작성 — hex 조정 정책 + 방향 + Changeset 분류~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-032** 신설 (4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제). docs only |
+| **T8b** (Phase 2 hex 후속 — 실제 변경) | `packages/tokens/src/theme-dark.ts` 4 leaf hex 변경 (bordersDark.mid / textDark.dim / primaryDark.selected/bg) — precise contrast 측정 + Storybook 시각 확인 + Phase 2 finding 4개 closure + skip story unskip + Changeset `@wonik/tokens` minor bump. `primaryDark.base`는 사내 진입 + design 협의 후 별도 | 1.5-2h | 중간 (Layer B 사내 진입 시점 결합 권장) |
 
 ---
 
@@ -371,9 +372,10 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - [x] **T3 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '품질 게이트': axe / contrast AA / dark / React 18·19 dual 4축 status — surfaces H — ✅ commit `bb296fd` (2026-05-29)
 - [x] **T4 (P1, human: ~30min / CC: ~5min)** — ROADMAP 새 section '사내 진입 freshness ritual': 분기별 dep audit + React/Tailwind 호환성 + dogfood 자리 재평가 + '진입 신호' 정의 — surfaces OV-2 — ✅ commit `bb296fd` (2026-05-29)
 - [x] **T5 (P2, human: ~30min / CC: ~10min)** — ADR-024 후속: "token bump 정책" — value drift = patch 조건 명시 (Figma 대조 + perceptible threshold) — surfaces 1.B — ✅ ADR-024 본문에 sub-section 추가 (2026-05-29)
-- [ ] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (예: ADR-030): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5
-- [ ] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (예: ADR-031): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4
-- [ ] **T8 (P2, human: ~1-2h / CC: ~30min)** — Phase 2 contrast 7 violations 실제 hex 조정 (bordersDark.mid / textDark.dim / primaryDark.base/selected/bg) + ADR-030 또는 ADR-032 후보 + Changesets minor bump — surfaces Phase 2 후속 (Layer B 사내 진입 시점 결합 권장)
+- [x] **T6 (P2, human: ~40min / CC: ~15min)** — ADR 신설 (**ADR-030**): "atom closure 조건 — first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven cycle ↔ Figma-derived rule transition + Phase 25 retroactive 인정" — surfaces 1.C + OV-1 + OV-5 — ✅ 2026-05-29
+- [x] **T7 (P2, human: ~30min / CC: ~10min)** — ADR 신설 (**ADR-031**): "evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 손실 / a11y impact 3축" — surfaces OV-4 — ✅ 2026-05-29 (sub-finding: Tabs 동결 결정 재평가 trigger 발견)
+- [x] **T8a (P2, human: ~40min / CC: ~15min)** — ADR 신설 (**ADR-032**): Phase 2 contrast 7 violations hex 조정 정책 — 4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제 분류 — ✅ 2026-05-29 (docs only)
+- [ ] **T8b (P2, human: ~1.5-2h / CC: ~30min)** — T8a 후속: `packages/tokens/src/theme-dark.ts` 4 leaf hex 변경 (bordersDark.mid / textDark.dim / primaryDark.selected/bg) + precise contrast 측정 + Storybook 시각 확인 + Phase 2 finding 4개 closure + skip story unskip + Changeset `@wonik/tokens` minor bump. `primaryDark.base`는 사내 진입 + design 협의 후 별도
 
 ### Worktree parallelization
 - **Lane A (sequential)**: T1 → T2 → T3 → T4 — 모두 ROADMAP.md 본문 수정, conflict 회피용 sequential
@@ -394,5 +396,6 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 
 **진행 상황** (2026-05-29 마감):
 - ✅ **T1-T4 완료** (commit `bb296fd`): ROADMAP 본문 4 결정 모두 반영 — 다크 검증 행 / Layer B Step 0 audit / 품질 게이트 / freshness ritual.
-- ⏳ **T5-T8 backlog 등록** (commit `8e33f2a`): §🛣️ 다음 호흡 표에 4행 추가 — ADR 신설 3건 (T5/T6/T7) + Phase 2 hex 조정 (T8). 별도 세션으로 분리.
-- 사내 진입 신호 도착 전까지 T6·T7·T8은 집에서 가능. T5·T8은 changeset 5건 누적 시점과 결합 권장.
+- ✅ **T5 완료** (commit `3839862`): ADR-024 본문에 token bump 정책 후속 sub-section 추가 — value drift = patch 3축 조건 (Figma 대조 / source 수용 / ΔE ≤ 5 threshold).
+- ✅ **T6·T7·T8a 완료** (2026-05-29 자율 진행): ADR-030 (atom closure 조건) + ADR-031 (trigger 결정 rubric, **Tabs 재평가 trigger sub-finding**) + ADR-032 (Phase 2 hex 조정 정책). 모두 docs only.
+- ⏳ **T8b pending**: theme-dark.ts 4 leaf hex 실제 변경 + Changeset minor bump. Layer B 사내 진입 시점 결합 권장 (사내 changeset 5건 누적분과 함께 발행 후보).

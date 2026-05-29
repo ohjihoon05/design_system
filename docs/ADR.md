@@ -1184,3 +1184,236 @@ interface TableProps<T> {
 - [ ] **Changeset** — `@wonik/web` minor (atom 추가).
 - [ ] **ROADMAP 갱신** — §🧱 atom 24 + Phase 25 closure 표기.
 - [ ] **확장 trigger 모니터링** — 사내 product 2자리 이상에서 정렬·필터 요구 도착 추적. 도달 시 ADR-029a로 promote.
+
+---
+
+### ADR-030: atom closure 조건 — `first dogfood evidence` 통일 + Phase 18~25 retro labeling + evidence-driven ↔ Figma-derived rule transition
+
+**결정**: atom 카운트의 closure 조건을 **"code + test + storybook + first dogfood evidence 1곳 도달"** 4단계 통과로 통일한다. 4단계 중 1~3만 완료된 상태는 **"atom candidate"** (atom 후보)로 표기, atom 카운트 미증가. dogfood evidence 1곳 도달 시 closure로 카운트.
+
+**배경**: plan-eng-review 2026-05-29 finding 1.C + adversarial review OV-1·OV-5는 다음 inconsistency를 surface했다 —
+
+- Phase 18 (IconButton), 19 (FilterChip+Avatar+ProgressBar), 20 (Modal+Toast), 23 (InlineEditableText), 24 (SortableList)는 모두 **dogfood 같은 phase에서 closure** (single-step). evidence-driven cycle("host에서 3번 trigger") 모델 따름.
+- Phase 25 Table (2026-05-27)은 **코드 + 16 tests + 6 Storybook stories 완료, 사내 dogfood 1자리 도달 시 atom 24 closure 표기** — dual-step 도입. ROADMAP §🧱 footer에 처음 등장.
+- 두 모델의 closure 조건이 ADR에 명시되지 않아 Phase 26+ 결정 시 ad-hoc 위험.
+
+**핵심 rule** (Phase 26+ 적용):
+
+| 단계 | 결과 | 카운트 |
+|---|---|---|
+| code 작성 | partial | 변동 없음 |
+| code + test | partial | 변동 없음 |
+| code + test + Storybook story | **atom candidate** (atom 후보 표기) | 변동 없음 |
+| code + test + Storybook story + first dogfood evidence | **atom closure** | +1 |
+
+**evidence "1곳"의 의미**: host product (ppt / demo-fab-monitor / 사내 product / 또는 향후 새 host) 중 한 자리에 실제 import + 적용된 상태. Storybook story는 evidence가 아님 (consumer 환경이 아니라 카탈로그 환경).
+
+#### Phase 18~25 retro labeling
+
+| Phase | atom 후보 | dogfood 시점 | 모델 | 비고 |
+|---|---|---|---|---|
+| 18 | IconButton | 같은 phase (demo-fab-monitor Topbar/Sidebar/Alarms 사전 evidence) | single-step (evidence-driven) | atom 15 closure 동시 |
+| 19 | FilterChip + Avatar + ProgressBar | 같은 phase (demo internal 사전 evidence) | single-step (evidence-driven, 묶음) | atom 18 closure 동시 |
+| 20 | Modal + Toast | 같은 phase (dogfood-driven 5 자리 적용) | single-step (evidence-driven, 묶음) | atom 20 closure 동시 |
+| 23 | InlineEditableText | 같은 phase (ppt OutlineCard 30→3줄 흡수) | single-step (evidence-driven) | atom 22 closure 동시 |
+| 24 | SortableList | 같은 phase (Presentation thumbnails 흡수) | single-step (evidence-driven) | atom 23 closure 동시 |
+| **25** | **Table** | **pending (사내 진입 후)** | **dual-step (Figma-derived)** | **atom candidate, count 23 유지 → dogfood 시 24 closure** |
+
+→ Phase 18·19·20·23·24 모두 사전 dogfood evidence 존재 → 코드 작성과 closure가 같은 phase에서 발생 (single-step). 모델 통일 후 retro로 봐도 동일 결과.
+
+→ Phase 25만 dogfood evidence가 사후 발생 예정 — 그래서 dual-step 모델 첫 적용.
+
+#### evidence-driven cycle ↔ Figma-derived rule transition
+
+| 모델 | 도입 시기 | 적용 영역 | 다음 atom 결정 trigger |
+|---|---|---|---|
+| **evidence-driven cycle** | Layer A 1차/2차 채움 (Phase 6~24) | ppt + demo-fab-monitor host 활성 | "host에서 같은 게 3번 나오면" trigger → 본 ADR + ADR-031 rubric 적용 → atom candidate → 즉시 dogfood 시 closure |
+| **Figma-derived rule** | Layer A 2차 마감 후 (Phase 25~) | Figma 토큰 정의 있고 web/app 도메인 fall-in | Figma fit + 도메인 적합성 → atom candidate → dogfood 1곳 도달 시 closure |
+
+**두 모델 공존 정당화**: evidence-driven은 host saturate 시점에서 cycle exit (ppt 1개 host로 dogfood evidence 누적 한계 도달, M2 표 "모든 atom 후보 동결"이 그 신호). Figma-derived는 그 exit 이후 새 atom 도출 통로로 도입. 두 모델은 **계속 공존** — 새 host product 등장 시 evidence-driven 재활성화 가능, Figma 추가 정의 시 Figma-derived 적용. 한 atom이 두 model 동시 만족도 가능 (그 경우 더 빠른 closure 도달).
+
+**Phase 25 rule retroactive 인정 (honest 기록)**:
+
+본 ADR (atom closure 조건)는 Phase 25 직전에 사전 정의돼 있지 않았다. Phase 25 코드 작성 후 "atom 카운트 24 즉시 올림 vs 보류"를 결정할 시점에 ROADMAP §🧱 footer에 "사내 dogfood 1자리 도달 시 atom 24 closure 표기"가 사후 도입됨. 그 사후 도입을 plan-eng-review 2026-05-29 finding 1.C가 일관성 issue로 surface → 본 ADR로 rule 명시 + 사후 도입 사실 honest 기록.
+
+→ Phase 26+에는 **사전 rule**로 적용. atom candidate 상태 진입 시점에 본 ADR reference 명시.
+
+**제약 / 범위**: docs only. 코드 변경 0. Changeset 불필요. ROADMAP §🧱 갱신은 본 ADR 후속 (Table을 "atom candidate" 표기로 보강).
+
+**대안 검토**:
+- **single-step만 유지 (Phase 25 즉시 atom 24)**: 사후 합리화 인정 회피하지만 dogfood pending 상태를 atom으로 카운트 = "Layer A 마감 entry criteria" 정의 불확실 (OV-5 finding 그대로 노출).
+- **dogfood evidence 2~3곳 도달 시 closure (더 엄격)**: Phase 18~24의 single-step closure (대부분 1자리만 적용 직후 closure 처리됨)와 어긋남 → 일관성 깨짐.
+- **dual model 통합 (Figma-derived 폐기)**: OV-4 옵션 C — 서사 재작성 비용 큼, plan-eng-review에서 reject됨.
+
+**reference**:
+- ADR-020 (DTCG 1:1 mapping) — atom의 토큰 구조 룰
+- ADR-024 정책 후속 (token value bump) — atom과 함께 token 변경 시 bump 정책
+- ROADMAP §🧱 Layer A atom 23개 + §M2 evidence-driven cycle / §🎨 Figma 정합 트랙 — 본 ADR이 적용되는 두 트랙
+
+**후속 변경 항목**:
+- [x] 본 ADR 작성 (2026-05-29).
+- [ ] **ROADMAP §🧱 footer 갱신** — Table 행에 "atom candidate (dogfood pending)" 명시 강화 + 본 ADR reference.
+- [ ] **사내 Phase 25 dogfood 도달 시 atom 24 closure 표기** — ROADMAP §🧱 갱신 + Phase 25 후속 변경 항목 closure.
+
+---
+
+### ADR-031: evidence trigger 후 결정 rubric — 우회 cost / 시각 정체성 / a11y impact 3축
+
+**결정**: evidence-driven cycle (ADR-030 첫 모델) 의 trigger (host evidence 3회 도달) 후 atom 추가/격하/보류 결정은 아래 **3축 rubric**으로 진행한다. rubric은 사후 합리화 차단 + Phase 26+ 결정 일관성 보장 목적.
+
+**배경**: plan-eng-review 2026-05-29 outside voice OV-4 finding —
+
+ROADMAP §M2 표에 "**dashed Add Slide button** 3/3 trigger 도달 → **본질 needs 약함 평가** → 격하 reaffirm" 결정이 있으나 "본질 needs 약함"의 객관 기준이 ADR에 없음. 같은 표에서 다른 후보 (ToggleGroup 2/3, FormField 1/3 등)는 "evidence 부족"으로 동결되는 양적 판단인 반면, dashed는 "본질 needs 약함" — **질적 판단이 사후 도입**됨. trigger rule이 사실상 "추가 대화의 시작"으로 변질된 패턴.
+
+**3축 rubric**:
+
+#### 1. 우회 cost
+현재 atom들로 우회 가능한가? 우회 시 host 코드의 복잡도 증가량은?
+- **낮음**: 기존 atom 1개로 우회 가능, host 코드 변동 없음 (예: dashed → outline)
+- **중간**: 기존 atom 조합으로 우회 가능, host 코드 ~10줄 추가
+- **높음**: 기존 atom으로 우회 불가, host에서 임시 구현 필요 ≥30줄
+
+#### 2. 시각 정체성 손실
+디자인 시안의 원래 시각 의도가 우회 시 손실되는가?
+- **수용 가능**: 우회 시 시각 차이 미미 (예: dashed visual은 부가적, outline으로 같은 의미 전달 가능)
+- **약함**: 우회 시 시각 차이 가시적이나 의미 손실 없음
+- **critical**: 우회 시 디자인 의도 (의미·계층·강조) 손실 (예: 시각 hierarchy 1단계 차이)
+
+#### 3. a11y impact
+우회가 a11y에 부정적 영향 있는가?
+- **없음**: contrast / keyboard / screen reader 동일 (예: dashed → outline은 둘 다 button)
+- **있음**: a11y 차이 발생 (예: Tabs → FilterChip 우회는 tab semantics 손실 — `role="tab"` 부재로 keyboard nav 차이)
+
+**결정 매트릭스**:
+
+| 우회 cost | 시각 손실 | a11y impact | 결정 |
+|---|---|---|---|
+| 낮음 | 수용 가능 | 없음 | **격하 / 보류** (atom 추가 안 함) |
+| 낮음 | critical | 없음 | **추가** (시각 정체성 우선) |
+| 낮음 | 수용 가능 / 약함 | 있음 | **추가** (a11y 강제) |
+| 중간 / 높음 | — | — | **추가** (우회 불가 또는 high cost) |
+
+#### Phase 18~25 retro 적용 (검증)
+
+| atom 후보 | 우회 cost | 시각 손실 | a11y impact | rubric 결정 | 실제 결정 | 일치 |
+|---|---|---|---|---|---|---|
+| dashed Add Slide button (Phase ~11) | 낮음 (outline 우회) | 수용 가능 (dashed visual은 부가적) | 없음 (둘 다 button) | **격하** | 격하 (reaffirm) | ✅ |
+| Tabs (M2.b Phase 3) | 낮음 (FilterChip single-select 우회) | 약함 (Tabs visual 일반적) | **있음** (`role="tab"` 손실) | **추가** | 동결 (자리 약함) | ❌ 재평가 필요 |
+| ToggleGroup (M2 2/3) | 낮음 (FilterChip 우회) | 약함 | 없음 | **격하/보류** | 동결 (Layer B 후 재평가) | ✅ |
+| FormField (M2 1/3) | 중간 (Input + Text 묶음 가이드) | 약함 | 없음 | **추가 또는 가이드 doc** | 동결 (자리 0건) | △ rule 적용 가능 (자리 발견 시) |
+| Card hover variant (M2 1/3) | 낮음 (`onClick` + Card 우회) | 수용 가능 | 없음 | **격하** | 동결 | ✅ |
+
+→ **Tabs 동결 결정이 본 rubric 적용 시 재평가 대상**. a11y impact "있음"이라 추가 강제. 사내 진입 후 host에 Tabs 자리 발견 시 본 ADR reference로 재진입.
+
+#### Figma-derived rule (ADR-030)과의 관계
+
+본 rubric은 **evidence-driven cycle 활성 상태**에서만 적용 — host saturate 전, host evidence 3회 도달 시점. Figma-derived rule (Phase 25 패턴)에는 별도 기준 (Figma 정의 + 도메인 fall-in) 적용. 두 rule은 orthogonal.
+
+만약 한 atom 후보가 두 model 동시 진입 (evidence 3회 + Figma 정의 있음) → 본 rubric을 evidence-driven side에 적용, Figma fit은 Figma-derived side에 적용. 두 결정이 충돌 시 (예: rubric은 격하인데 Figma fit는 추가) → ADR 작성 시 명시적 결정.
+
+#### OV-4 사후 합리화 위험 인정 (honest 기록)
+
+본 rubric은 dashed 격하 결정 + Tabs 동결 결정 + ToggleGroup 동결 결정 사후에 도입. 그 결정 자체에는 본 rubric이 없었음을 honest 기록. 본 ADR 적용 시 그 결정들이 retro 검증되며, 검증 결과 일부 (Tabs)는 재평가 대상으로 surface됨.
+
+Phase 26+에는 **사전 rule** — atom candidate 진입 시점에 본 ADR reference + 3축 채점 명시.
+
+**제약 / 범위**: docs only. 코드 변경 0. Changeset 불필요.
+
+**대안 검토**:
+- **rubric 없이 case-by-case**: 동일 결정의 사후 합리화 risk 지속 (OV-4 그대로 노출).
+- **단축 rubric (2축: 우회 cost + a11y만)**: 시각 정체성 손실이 디자인 시스템 본질이라 누락 부적절.
+- **5축 rubric (사용 빈도 + 학습 cost 추가)**: 디자이너 1인 운영 부담 — 3축이 minimum viable.
+
+**reference**:
+- ADR-030 (atom closure 조건) — 본 rubric은 closure 진입 결정의 sub-rule
+- ROADMAP §M2 evidence-driven cycle — 본 rubric이 적용되는 영역
+- ROADMAP §🎨 Figma 정합 트랙 — 본 rubric 비적용 영역 (ADR-030 Figma-derived rule 적용)
+
+**후속 변경 항목**:
+- [x] 본 ADR 작성 (2026-05-29).
+- [ ] **ROADMAP §M2 표에 본 ADR reference 추가** + dashed 결정 retro 검증 결과 1줄 명시.
+- [ ] **Tabs 재평가 trigger 등록** — 사내 진입 후 host에 Tabs 자리 발견 시 본 ADR rubric 재적용.
+
+---
+
+### ADR-032: Phase 2 dark contrast 7 violations 토큰 hex 조정 정책 — 5개 leaf 조정 방향 + primaryDark.base 보류 사유
+
+**결정**: Phase 2 (2026-05-28) 측정으로 surface된 dark mode contrast 7 violations 중 **4개 토큰 leaf의 hex를 conservative 방향으로 조정**한다. 5번째 (`primaryDark.base`)는 brand 인지 영향이 있어 **사내 design 협의 전까지 보류**.
+
+**실제 hex 변경 + Changeset minor bump는 본 ADR 후속 작업** (사용자 design 확인 + WCAG contrast precise 측정 후 별도 commit). 본 ADR은 조정 방향·근거·우선순위 정리.
+
+**배경**: `docs/PHASE2_DARK_CONTRAST_FINDINGS.md` (2026-05-28) — Phase 1~5 dark 검증 작업 (2026-05-29 commit `26ed34b`) 직전에 측정된 7 violations:
+
+| # | 위치 | 토큰 | 측정 contrast | 기준 |
+|---|---|---|---|---|
+| 1·2·8 | Input/Textarea/Button outline border | `bordersDark.mid` `#52525C` | 2.15 (on surface) / 1.61 (on canvas) | UI 3.0 |
+| 3·4·5 | Input/Textarea placeholder + InlineEditableText muted | `textDark.dim` `#71717B` | 2.58 / 3.44 / 2.58 | Text 4.5 |
+| 6 | FilterChip active text on active bg | `primaryDark.selected` `#6B82CC` on `primaryDark.bg` `#2A3556` | 3.27 | Text 4.5 |
+| 7 | FilterChip active border on bg/canvas | `interfaceColors.primary` (cascade → `primaryDark.base` `#4A65B8`) | 2.21 / 2.28 | UI 3.0 |
+
+**조정 방향** (4개 leaf, conservative):
+
+| 토큰 | before | 조정 방향 | target contrast | 후보 hex (precise 측정 후 결정) |
+|---|---|---|---|---|
+| `bordersDark.mid` | `#52525C` | 더 밝게 (border는 UI 3.0:1 기준) | ≥ 3.0:1 (surface + canvas 둘 다) | `#7D7D88` 후보 (canvas 위 ≈ 3.0) |
+| `textDark.dim` | `#71717B` | 더 밝게 (placeholder/muted text는 4.5:1) | ≥ 4.5:1 (surface + canvas 둘 다) | `#A8A8B0` 후보 (canvas 위 ≈ 4.5) |
+| `primaryDark.selected` | `#6B82CC` | 더 밝게 (selected text on bg) | ≥ 4.5:1 (on `primaryDark.bg`) | `#8FA3DD` 후보 |
+| `primaryDark.bg` | `#2A3556` | 더 어둡게 (selected text contrast 확보 후보 — primaryDark.selected와 짝) | (위와 함께 결정) | `#20294A` 후보 |
+
+→ 정확한 hex는 후속 작업에서 WCAG contrast tool (e.g., `scripts/check-dark-contrast.ts` 보정 후 재측정 + Storybook 시각 확인) 통과 후 결정. 본 ADR은 방향만 lock.
+
+#### `primaryDark.base` 보류 사유
+
+`#4A65B8` → 더 밝게 (예: `#5A78D0` 수준) 시 FilterChip active border contrast 통과 가능. 단:
+- ADR-007 WONIK BLUE `#273E82`의 dark mode 적응 변종 (`primaryDark.base`는 dark 대응 색)
+- brand 인지 측면: dark에서 brand 색이 더 밝아지면 light/dark 사이 brand 정체성 일관성 약화
+- 사용자 design 결정 필요 (사내 진입 후 디자이너 협의)
+
+**대안 1 (해법 보강, 사내 협의 전)**: FilterChip active 시 border 두께 1px → 2px 또는 dotted/dashed visual 분리로 a11y 보강 — 이건 컴포넌트 변경 (`packages/web/src/FilterChip/`) + Changeset patch.
+
+**대안 2 (보류 유지)**: 본 violation #7만 backlog 유지 + Storybook story `parameters: { a11y: { test: 'todo' } }` skip — 현재 적용된 상태 (Phase 1 작업).
+
+→ **본 ADR은 대안 2 채택** (사내 진입 + design 협의 + brand 결정까지 보류). 대안 1은 보강책으로 가능하나 사용자 design 결정 우선.
+
+#### Changeset 분류 (ADR-020 + ADR-024 정책 후속 적용)
+
+본 hex 조정은 **value drift** (key set 불변, 값만 변경) — ADR-024 정책 후속의 patch 허용 조건 3축 평가:
+
+1. **Figma vs 코드 대조 스크린샷**: Figma `Standardization 2.0`에 dark `borders.mid` / `text.dim` / `primary.*` 정의 없음 (ADR-022/024 확인). Figma source가 아니라 **WCAG AA 준수가 source-of-truth** — 본 case는 ADR-024 정책의 "Figma source" 조건 미충족.
+2. **host 'Figma source of truth' 수용**: 위와 같이 Figma source 아님 — 조건 미충족.
+3. **차이 < perceptible threshold**: 색 변경량이 contrast 통과를 위해 의도적으로 크다 (ΔE ≥ 5 예상) — perceptible threshold 초과.
+
+→ ADR-024 정책 3축 모두 미충족 → **minor bump 강제**. visual change visible to host → explicit upgrade decision 필요.
+
+**Changeset 항목** (후속 작업 시):
+- `@wonik/tokens` minor — 4 leaf hex 변경 (bordersDark.mid / textDark.dim / primaryDark.selected / primaryDark.bg)
+- `@wonik/web` patch — 변경 없음 (cascade로 자동 적용, computed). 단 Storybook 시각 확인 후 회귀 없는 경우만.
+
+**`@wonik/tokens` 현재 버전 (Verdaccio dry run trial 12 기준)**: `0.2.0` → `0.3.0` minor bump 예상. 사내 진입 시 changeset 5건 누적분과 함께 발행.
+
+**제약 / 범위**:
+- 본 ADR: docs only — 정책·방향·우선순위만. Changeset 불필요.
+- 후속 작업 (별도 commit + Changeset): 4 leaf hex 변경 + Storybook 시각 확인 + axe-core dark 통과 확인 (Phase 1 회귀 가드 자동 동작) + Phase 2 finding 7 violations 중 4개 closure 표기 + `parameters: { a11y: { test: 'todo' } }` 4개 unskip.
+- `primaryDark.base` (violation #7) 보류 유지 — 사내 진입 후 design 결정 시 별도 ADR 또는 본 ADR 후속 항목으로 closure.
+
+**대안 검토**:
+- **5개 다 즉시 조정 (`primaryDark.base` 포함)**: brand design 결정 무시 risk. reject.
+- **conservative 대신 minimum AA (3.0 / 4.5 임계 근접)**: contrast 측정 noise (display gamma / viewer 환경) 고려 시 buffer 부족. reject — 충분한 buffer 두고 조정.
+- **dark mode 전체 재디자인 (모든 dark 토큰 audit)**: 1단계 범위 확장. reject — Phase 2 finding 7 violations로 한정.
+- **Changeset 분류 patch 시도**: ADR-024 정책 3축 미충족 — patch 부적합. minor 강제.
+
+**reference**:
+- `docs/PHASE2_DARK_CONTRAST_FINDINGS.md` — 측정 원문
+- ADR-007 (WONIK BLUE) — `primaryDark.base` 보류 사유 base
+- ADR-009 (light/dark dual mode) — 본 조정의 영향 범위
+- ADR-010 (cascade override) — host가 본 토큰 reference 시 cascade 동작 보장
+- ADR-024 정책 후속 (token bump 정책) — minor bump 분류 적용
+- ADR-027 (a11y 3-layer gate) — Phase 1 회귀 가드 (axe-core dark)
+
+**후속 변경 항목**:
+- [x] 본 ADR 작성 (2026-05-29).
+- [ ] **`packages/tokens/src/theme-dark.ts` 4 leaf hex 변경** — precise contrast 측정 + Storybook 시각 확인 후 final hex 결정.
+- [ ] **Changeset `@wonik/tokens` minor bump** + 변경 내역 본 ADR reference.
+- [ ] **Phase 2 finding 4개 closure 표기** — `docs/PHASE2_DARK_CONTRAST_FINDINGS.md`에 통과 측정값 update.
+- [ ] **Storybook 4개 story `parameters: { a11y: { test: 'todo' } }` unskip** — Phase 1 회귀 가드가 dark에서 새 contrast pass 자동 확인.
+- [ ] **`primaryDark.base` (violation #7) — 사내 진입 후 design 결정** — brand 인지 영향 협의 → 결정 시 본 ADR 후속 closure 또는 별도 ADR.
