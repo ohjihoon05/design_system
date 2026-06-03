@@ -3,7 +3,8 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-05-29 (**다크 모드 전수 검증 ship** — Phase 1-5: 16 dark variants + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) + Phase 2 contrast 7 violations findings 문서화 + web-sandbox cascade override section. commit `26ed34b` + `ad8d141`. 직전 2026-05-27 Figma P3·P4 보류 reaffirm + Phase 25 Table atom 완료)
+**최종 갱신**: 2026-06-04 (**trial 14 — demo-tracker (사내 CRUD shape) dogfood**: 새 host `apps/demo-tracker` 이슈 트래커로 Table atom 첫 dogfood(atom 24 provisional) + frozen 후보(FormField/Select/RadioGroup) gap 실증 + Badge tone 신규 finding + Tabs 동결 reaffirm. build+render+console 0 검증. 직전 2026-05-29 plan-eng-review T1~T8d closure)
+> **이전 갱신**: 2026-05-29 (**다크 모드 전수 검증 ship** — Phase 1-5: 16 dark variants + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) + Phase 2 contrast 7 violations findings 문서화 + web-sandbox cascade override section. commit `26ed34b` + `ad8d141`. 직전 2026-05-27 Figma P3·P4 보류 reaffirm + Phase 25 Table atom 완료)
 
 ---
 
@@ -81,7 +82,7 @@
 > → **23 atom 도달** (Phase 21 Tooltip + Phase 23 InlineEditableText + Phase 24 SortableList 합류). Storybook(15+) 통과 + **Chromatic(20+) trigger 통과**. **Storybook 카탈로그 (phase 22 Ladle 도입 → 2026-05-20 Storybook 교체)** — `pnpm -F storybook-app dev`로 atom 카탈로그 + 토큰 시각화 + a11y addon. Chromatic은 사내 진입 시(CI 의존) 별도.
 > 잔여 M2.b 후보: Tabs(자리 약함 평가), Select(자리 부족).
 >
-> <sup>†</sup> `Table`: Phase 25 (ADR-029, 2026-05-27). 코드 + 16 tests + 6 Storybook stories 완료. atom 카운트 23 유지 — 사내 dogfood 1자리 도달 시 atom 24 closure 표기.
+> <sup>†</sup> `Table`: Phase 25 (ADR-029, 2026-05-27). 코드 + 16 tests + 6 Storybook stories 완료. **2026-06-04 trial 14(demo-tracker)에서 첫 dogfood → atom 24 provisional closure**. 단 demo-tracker는 synthetic host(이 dogfood 위해 지은 앱)라 약한 증거 — 로드맵 원래 조건인 **사내(organic) dogfood 1자리** 도달 시 정식 승격. 그 전까지 headline atom 카운트는 23(+1 provisional)로 표기.
 
 ---
 
@@ -172,11 +173,13 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 |---|---|---|
 | **ToggleGroup** (chip selector — verbosity 같은 것) | **2/3** | 🧊 **동결 (Layer B 후 재평가)** — ppt 추가 evidence 없음. 1단계 atom 23으로 충분 |
 | ~~Add-dashed Button variant~~ | **3/3 trigger** → 본질 needs 약함 | **보류 (격하 reaffirm)** — outline 우회로 충분, dashed visual 손실 수용 |
-| **FormField** (label + Input + error 묶음) | **1/3** | 🧊 **동결** — ppt에 본격 form 자리 0건 (label/errorMessage 패턴 부재) |
-| **RadioGroup** | **1/3** | 🧊 **동결** — ppt에 `type="radio"` 사용 0건 |
+| **FormField** (label + Input + error 묶음) | **1/3 organic** + trial 14 shape-validated | 🧊 **동결** — ppt form 0건. demo-tracker(synthetic)에서 host가 `Field` 5회 재구현으로 gap 실증, 단 synthetic이라 organic trigger엔 미산입 |
+| **Select** (dropdown) | 자리 부족 + trial 14 shape-validated | 🧊 **동결** — demo-tracker에서 native `<select>` 3회 우회(시각 불일치 실증). organic 자리 대기 |
+| **RadioGroup** | **1/3 organic** + trial 14 shape-validated | 🧊 **동결** — ppt `type="radio"` 0건. demo-tracker에서 Radio 수동 그룹 1자리. organic 대기 |
+| **Badge `tone` prop** (신규 — trial 14) | **1/1 synthetic** | 🧊 **신규 동결** — Badge variant가 neutral/primary뿐이라 status 의미색(success/warning/danger) 부재. demo-tracker에서 primary 과적재로 실증. organic 수요 시 ADR + minor |
 | **Card with hover variant** | **1/3** | 🧊 **동결** — ppt에 cursor-pointer + Card 조합 패턴 0건 |
 | **host 측 inline px helper 가이드** (Stack 권장) | **4/3** | ✅ doc 갱신 끝 (QUICKSTART line 112 F23 wrap) |
-| Modal/Dialog · Tabs · Tooltip | **Modal·Tooltip ✅** / Tabs **0/3** | Tabs 동결 — Layer B 후 재평가 |
+| Modal/Dialog · Tabs · Tooltip | **Modal·Tooltip ✅** / Tabs **0/3** | Tabs 동결 — trial 14에서 필터를 FilterChip로 충분히 구현, Tabs 갈증 0 → **동결 reaffirm** (ADR-031 재평가 trigger에 대한 데이터 포인트) |
 
 → **모든 atom 후보 동결**. ppt main 3 + sub 2 자리에서 atom 23이 모두 dogfood됨. 새 host product 등장 시 evidence 재누적 가능.
 
@@ -313,8 +316,9 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | 11 | 2026-05-15 | Presentation 재dogfood — trial 6 미완 청소 + Alert/Input/Textarea + AI 수정 보라 anti-pattern 제거. dashed 3/3 trigger도 격하 reaffirm | `dogfood-trial-11.md` |
 | 12 | 2026-05-15 | Layer B publish & adopt 사이클 — Verdaccio 14873 + Changesets dry run, tokens 0.2.0/web 1.0.0 첫 publish + ppt dual-direction patch (3.7s install) | `dogfood-trial-12.md` |
 | 13 | 2026-05-19 | Phase 23/24 atom의 dogfood closure — InlineEditableText(OutlineCard 인라인 편집 6요소 흡수) + SortableList(Presentation SortableThumbnail ~120줄 흡수). −186 net 라인, ppt에서 dnd-kit 직접 의존 제거. **atom 23 × ppt 4 자리** | `dogfood-trial-13.md` |
+| 14 | 2026-06-04 | **새 host shape (사내 CRUD)** — `apps/demo-tracker` 이슈 트래커(목록 Table + Modal 폼). **Table atom 첫 dogfood → atom 24 provisional**. frozen 후보 gap 실증: FormField(host가 `Field` 재구현 5회)·Select(native `<select>` 3회)·RadioGroup(Radio 수동 그룹). 신규 finding: **Badge tone 부재**. Tabs는 FilterChip로 충분 → 동결 reaffirm. build+render+console 0 검증 (synthetic host = shape-validation, organic 아님) | `dogfood-trial-14.md` |
 
-→ 누적 13 trial. **Layer A 23 atoms × ppt 3 main 페이지 + 2 sub 자리 모두 적용 완료.** atom 추가 → host 흡수 cycle이 1주기 내(Phase 23→trial 13, Phase 24→trial 13) closure됨. **Layer A 사이클 마감 commit 거리 도달.**
+→ 누적 14 trial. **Layer A 23 atoms × ppt 3 main 페이지 + 2 sub 자리 모두 적용 완료.** atom 추가 → host 흡수 cycle이 1주기 내(Phase 23→trial 13, Phase 24→trial 13) closure됨. **Layer A 사이클 마감 commit 거리 도달.**
 
 ---
 
