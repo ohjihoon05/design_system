@@ -59,7 +59,8 @@ const AtomGroup = ({ label, atoms }: { label: string; atoms: string[] }) => (
 // ─── stories ───────────────────────────────────────────────────────────────
 
 // Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
-// Welcome 전체는 무거우므로 짧은 hero + atom TOC 1개만 dark로. 'dim' text 위반 risk → todo.
+// Welcome 전체는 무거우므로 짧은 hero + atom TOC 1개만 dark로.
+// T8d closure: 'dim' text (textDark.dim, T8b/ADR-032) 유일 위반이 수정됨 → unskip. axe 실측 PASS (2026-05-29).
 export const WelcomeDark = () => (
   <Stack gap={6} style={{ maxWidth: 820 }}>
     <Stack gap={3}>
@@ -78,7 +79,6 @@ export const WelcomeDark = () => (
   </Stack>
 );
 WelcomeDark.globals = { theme: 'dark' };
-WelcomeDark.parameters = { a11y: { test: 'todo' } };
 
 export const Welcome = () => (
   <Stack gap={6} style={{ maxWidth: 820 }}>

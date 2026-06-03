@@ -67,7 +67,10 @@ export const Disabled = () => (
 );
 
 // Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
-// Tooltip trigger Button outline border + 'dim' text 위반 risk → todo.
+// T8d 보류 (skip 유지): outline Button의 text+border = interfaceColors.primary → dark에서
+// primaryDark.base #4A65B8 = Phase 2 finding #7 (canvas 위 2.28:1, 미수정). T8b 3-leaf 조정
+// 대상 아님. axe는 투명 배경 outline 버튼의 effective bg를 측정 못 해 incomplete 처리(통과처럼
+// 보이나 false negative) → 거짓 a11y 주장 방지 위해 skip 유지. unskip 조건 = T8c (primaryDark.base 협의).
 export const PlacementsDark = () => (
   <Stack direction="row" gap={6} align="center" style={{ padding: 60 }}>
     {(['top', 'right', 'bottom', 'left'] as const).map((p) => (

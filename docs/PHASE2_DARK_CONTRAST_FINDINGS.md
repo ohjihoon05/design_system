@@ -73,6 +73,25 @@ ADR-007은 WONIK BLUE `#273E82`를 light mode primary로 고정. dark mode의 `p
 3. **Contrast 측정 자동화**: build 시 contrast script를 CI에 incorporate (현재는 scripts/check-dark-contrast.ts 수동 실행)
 4. **Storybook a11y addon**: dark mode 시각 검증 시 axe-core가 위반을 자동 flag (Phase 1 완료 후 자동 동작)
 
+## T8d — Storybook a11y skip burndown (2026-05-29)
+
+T8b가 5/7을 닫은 뒤, Phase 1에서 skip(`a11y.test='todo'`) 처리됐던 **dark story**를 axe 게이트로 실측해 정리:
+
+| dark story | 의존 토큰 | axe 게이트 | 처리 |
+|---|---|---|---|
+| `Text.ColorsDark` | textDark.dim (#71717B→#A0A0A8, T8b) | PASS (canvas 4.92:1) | ✅ unskip |
+| `intro.WelcomeDark` | textDark.dim (T8b) | PASS | ✅ unskip |
+| `Tooltip.PlacementsDark` | outline Button text+border = interfaceColors.primary → primaryDark.base #4A65B8 (finding #7, 미수정) | **PASS (false negative)** | ⏸ skip 유지 (T8c) |
+| `FilterChip.ActiveDark` | active text #6 수정됨 / active border = primaryDark.base #4A65B8 (#7, 미수정) | (skip 중) | ⏸ skip 유지 (T8c) |
+
+> **참고**: Input/Textarea/InlineEditableText 등 9개 파일의 파일-레벨 skip은 **ADR-027 light backlog**(TODOS.md `[a11y-gate-backlog]`)로 본 dark 트랙과 별건. 이 셋은 dark story 자체가 없다.
+
+### ⚠️ 발견 — axe 회귀 가드 사각지대 (non-text contrast false negative)
+
+`Tooltip.PlacementsDark`는 axe 게이트를 **통과**했으나 실제로는 저대비다. outline Button의 텍스트·border가 `primaryDark.base` #4A65B8 (canvas #343434 위 2.28:1, 4.5/3.0 모두 미달)인데, axe-core가 **투명 배경(`background: transparent`) outline 버튼의 effective bg를 확정하지 못해 color-contrast를 `incomplete`로 처리** → violation throw 안 함.
+
+→ **우리 dark 회귀 가드(addon-a11y + vitest)는 투명 배경 컴포넌트의 저대비를 자동 검출 못 한다.** finding #7 계열(FilterChip active border / Tooltip·Button outline)은 **T8c에서 수동 contrast 측정 필수**. 거짓 a11y 통과 주장 방지를 위해 해당 story는 skip 유지(주석에 false-negative 사유 명기).
+
 ## 측정 스크립트 위치
 
 - `packages/tokens/scripts/check-dark-contrast.ts` (또는 본 측정에 사용된 임시 스크립트)

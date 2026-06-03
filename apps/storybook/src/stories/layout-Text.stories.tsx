@@ -48,7 +48,8 @@ export const AsTag = () => (
 );
 
 // Phase 1 dark mode 회귀 가드. docs/PHASE2_DARK_CONTRAST_FINDINGS.md 참조.
-// Color 'dim' (textDark.dim) 위반 risk — todo 처리.
+// T8d closure: 'dim' (textDark.dim #71717B→#A0A0A8, T8b/ADR-032)가 유일 위반이었고 canvas 위
+// 4.92:1로 통과 → unskip. axe 게이트 실측 PASS (2026-05-29).
 export const ColorsDark = () => (
   <Stack gap={2}>
     <Text variant="label" color="primary">primary</Text>
@@ -58,4 +59,3 @@ export const ColorsDark = () => (
   </Stack>
 );
 ColorsDark.globals = { theme: 'dark' };
-ColorsDark.parameters = { a11y: { test: 'todo' } };

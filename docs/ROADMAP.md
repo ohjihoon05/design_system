@@ -144,7 +144,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | ~~T8a~~ (Phase 2 hex 후속 — ADR 작성) | ~~ADR-032 작성 — hex 조정 정책 + 방향 + Changeset 분류~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-032** 신설 (4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제). docs only |
 | ~~T8b~~ (Phase 2 hex 후속 — 실제 변경) | ~~theme-dark.ts 3 leaf hex 변경~~ | ~~1.5-2h~~ | ✅ 2026-05-29 closure — 3 leaf hex 변경 (bordersDark.mid #52525C→#82828A, textDark.dim #71717B→#A0A0A8, primaryDark.selected #6B82CC→#8FA3DD), Phase 2 5/7 violations closure, 347 tests pass, Changeset `dark-contrast-fix.md` (minor). primaryDark.bg는 selected 변경만으로 4.5:1 충족이라 미변경. **`primaryDark.base` 보류 = T8c 후속** (사내 design 협의) |
 | **T8c** (Phase 2 finding #7 후속) | `primaryDark.base` `#4A65B8` brand 결정 + FilterChip active border / Button outline 의 a11y 보강 결정 (대안 1 = base 밝게 / 대안 2 = border 두께·dotted 분리) | 사내 진입 + design 협의 후 | 사내 진입 의존 |
-| **T8d** (a11y backlog burndown 후속) | Storybook 13개 skip stories 중 T8b로 통과 가능해진 stories unskip — Input/Textarea/InlineEditableText의 dark variant. axe-core 회귀 가드 자동 동작 확인 후. FilterChip ActiveDark는 finding #7 보류 영역이라 skip 유지 | 30분 | 낮음 (집에서 가능) |
+| ~~T8d~~ (a11y skip burndown 후속) | ~~skip stories unskip — Input/Textarea/InlineEditableText dark variant~~ | ~~30분~~ | ✅ 2026-05-29 closure — **전제 교정**: 원 설명은 "Input/Textarea/InlineEditableText dark variant unskip"이었으나 그 셋은 **dark story가 없고** ADR-027 **light** backlog(Disabled 등)로 파일 봉인된 별건. T8b가 푸는 건 skip된 **dark story** 4개 중 dim-text 의존분. **axe 게이트 실측**: `Text.ColorsDark` + `intro.WelcomeDark` **unskip** (dim 4.92:1 통과). `Tooltip.PlacementsDark` + `FilterChip.ActiveDark` **skip 유지** — outline/active border = `interfaceColors.primary`→primaryDark.base #4A65B8(finding #7, 2.28:1) 미수정 = **T8c 의존**. **발견: axe가 투명 배경 outline 버튼 contrast를 incomplete 처리(false negative) → dark 회귀 가드 사각지대** (Tooltip은 axe 통과하나 실제 저대비라 정직성 위해 skip 유지) |
 
 ---
 
@@ -379,7 +379,7 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - [x] **T8a (P2, human: ~40min / CC: ~15min)** — ADR 신설 (**ADR-032**): Phase 2 contrast 7 violations hex 조정 정책 — 4 leaf 조정 방향 + `primaryDark.base` 보류 사유 + ADR-024 정책 3축 미충족 → minor 강제 분류 — ✅ 2026-05-29 (docs only)
 - [x] **T8b (P2, human: ~1.5-2h / CC: ~30min)** — T8a 후속: `packages/tokens/src/theme-dark.ts` 3 leaf hex 변경 (bordersDark.mid #52525C→#82828A / textDark.dim #71717B→#A0A0A8 / primaryDark.selected #6B82CC→#8FA3DD) + Phase 2 5/7 violations closure + 347 tests pass + Changeset `dark-contrast-fix.md` (minor). primaryDark.bg는 selected 변경만으로 4.5:1 충족이라 미변경 — ✅ 2026-05-29
 - [ ] **T8c (P2, human: pending sub 협의)** — `primaryDark.base` `#4A65B8` brand 결정 + FilterChip active border / Button outline a11y 보강 (대안 1: base 밝게 / 대안 2: border 두께·dotted 분리). Phase 2 finding #7 closure. 사내 진입 + design 협의 후
-- [ ] **T8d (P3, human: ~30min / CC: ~10min)** — Storybook a11y skip stories burndown: T8b로 통과 가능해진 stories (Input/Textarea/InlineEditableText dark variants) `parameters: { a11y: { test: 'todo' } }` 제거. axe-core 회귀 가드 자동 통과 확인. FilterChip ActiveDark는 #7 보류라 skip 유지
+- [x] **T8d (P3)** — ✅ 2026-05-29 closure. **전제 교정**: Input/Textarea/InlineEditableText는 dark story 부재 + ADR-027 light backlog 별건. 실제 unskip 대상 = skip된 dark story. axe 게이트 실측: `Text.ColorsDark` + `intro.WelcomeDark` unskip(dim 4.92:1), `Tooltip.PlacementsDark` + `FilterChip.ActiveDark` skip 유지(primaryDark.base #7 = T8c 의존). 부수 발견: axe가 투명 배경 outline 버튼 저대비를 incomplete 처리(false negative) = dark 회귀 가드 사각지대
 
 ### Worktree parallelization
 - **Lane A (sequential)**: T1 → T2 → T3 → T4 — 모두 ROADMAP.md 본문 수정, conflict 회피용 sequential
@@ -403,4 +403,5 @@ ROADMAP 본문 수정 + ADR 신설은 별도 작업으로 분리.
 - ✅ **T5 완료** (commit `3839862`): ADR-024 본문에 token bump 정책 후속 sub-section 추가 — value drift = patch 3축 조건 (Figma 대조 / source 수용 / ΔE ≤ 5 threshold).
 - ✅ **T6·T7·T8a 완료** (2026-05-29 자율 진행): ADR-030 (atom closure 조건) + ADR-031 (trigger 결정 rubric, **Tabs 재평가 trigger sub-finding**) + ADR-032 (Phase 2 hex 조정 정책). 모두 docs only.
 - ✅ **T8b 완료** (2026-05-29 자율 진행): theme-dark.ts 3 leaf hex 변경 + Phase 2 5/7 violations closure + 347 tests pass + Changeset `dark-contrast-fix.md` (minor). `primaryDark.base` 보류 → **T8c** 신설 (사내 design 협의 후).
-- ⏳ **T8c·T8d pending**: T8c (primaryDark.base brand 결정) = 사내 진입 의존. T8d (skip stories unskip burndown) = 집에서 가능 후속.
+- ✅ **T8d 완료** (2026-05-29): skip된 dark story 중 dim-text 의존분만 axe 게이트 실측 후 unskip (`Text.ColorsDark` + `intro.WelcomeDark`). 원 설명의 "Input/Textarea/InlineEditableText"는 dark story 부재 + ADR-027 light backlog 별건이라 전제 교정. `Tooltip.PlacementsDark` + `FilterChip.ActiveDark`는 primaryDark.base(#7) 의존 = T8c로 보류. **부수 발견**: axe가 투명 배경 outline 버튼 저대비를 false-negative 처리 = dark 회귀 가드 사각지대 (T8c 시 수동 측정 필요).
+- ⏳ **T8c pending**: `primaryDark.base` #4A65B8 brand 결정 = 사내 진입 + design 협의 의존. FilterChip active border / Tooltip outline / Button outline 의 dark 저대비 closure가 여기 묶임.
