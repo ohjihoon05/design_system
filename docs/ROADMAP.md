@@ -129,11 +129,11 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 | 후보 | 내용 | 시간 | 우선도 |
 |---|---|---|---|
-| cleanup #1 | ppt `frontend/vendor/wonik-{tokens,web}-0.0.0.tgz` 삭제 (trial 7로 0.1.0 교체된 잔재) | 5분 | 낮음 |
-| cleanup #2 | design_system root `*.tgz` 삭제 (디스크 잔존) | 5분 | 낮음 |
-| cleanup #3 | trial-N narrative 주석 일괄 제거 (`/* trial 8: ... */` 누적, CLAUDE.md 주석 정책 위배) | 30분 | 중간 |
-| doc #1 | QUICKSTART에 "host inline px 대신 Stack gap 사용" 한 줄 추가 (F23) | 10분 | 중간 |
-| doc #2 | AI semantic purple ADR — `--color-status-processed-text: #7C3AED` 의미 확장(AI 처리)을 ADR-007에 짧게 추가 (F19) | 15분 | 중간 |
+| ~~cleanup #1~~ | ~~ppt `frontend/vendor/wonik-{tokens,web}-0.0.0.tgz` 삭제~~ | ~~5분~~ | ✅ 2026-05-29 확인 — **이미 없음** (no-op). trial 7 이후 0.1.0 교체로 제거됨 |
+| cleanup #2 | `pkg-out/wonik-{tokens,web}-0.0.0.tgz` 삭제 (디스크 잔재) | 5분 | 낮음 — **gitignored** (git 추적 X, 디스크만). pkg-out엔 dogfood 스크린샷도 함께 있어 통째 삭제 금지 |
+| cleanup #3 | trial-N narrative 주석 제거 (`{/* trial 10: ... */}` 등) | 30분 | 낮음 — **ppt repo 소속** (Presentation/Home/OutlineCard.tsx). design_system 아님 = cross-repo 작업 (별도 repo 진입 필요) |
+| ~~doc #1~~ | ~~QUICKSTART "host inline px 대신 Stack gap" (F23)~~ | ~~10분~~ | ✅ 완료 — QUICKSTART.md:112 (M2 표와 중복 등록이었음) |
+| ~~doc #2~~ | ~~AI semantic purple `#7C3AED` 의미를 ADR-007에 추가 (F19)~~ | ~~15분~~ | ✅ 완료 — ADR.md:63 (trial 11 F19 보강) |
 | (선택) sub-component dogfood | PromptRefineChat / AiChatPanel — ToggleGroup 추가 evidence 가능성 | 30분~ | 낮음 (Layer A 이미 마감) |
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
