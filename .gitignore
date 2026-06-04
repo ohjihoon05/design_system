@@ -61,8 +61,9 @@ apps/storybook/debug-storybook.log
 # Claude Code 작업 디렉토리
 .claude/worktrees/
 
-# Obsidian graph state (자동 갱신)
+# Obsidian editor/graph UI state (자동 갱신 — 작업 아님)
 .obsidian/graph.json
+.obsidian/workspace.json
 
 # 사용자 작업 컨텍스트 (spike 결과 / retros / design-audit dump)
 .context/
