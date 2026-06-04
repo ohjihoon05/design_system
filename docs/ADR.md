@@ -1417,3 +1417,51 @@ Phase 26+에는 **사전 rule** — atom candidate 진입 시점에 본 ADR refe
 - [ ] **Phase 2 finding 4개 closure 표기** — `docs/PHASE2_DARK_CONTRAST_FINDINGS.md`에 통과 측정값 update.
 - [ ] **Storybook 4개 story `parameters: { a11y: { test: 'todo' } }` unskip** — Phase 1 회귀 가드가 dark에서 새 contrast pass 자동 확인.
 - [ ] **`primaryDark.base` (violation #7) — 사내 진입 후 design 결정** — brand 인지 영향 협의 → 결정 시 본 ADR 후속 closure 또는 별도 ADR.
+
+---
+
+### ADR-033: 문서 모호함 감사 — 채택 trigger 단위 / organic·synthetic 정의 / interface variable 격상 게이트
+
+**결정**: deep-interview 감사(2026-06-04)로 발견된 미명문 규칙 2건(C·E)을 명시하고, 모순으로 의심됐던 2건(D·F)은 기존 ADR로 이미 일관 처리됨을 honest 기록한다. docs only — 코드 변경 0, Changeset 불필요.
+
+**배경**: 1인 메인테이너 self-audit. 스카우트(grep/훑기) 1차가 11개 모호점을 surface했으나, ADR 본문 정독 결과 C·E만 진짜 미명문이고 D는 ADR-024가 이미 orthogonal 명시, F는 패러프레이즈 기반 오인이었다. "grep은 triage, 읽고 추론이 본체" 원칙 적용.
+
+#### C1 — 채택 trigger "3회"의 단위 (ADR-030 보완)
+ADR-030의 "host에서 같은 게 3번 나오면" trigger는 다음 **둘 다** 충족으로 본다:
+- **한 자리(페이지)에서 3회 반복** (예: Card — Outline 한 화면 4회)
+- **여러 자리 누적 3회** (예: Badge — Outline 3 + Home 1)
+
+ADR-016 L508("한 페이지 4회든 여러 페이지 누적 4회든 동일 threshold")이 암시한 것을 명문화. trigger는 신호일 뿐 — 충족 후 결정은 ADR-031 3축 rubric으로 진행(trigger ≠ 결정).
+
+#### C2 — organic vs synthetic dogfood 정의 (신규 정의)
+- **organic** = 자기 목적으로 존재하며 DS를 소비하는 제품 (ppt, demo-fab-monitor).
+- **synthetic** = DS를 시험할 목적으로 지은 앱 (demo-tracker).
+- synthetic 증거는 **shape 검증**(gap이 형태상 실재함)만 제공하며 ADR-030의 3회 trigger에 **불산입**한다.
+
+FormField가 demo-tracker에서 `Field` 5회 재구현됐음에도 동결된 근거(ROADMAP trial 14)를 규칙으로 승격. confirmation bias 차단.
+
+#### E — interface variable 격상 게이트 (ADR-010·011 통합)
+internal 토큰을 interface variable(host override 가능)로 격상하려면 **ADR + "왜 host가 이걸 themable해야 하나" 1줄 정당화**를 요한다. 엄격 evidence-first("2nd host가 dogfood로 요청")는 1단계 단일-host(ppt) 현실에서 interface set의 영구 동결을 낳아 부적합 — 정당화는 (a) dogfood 증거 **또는** (b) 강한 디자인시스템 선례 + layer-A "host가 색을 own" 정신 적합 reasoning으로 충족한다.
+
+ADR-010 L144(`--color-focus`를 미래 hook으로 미리 지명) + ADR-011 L176(Primer/Radix/Chakra 선례 등 7개 이유로 실현)을 하나의 일반 규칙으로 통합. `focus`는 이 게이트를 이미 충족 — 소급 정당화 불요.
+
+#### D — 토큰 value drift bump (검토결과: 신규 정책 아님)
+토큰 value drift(key set 불변, 값만 변경)의 bump는 ADR-024 §정책후속(L1011-1018)이 이미 규정: 3축(Figma source 합의 + ΔE≤5 + 대조 스크린샷) 충족 시 patch, 미충족·ΔE≥5 시 minor 강제. ADR-024 L1018이 "ADR-020(추가/이름변경/삭제=minor↑)과 orthogonal, 충돌 없음"을 명시한다. 신규 정책 불요 — **CLAUDE.md L37에 이 value-drift 카브아웃 교차참조 1줄만 보강**(CLAUDE.md 단독 독자가 "모든 토큰 변경=minor"로 오해하지 않도록).
+
+#### F — Figma vs 코드 source of truth (검토결과: 변경 없음)
+모순이 아니라 일관된 **레이어 분리**:
+- **Figma `Standardization 2.0` = 지속 디자인 소스** — surfaces/borders/text + button/table component 값. drift는 Figma 기준으로 교정(ADR-021/022/024). "1회성 seed"가 아니라 ongoing.
+- **코드 = canon** — WONIK BLUE/primary(ADR-007이 Figma `#2B7FFF` override), status(WARP 시안 유래), graph(ADR-012/013). ADR-024 L1005: 이들은 "별개 출처라 정합 대상이 아니다".
+
+ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한정된 진술이지 전역 선언이 아니다. 감사 초기 "코드 canon vs Figma single-source" 프레이밍은 FIGMA_SEMANTIC_MAPPING_PLAN.md에 없는 문구("single source of truth")를 스카우트가 패러프레이즈한 데 근거한 오인 — 문서 변경 불요.
+
+**범위 밖 / 후속**:
+- **#10 (고객 없는 토큰 추가 예외)**: ADR-012 "표준화 ≠ 추상화" 카브아웃의 경계(graph 토큰은 OK인데 animation 토큰도 같은 논리로 추가 가능한가?)는 여전히 무름 — 별도 ADR 권장. 본 ADR-033의 C 2관문은 *컴포넌트*용이라 *토큰* 예외를 덮지 못함(확신도 명시).
+- **보류 5건** (Layer B·T8c·HMI·freshness ritual·Table provisional): 사용자 확정 의도된 보류 유지. 각 보류에 "해소 trigger 1줄"(예: Layer B="사내 진입 alert 수신 시", T8c="design 협의 1회 후") 부기는 선택적 후속.
+
+**reference**: ADR-030(trigger 모델)·ADR-031(결정 rubric)·ADR-010/011(interface variable)·ADR-016(누적 threshold)·ADR-024 §정책후속(value drift bump). 감사 spec: `.omc/specs/deep-interview-ambiguity-audit.md`.
+
+**후속 변경 항목**:
+- [x] 본 ADR 작성 (2026-06-04).
+- [ ] CLAUDE.md L37 value-drift 교차참조 1줄 보강 (별도 항목, 동시 진행).
+- [ ] (선택) ROADMAP §M2/§🧱에 C1·C2 규칙 reference 1줄.
