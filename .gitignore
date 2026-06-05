@@ -55,6 +55,9 @@ Thumbs.db
 .claude/scheduled_tasks.lock
 .gstack/
 
+# oh-my-claudecode 플러그인 작업 state (session/state/project-memory churn + spec scratch)
+.omc/
+
 # Storybook debug log (Storybook이 broken build 시 dump)
 apps/storybook/debug-storybook.log
 
