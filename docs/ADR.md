@@ -1465,3 +1465,42 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 - [x] 본 ADR 작성 (2026-06-04).
 - [ ] CLAUDE.md L37 value-drift 교차참조 1줄 보강 (별도 항목, 동시 진행).
 - [ ] (선택) ROADMAP §M2/§🧱에 C1·C2 규칙 reference 1줄.
+
+---
+
+### ADR-034: 토큰 추가 관문 — "비준 디자인 소스" 근거 표준화 테스트 (ADR-012 §6 운영화, atom 관문의 토큰측 대응)
+
+**결정**: 코드 소비처(컴포넌트·제품 화면)가 아직 없는 상태에서 토큰 그룹을 `@wonik/tokens`에 추가하는 것은 다음 **두 조건을 모두** 충족할 때만 정당한 *표준화*다. 미충족 시 ADR-001이 금지하는 *추상화*(speculative)로 본다.
+
+1. **비준된 공식 디자인 소스에 값이 이미 존재** — Figma `UI/UX Standardization 2.0` 파일의 컬렉션, WARP 시안 폴더, Parameter Description 캡처 같은 *확정 산출물*에 그 값이 이미 그려져 있어야 한다. 빈 Figma 프레임에 끄적인 값·손스케치·경쟁사 캡처·머릿속 구상은 소스로 인정 안 함.
+2. **새 컴포넌트를 요구하지 않음** — 토큰만 추가하면 되는 경우. 그 토큰이 새 컴포넌트(`<Chart>` 류)를 끌고 와야 소비된다면, 컴포넌트 부분은 본 관문이 아니라 **ADR-030/031 atom 관문**을 별도로 통과해야 한다 (두 관문은 합성된다).
+
+**배경**: deep-interview 재감사(2026-06-04→06-05 후속). ADR-033이 #10("고객 없는 토큰 추가 예외")을 "범위 밖, 별도 ADR 권장"으로 남겼다 — ADR-012 §6은 "표준화 ≠ 추상화, 추상화 우려는 *컴포넌트*에 적용"이라는 *원칙*은 세웠으나 "무엇이 표준화인가"를 가르는 *운영 테스트*가 없어 "graph는 OK인데 animation 토큰도 같은 논리로 추가 가능한가?"에 답하지 못했다. 본 ADR이 그 테스트를 명문화한다.
+
+**이유**:
+1. **ADR-012 §6의 암묵 기준을 명시화** — graph 토큰을 고객 0인데도 추가한 실제 근거(§6)는 "9 Parameter Description 캡처가 *이미 존재하는 시각 언어*"였다. 즉 저자는 암묵적으로 "비준 소스에 값이 존재하는가"를 통과 기준으로 썼다. 이를 규칙으로 승격.
+2. **organic/synthetic과 같은 논리 골격** — ADR-033 §C2는 채택 trigger에서 "진짜 증거(organic) vs 지어낸 증거(synthetic)"를 가른다. 토큰 추가도 동일하게 "진짜 소스(비준 산출물) vs 지어낸 값(speculative)"으로 가른다. 시스템 전체가 confirmation bias / 미리 깔기를 같은 방식으로 차단.
+3. **atom 관문의 대응물** — 컴포넌트는 ADR-030(trigger)·ADR-031(rubric) 관문을 통과해야 한다. 토큰엔 그 대응물이 없어 "atom엔 관문, 토큰엔 무규칙"의 비대칭이 있었다. 본 ADR이 토큰측 관문을 채운다.
+
+**검증 (retro 적용)**:
+
+| 후보 | 비준 소스 존재? | 새 컴포넌트 요구? | 본 관문 결정 | 실제 |
+|---|---|---|---|---|
+| graph 토큰 (ADR-012/013) | ✅ 9캡처 + Figma `Graph` collection | ❌ (토큰만, `<Chart>` 1단계 외) | **추가 허용** | 추가됨 ✅ |
+| button/table 토큰 (ADR-023/025) | ✅ Figma `Standardization 2.0` button/table | ❌ (토큰 layer, 컴포넌트 배선 별도) | **추가 허용** | 추가됨 ✅ |
+| (가상) motion 토큰 (duration/easing) | ❌ 공식 모션 시안 부재 | — | **금지** (speculative) | (해당 없음) |
+
+**트레이드오프**:
+1. **"비준 소스"의 게이트키핑 = 디자이너 1인 본인** — 무엇이 "확정 산출물"인지 최종 판단은 메인테이너다. 1인 운영에선 자기 자신을 속일 위험(아무 프레임에 그려놓고 "소스 있음" 우기기)이 있으나, "공식 파일만" 엄격 기준 + 토큰 추가 시 ADR 작성 강제가 1차 방어선.
+2. **토큰 추가 자체의 semver/문서 의무는 그대로** — 본 관문은 *추가해도 되는가*를 가를 뿐. 추가의 의무(CLAUDE.md CRITICAL: 토큰 추가 = ADR + minor↑)는 불변.
+3. **소스가 진화하면 게이트도 진화** — Figma `Standardization 2.0`에 새 의미 그룹이 추가되면 그때 본 관문을 통과하는 새 토큰 후보가 생긴다. 정적 목록이 아님.
+
+**제약 / 범위**: docs only — 코드·토큰 변경 0, Changeset 불필요. 본 ADR은 *규칙 명문화*. 보류 5건(Layer B·T8c·HMI·freshness·Table)·토큰 value drift bump(ADR-024 §정책후속)·atom 채택(ADR-030/031)은 별개 영역.
+
+**reference**: ADR-001(고객 없이 추상화 금지)·ADR-012 §6(표준화≠추상화 원칙)·ADR-013(graph YAGNI 축소)·ADR-023/025(button/table 토큰 선례)·ADR-030/031(atom 관문, 본 관문의 컴포넌트측 대응)·ADR-033 §C2(organic/synthetic 평행). 감사 spec: `.omc/specs/deep-interview-token-gate-figma-direction.md`.
+
+**후속 변경 항목**:
+- [x] 본 ADR 작성 (2026-06-05).
+- [x] 선행 spec(`deep-interview-ambiguity-audit.md`) §F "Figma=1회성 seed" 표기를 레이어별 양방향으로 정정.
+- [x] CLAUDE.md 토큰 CRITICAL 규칙에 본 관문 reference 1줄 (2026-06-05).
+- [ ] (선택) ROADMAP §🧱/§🎨에 토큰 추가 관문 링크.
