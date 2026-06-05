@@ -239,6 +239,8 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | 5 | host product `pnpm install` (vendor → registry) → dual-direction patch | ✅ ppt 3.7초 install + 1.5초 update | 동일 흐름 |
 | 6 | (선택) CI 자동 publish workflow | 보류 | GitHub Actions 추가 |
 
+> **⚠️ 진입 전 집에서 닫을 것 (2026-06-05 실측 — F28 reproduction confirmed)**: `pnpm changeset status` 기준 대기 changeset 10건이 `@wonik/web`을 **`2.0.0 → 3.0.0` (major)**로 계산. 선언된 major 0건(minor 2 + patch 2)이라 **의도는 `2.1.0` (minor)** — changesets#1011 "누적 minor → major 승격" 버그(F28) 재현. 사내 첫 publish 전 `.changeset/*.md` frontmatter 정정 또는 version pin으로 `2.1.0` 확정 필요 (trial 13 F30 publish-prep 규칙). **곁가지 결정**: 현재 committed `tokens@0.3.0`/`web@2.0.0`은 dry-run `changeset version` 잔재(실제 registry publish 0회) → 첫 진짜 publish를 이어갈지/리셋할지 F28 닫으며 동시 결정. `@wonik/tokens` 0.3.0→0.4.0 (minor)는 의도대로 정상.
+
 > **진입 신호**: 사용자가 사내 환경 진입 알릴 때까지 ROADMAP에서 push 안 함. dry run 결과 commit은 집에서 가능. **진입 신호 정의 + 무기한 대기 fallback** = 아래 §🔄 freshness ritual.
 
 ---
