@@ -1509,7 +1509,7 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 
 ### ADR-035: F28 peer-induced major churn 종결 — changesets peer 옵션 + `@wonik/tokens` 1.0.0 cutover
 
-> **상태**: ✅ **채택** (2026-06-08). 1순위 fix(changesets config 옵션)는 **적용·실측 검증 완료** + commit. 보완 fix(tokens 1.0.0 + web peer `^1.0.0` cutover)는 사내 첫 publish 시 실행(ROADMAP_LAYER_B §B2). web baseline 하위결정 = **A안(1.0.0 reset) 비준됨** (2026-06-08).
+> **상태**: ✅ **채택·실행 (2026-06-08)**. (1)순위 fix(config 옵션) + (2)보완 fix(tokens·web 1.0.0 cutover) **둘 다 집에서 실행·검증 완료** — build green · web test 347 · **proof: tokens patch → web 무변경**. web baseline = A안(1.0.0 reset). **publish(네트워크)만 사내 PC에 남음**(registry 미발행).
 
 **결정**: F28(누적/단일 changeset에서 `@wonik/web`이 의도 외 major로 점프)을 **두 조치 결합**으로 종결한다:
 1. **`.changeset/config.json`에 `___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: { onlyUpdatePeerDependentsWhenOutOfRange: true }` 추가** — changesets가 peer 의존(tokens)이 바뀌어도 *dependent(web)의 현재 range를 벗어날 때만* web을 승격하도록. **1순위 fix** (적용·검증 완료).
@@ -1547,6 +1547,7 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 - [x] 본 ADR 작성 + 실험 정정 (2026-06-08).
 - [x] **1순위 fix 적용** — `.changeset/config.json` 옵션 추가 + pre-cutover inert 검증 (2026-06-08).
 - [x] **web baseline 비준** — A안(1.0.0 reset) 확정 (2026-06-08).
-- [ ] (사내 진입 시 실행) version cutover — ROADMAP_LAYER_B §B2 recipe: tokens 1.0.0 + web 1.0.0 + peer `^1.0.0` + 10 changeset → CHANGELOG 1.0.0 + 첫 publish.
+- [x] **(2) 보완 fix cutover 집에서 실행·검증** (2026-06-08) — tokens·web 1.0.0 + peer `^1.0.0` + 10 changeset→CHANGELOG 1.0.0 fold + build/test 347/proof(tokens patch→web 무변경) green.
+- [ ] **(사내 PC) `pnpm changeset publish`** — 둘 다 1.0.0 발행 + git tag + publish 후 dual-direction 재확인.
 - [ ] (실행 시) CLAUDE.md 토큰 CRITICAL 규칙에 "tokens 1.0 baseline" reference 1줄.
 - [ ] changesets 업글 시마다 옵션 키 유효성 재확인 (experimental API drift 가드).

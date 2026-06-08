@@ -11,7 +11,7 @@
 - **Layer A 마감 ✅** (atom 23 + 1 provisional, 14 trial 누적).
 - **Layer B dry run ✅** — 집 Verdaccio(`localhost:14873`)로 8-step 전체 사이클 한 바퀴 (trial 12). 변경 표면 = **정확히 2곳**(`.npmrc` `@wonik:registry` + `publishConfig.registry`).
 - **남은 본질 의존 = 사내 registry URL 한 가지.** 나머지는 집에서 검증 끝.
-- **F28 = 1순위 fix(config 옵션) 적용·검증·commit 완료** (§3). 보완 fix(tokens 1.0 cutover)는 publish 시. ADR-035 채택 + baseline A(1.0.0 reset) 비준.
+- ✅ **F28 mechanism 종결** (2026-06-08, 집) — config 옵션 + tokens·web 1.0.0 cutover 실행·검증(tokens patch → web 무변경). **publish(네트워크)만 사내에 남음.** ADR-035 채택.
 - **진입 신호 수신 ✅ (2026-06-08)** "사내 진입 시작하자" → B1 진입. **단 현재 집 PC = 사내 registry 미접근** → 지금은 IT 협의 agenda + 집-prep 단계. URL/token/publish는 사내 PC.
 
 ---
@@ -28,7 +28,7 @@
 - ✅ **F28 1순위 fix** — config 옵션 적용·실험 검증·commit. ADR-035 채택. (보완 = tokens 1.0 cutover, publish 시 §3.4)
 - ✅ **version baseline** — A안(1.0.0 reset) 비준.
 - ✅ **freshness/supply-chain audit** — 배포물 깨끗(@dnd-kit MIT만), dev-only vuln 3(미출시), drift patch/minor.
-- ⏳ **changeset 1.0.0 fold** — cutover(§3.4)와 묶여 publish 시.
+- ✅ **tokens 1.0 cutover** — tokens·web 1.0.0 + peer `^1.0.0` + changeset fold. build green·test 347·**F28 닫힘 검증(tokens patch→web 무변경)**. publish만 사내.
 
 ### 🔴 사내 진입 후만 가능 (gated)
 - Step 0 사전 audit 5축 (token rotation / supply-chain / consumer 식별 / SSO scope / registry vendor confirm).
@@ -53,7 +53,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | B0.1 | ✅ **검증+실험 (2026-06-08)** — `changeset status`: web 자체 changeset 전부 sub-major인데 major → peer 승격. + post-cutover 실험으로 옵션 false/true 격리 | 콘솔 로그 | ✅ 충족 |
 | B0.2 | ✅ **F28 결정 + ADR + 1순위 fix** — ADR-035 채택 + config 옵션 적용·commit (2026-06-08) | ADR-035 · config.json | ✅ 완료 |
 | B0.3 | ✅ **version baseline** — A안(1.0.0 reset) 비준 (2026-06-08) | §3.3 | ✅ 완료 |
-| B0.4 | **changeset 정리** — cutover recipe(§3.4)로 1.0.0에 fold | ⏳ cutover 시 | — |
+| B0.4 | ✅ **tokens 1.0 cutover (2026-06-08, 집)** — tokens·web 1.0.0 + peer `^1.0.0` + changeset 10개 fold | build/test/proof green | ✅ 완료 |
 | B0.5 | ✅ **freshness 점검 (2026-06-08)** — 배포물 깨끗(@dnd-kit MIT만), dev-only vuln 3(vitest/vite/esbuild, 미출시), drift 전부 patch/minor | audit 로그 | ✅ 완료 |
 
 > B0는 사내 의존 0. **B0.1~B0.3·B0.5 완료**, B0.4는 cutover와 묶임.
@@ -94,7 +94,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 
 ---
 
-## 3. F28 — 종결 (1순위 fix 적용·검증 완료, cutover는 publish 시)
+## 3. F28 — mechanism 종결 (집 cutover 완료·검증, publish만 사내)
 
 ### 3.1 재진단 (2026-06-08, 코드+실측+실험 3중 확정)
 
@@ -121,7 +121,7 @@ F28 종결 = **두 조치 AND** (실험 확정):
 | 조치 | 무엇 | 역할 | 상태 |
 |---|---|---|---|
 | **(1) config 옵션** | `.changeset/config.json`에 `___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: { onlyUpdatePeerDependentsWhenOutOfRange: true }` | **1순위** — peer가 range 벗어날 때만 web 승격 | ✅ **적용+commit (2026-06-08)** · 현재 0.x라 inert(검증됨) |
-| **(2) tokens 1.0 cutover** | tokens `0.x→1.0.0` + web `→1.0.0` + web peer `^1.0.0` | **보완** — minor를 range 안에 가둬 (1)이 실효 | ⏳ 사내 첫 publish 시 (§3.4 recipe) |
+| **(2) tokens 1.0 cutover** | tokens `0.x→1.0.0` + web `→1.0.0` + web peer `^1.0.0` | **보완** — minor를 range 안에 가둬 (1)이 실효 | ✅ **집 cutover 완료·검증 (2026-06-08)** — publish만 사내 |
 
 기각: peer `>=0.3.0` 완화(계약 느슨) · frontmatter/pin(매 cycle 재발) · web major 수용(버전 인플레). 상세 근거 = ADR-035.
 
@@ -131,7 +131,9 @@ F28 종결 = **두 조치 AND** (실험 확정):
 
 현 committed `tokens@0.3.0`/`web@2.0.0`은 dry-run 잔재(실제 publish 0회). 사용자 비준 = **A안**: tokens·web 둘 다 `1.0.0`으로 깨끗하게 reset → "둘 다 stable 1.0 사내 첫 공개". 0 publish라 reset 비용 0. CHANGELOG는 1.0.0 항목으로 정리(dry-run 0.x/2.x 이력은 pre-release로 접음).
 
-### 3.4 cutover recipe (사내 첫 publish 시 = §B2에서 실행)
+### 3.4 cutover recipe — ✅ 1~5 집에서 완료 (2026-06-08), 6만 사내
+
+> ✅ **1~5단계 집에서 실행·검증 완료**: tokens·web 1.0.0 + peer `^1.0.0` + changeset 10개 fold + build green + web test 347 + **proof(tokens patch→web 무변경)**. 남은 건 **6(publish, 사내 PC)** + 7(publish 후 재확인)뿐. 아래는 실행 기록 + 사내 replay용.
 
 URL 2곳 교체 후 — `changeset version`을 쓰지 **않고** 1.0.0 baseline을 수동 cutover (changeset version은 상대 bump라 1.0.0을 못 만듦):
 
@@ -160,7 +162,7 @@ Layer B 완료 = 다음 4개가 참:
 1. tokens + web가 **사내 registry에 진짜 publish**됨 (dry run 아님).
 2. **최소 1개 host product**가 `@wonik` scope로 install해 렌더링됨.
 3. **dual-direction** 입증 — DS 변경 → host `pnpm update`로 도달 (수 초).
-4. F28이 **반복 없이 닫힘** (tokens minor가 더는 web major를 강제하지 않음).
+4. F28이 **반복 없이 닫힘** — ✅ mechanism은 집 cutover로 닫힘·검증(2026-06-08, tokens patch→web 무변경); publish 후 최종 확정.
 
 → 그 다음은 Layer C(채택 확산 / consumer 다양화 / 거버넌스)지만 1단계 범위 밖 — 진짜 consumer 수요 누적 후 결정 (ADR-001 원칙).
 

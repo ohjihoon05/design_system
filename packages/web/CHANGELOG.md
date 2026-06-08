@@ -1,5 +1,11 @@
 # @wonik/web
 
+## 1.0.0
+
+사내 첫 stable release (ADR-035 cutover). Layer A atom 전체(23 + Table provisional) — Box/Stack/Text/Button/IconButton/Input/Textarea/InlineEditableText/Checkbox/Radio/Switch/Spinner/Skeleton/Card/Badge/Alert/ProgressBar/Avatar/FilterChip/Modal/Toast/Tooltip/SortableList/Table. interface variable cascade(ADR-010/011) + React 18/19 dual peer(ADR-008) + light/dark dual(ADR-009). peer `@wonik/tokens` `^1.0.0`. 누적 dry-run changeset을 1.0.0으로 fold.
+
+> 아래 0.x/2.x 이력은 집 dry-run(Verdaccio, registry **미발행**). 1.0.0이 사내 첫 공개 버전 — **F28 종결 baseline**(ADR-035).
+
 ## 2.0.0
 
 ### Minor Changes

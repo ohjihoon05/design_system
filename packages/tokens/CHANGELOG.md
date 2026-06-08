@@ -1,5 +1,11 @@
 # @wonik/tokens
 
+## 1.0.0
+
+사내 첫 stable release 기준점 (ADR-035 cutover). 토큰 layer 전체 — primitives 색 팔레트(ADR-021) + light/dark theme 정합(ADR-022/024) + button/table component 토큰(ADR-023/025) + dark contrast 교정(ADR-032) + DTCG 1:1 호환 정리(ADR-020). 누적 dry-run changeset을 1.0.0으로 fold.
+
+> 아래 0.x 이력은 집 dry-run(Verdaccio, registry **미발행**). 1.0.0이 사내 첫 공개 버전이자 **F28(peer major churn) 종결 baseline**.
+
 ## 0.3.0
 
 ### Minor Changes
