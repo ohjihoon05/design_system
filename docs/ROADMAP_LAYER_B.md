@@ -78,7 +78,20 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 
 - **de-risk됨**: B2 mechanics(publish/install) + B3 cross-machine 채택 + 회사망 방화벽/포트 현실을 실머신으로 입증. `@dnd-kit`도 공용 npm에서 정상 resolve.
 - **아직 "진짜" 아님**: (1) 테스트 PC=throwaway → production은 always-on 머신 (2) 익명 publish(`$all`)로 테스트 → 실제는 **인증** 필요 (3) publish-over-network는 install과 동일 TCP 경로라 사실상 덮였으나 literal 미실행 (4) dual-direction(B3.3)은 cross-machine 미실행.
-- **남은 결정**: production registry = always-on 머신 self-host(검증됨) vs IT 공식.
+- **방향 (2026-06-08 사용자)**: self-host(①)로 기울되 **production 베팅 전 충분히 검증**(아래 Stage 3). IT 공식(②)은 self-host 검증 미달·IT 정책 충돌 시 fallback.
+
+### Stage 3 — self-host 충분히 검증 (production 결정 전, 🔜 다음)
+
+> 사용자 방향(2026-06-08): self-host로 가되 always-on 머신에 베팅하기 전에 "진짜 production처럼" 검증. Stage 1·2가 남긴 4개 갭을 닫는다. **3.1~3.3은 한 세션 chain**(인증 켜기 → 회사 PC authed publish=3.2 → patch 재publish로 host 흡수=3.3), 3.4는 별도. 전부 회사 머신 작업이라 집 PC는 수동 runbook 제공만.
+
+| # | 검증 | 무엇을 증명 | 비고 |
+|---|---|---|---|
+| 3.1 ⭐ | **인증(auth)** | Verdaccio htpasswd 사용자 — 로그인 안 하면 publish 차단(아무나 못 올림), install(읽기)은 동료 OK | 익명 `$all` 졸업. `@wonik/*` publish: `$authenticated`. storage clear 후 재검증(버전 충돌 회피) |
+| 3.2 | **publish-over-network** | 회사 PC에서 창고로 진짜 올리기(authed) | 지금까진 cross-machine은 받기만. 회사 PC에 repo+build 필요 |
+| 3.3 | **dual-direction** | DS patch publish → host `pnpm update` 자동 흡수 (B3.3 cross-machine) | trial 12 localhost 입증분의 실머신 재현 |
+| 3.4 | **항상-켜짐/영속** | 재부팅·로그아웃 후에도 창고 생존 + storage 영속 (Windows 서비스/작업 스케줄러 자동시작) | always-on 머신의 핵심. throwaway 테스트 PC와 다른 점 |
+
+통과 시 → production registry = always-on self-host 확정 → Phase B2(2곳 URL 교체 + real publish)로.
 
 ### Phase B2 — 첫 진짜 publish (gated)
 
