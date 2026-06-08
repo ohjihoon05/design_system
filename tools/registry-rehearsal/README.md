@@ -62,3 +62,26 @@ repo **바깥** 폴더(`%USERPROFILE%\wonik-smoke-test`)로 작은 소비자 프
 - `tools/registry-rehearsal/verdaccio-storage/` — 창고가 패키지를 저장하는 곳
 - `%USERPROFILE%\wonik-smoke-test\` — 소비자 테스트 폴더 (repo 바깥)
 - 루트 `.npmrc` — 3번 .bat이 생성 (gitignore됨, 토큰 git에 안 남음)
+- `tools/registry-rehearsal/htpasswd` — Stage 3 인증 사용자 파일 (gitignore됨)
+
+---
+
+## Stage 3 — self-host production-readiness 검증 (인증부터)
+
+Stage 1·2는 **익명**(아무나 publish) 상태로 검증함. production 가기 전 "진짜처럼" 검증하는 단계. 전부 테스트 PC(repo 있는 그 PC)에서.
+
+### 3.1 인증(auth) — 로그인해야만 publish
+1. 이전 창고(`2-창고띄우기` 창)가 켜져 있으면 그 창에서 **Ctrl+C**로 끄기.
+2. **`stage3-1-인증창고-시작.bat`** 더블클릭 → storage 비우고 인증 창고 시작 (이 창 켜두기).
+3. **`stage3-2-로그인없이-올리기.bat`** 더블클릭 → 익명 publish 시도.
+   - **실패(`ENEEDAUTH`/401/403)면 정상** = 익명 차단 작동 ✅
+4. 명령창에서 한 줄 (로그인 = 토큰 발급):
+   ```
+   npm adduser --registry http://127.0.0.1:14873/ --auth-type=legacy
+   ```
+   아무 id / pw / email 입력.
+5. **`stage3-3-로그인후-올리기.bat`** 더블클릭 → 이번엔 publish **성공**해야 정상 ✅
+
+→ **3-2 막힘 + 3-3 성공 = 3.1 인증 통과.**
+
+(다음: 3.2 publish-over-network = 회사 PC에서 authed로 올리기 · 3.3 dual-direction · 3.4 always-on 영속. 상세: `docs/ROADMAP_LAYER_B.md` § Stage 3.)

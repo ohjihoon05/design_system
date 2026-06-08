@@ -1,0 +1,32 @@
+# Stage 3 — 인증(auth) 켠 Verdaccio 설정.
+# 익명 publish 차단(로그인한 사람만 올림), install(읽기)은 사내 LAN에 열림.
+# 검증용 설정. 진짜 운영 머신에선:
+#   - max_users: -1 로 사용자 등록 잠금
+#   - 더 엄격히 하려면 access 도 $authenticated (받기도 로그인 필요)로
+
+storage: ./verdaccio-storage
+
+auth:
+  htpasswd:
+    file: ./htpasswd
+    max_users: 1000      # adduser로 사용자 생성 허용 (검증용). 운영 잠금 = -1.
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+
+packages:
+  '@wonik/*':
+    access: $all                # 받기/install = 누구나 (사내 LAN)
+    publish: $authenticated      # 올리기 = 로그인한 사람만  ← 익명 졸업
+    unpublish: $authenticated
+
+  '**':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+log:
+  type: stdout
+  format: pretty
+  level: warn
