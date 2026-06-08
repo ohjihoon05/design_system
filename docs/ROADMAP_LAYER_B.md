@@ -51,7 +51,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | # | 작업 | 산출물 | 완료 기준 |
 |---|---|---|---|
 | B0.1 | ✅ **검증 완료 (2026-06-08)** — `changeset status --verbose`: web 자체 changeset 4개 전부 minor/patch인데 web `3.0.0`(major) 계산 → 소거법으로 tokens peer 승격 확정 | 콘솔 로그 | ✅ 충족 |
-| B0.2 | **F28 결정 + ADR 신설** — §3 4옵션 중 택 (추천 A: tokens 1.0 승격) | ADR-035(가칭) | 결정 + 근거 기록 |
+| B0.2 | **F28 결정 + ADR 신설** — §3 4옵션 중 택 (추천 A: tokens 1.0 승격) | ✅ **ADR-035 초안 작성됨 (2026-06-08)** — 비준 대기 | 결정 + 근거 기록 |
 | B0.3 | **version baseline 결정** — dry-run 잔재 reset vs 이어가기 (§3.3) | ROADMAP 1줄 | 첫 publish 숫자 확정 |
 | B0.4 | **changeset 정리** — 10건 frontmatter를 결정에 맞게 정정, `changeset status` green | green status | 의도 버전과 계산 버전 일치 |
 | B0.5 | **freshness 점검** — dep audit + React/Tailwind drift | 체크리스트 | high severity 0 또는 기록 |
@@ -118,6 +118,8 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | D. 받아들임 (web major) | web `3.0.0` 그대로 publish | 즉시 진행 | tokens minor마다 web major → 버전 인플레, DS 신뢰 ↓ | ✗ DS 부적합 |
 
 **추천: A (tokens 1.0.0 승격).** 근거 — tokens는 Figma 정합(ADR-021~025)까지 흡수해 *재료 창고로 안정화* 선언이 정당하고, A만이 F28을 **반복 없이 닫는다**. B/C/D는 모두 churn 또는 의미 손상을 남김.
+
+> 📌 **ADR-035 초안 작성됨 (2026-06-08)** — 옵션 A를 결정 기록으로 못박음. 비준 대기 2건: (1) 옵션 A 최종 확정 (2) web baseline 하위결정(reset 1.0.0 vs keep 2.x). 상세: `ADR.md` ADR-035.
 
 **단 실행 전 게이트**: B0.1(`changeset status --verbose`)로 major 출처가 tokens peer임을 *눈으로 확인*한 뒤 A 확정. (가짜 안심 금지 — config 추론은 강하지만 실측 1회로 못박는다.)
 
