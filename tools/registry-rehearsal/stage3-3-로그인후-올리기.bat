@@ -4,9 +4,7 @@ cd /d "%~dp0..\.."
 echo ===========================================
 echo  Stage 3-3. 로그인 후 올리기 (이번엔 *성공*해야 정상)
 echo ===========================================
-echo  ※ 먼저 명령창에서 한 번 했어야 함:
-echo      npm adduser --registry http://127.0.0.1:14873/ --auth-type=legacy
-echo    (토큰이 ~/.npmrc 에 저장됨)
+echo  ※ 먼저 stage3-2b-로그인.bat 을 돌려 OK 가 떴어야 함 (토큰 ~/.npmrc 저장).
 echo.
 echo .npmrc (scope만 — 토큰은 npm adduser가 ~/.npmrc에 넣어둔 걸 사용)...
 >  .npmrc echo auto-install-peers=true
@@ -31,9 +29,9 @@ exit /b 0
 :fail
 echo.
 echo *** 실패. 점검: ***
-echo  - npm adduser 를 먼저 했는지 (--auth-type=legacy 로)
+echo  - stage3-2b-로그인.bat 을 먼저 돌려 OK 떴는지
 echo  - 3-1 인증 창고 창이 켜져 있는지
-echo  - 'ENEEDAUTH' 면: adduser 토큰이 ~/.npmrc 에 안 들어간 것 → adduser 재실행
+echo  - 'ENEEDAUTH' 면: stage3-2b 재실행 (토큰 재발급)
 echo.
 pause
 exit /b 1
