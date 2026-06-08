@@ -79,3 +79,6 @@ color_token/
 
 # 사용자 일별 plan / report (개인 작업 노트)
 daily-plans/
+
+# registry 리허설 키트 런타임 산출물 (테스트 PC에서 생성, 커밋 X)
+tools/registry-rehearsal/verdaccio-storage/

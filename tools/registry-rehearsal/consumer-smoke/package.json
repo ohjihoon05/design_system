@@ -1,0 +1,13 @@
+{
+  "name": "wonik-smoke-consumer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "창고에서 @wonik 패키지를 받아 실제 로드/렌더되는지 확인하는 최소 소비자",
+  "dependencies": {
+    "@wonik/tokens": "^1.0.0",
+    "@wonik/web": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

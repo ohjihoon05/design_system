@@ -1,0 +1,26 @@
+# Verdaccio 설정 — 테스트 PC 로컬 리허설 전용 (localhost, 인증 없이 publish 허용)
+# 실제 사내 registry는 이렇게 열어두면 안 됨. 이건 한 PC 안 localhost 리허설용.
+
+storage: ./verdaccio-storage
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+
+packages:
+  '@wonik/*':
+    # 우리 패키지: 누구나(=이 PC) 읽고/올리고/내릴 수 있음
+    access: $all
+    publish: $all
+    unpublish: $all
+
+  '**':
+    # 그 외(react 등): 읽기 허용 + 공용 npm으로 프록시
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+log:
+  type: stdout
+  format: pretty
+  level: warn
