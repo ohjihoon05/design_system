@@ -1507,53 +1507,46 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 
 ---
 
-### ADR-035: `@wonik/tokens` 1.0.0 승격 — F28 peer-induced major churn 구조적 해소 (초안)
+### ADR-035: F28 peer-induced major churn 종결 — changesets peer 옵션 + `@wonik/tokens` 1.0.0 cutover
 
-> **상태**: 🟡 **제안(초안) — 비준·실행 보류**. 결정 골격은 확정이나, (a) web baseline 하위결정 1건이 사용자 비준 대기, (b) 실제 버전 bump 실행은 사내 첫 publish(ROADMAP_LAYER_B §B0.3/B2)에 묶임. 본 ADR은 *왜 tokens를 1.0으로 올리는가*를 지금 못박는 결정 기록.
+> **상태**: ✅ **채택** (2026-06-08). 1순위 fix(changesets config 옵션)는 **적용·실측 검증 완료** + commit. 보완 fix(tokens 1.0.0 + web peer `^1.0.0` cutover)는 사내 첫 publish 시 실행(ROADMAP_LAYER_B §B2). web baseline 하위결정 = **A안(1.0.0 reset) 비준됨** (2026-06-08).
 
-**결정**: 사내 첫 진짜 publish 시 `@wonik/tokens`를 `0.x → 1.0.0`으로 승격하고, `@wonik/web`의 `peerDependencies["@wonik/tokens"]`를 `^0.3.0 → ^1.0.0`으로 갱신한다. 이로써 이후 tokens minor(1.0→1.1)가 web의 `^1.0.0` caret 범위 *안에* 머물러, changesets가 web을 major로 강제 승격하지 않는다 — **F28을 매 cycle 재발 없이 구조적으로 닫는다**.
+**결정**: F28(누적/단일 changeset에서 `@wonik/web`이 의도 외 major로 점프)을 **두 조치 결합**으로 종결한다:
+1. **`.changeset/config.json`에 `___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: { onlyUpdatePeerDependentsWhenOutOfRange: true }` 추가** — changesets가 peer 의존(tokens)이 바뀌어도 *dependent(web)의 현재 range를 벗어날 때만* web을 승격하도록. **1순위 fix** (적용·검증 완료).
+2. **사내 첫 publish 시 `@wonik/tokens` `0.x → 1.0.0` + `@wonik/web` `0.x/2.x → 1.0.0` + web peer `^0.3.0 → ^1.0.0`** — tokens minor(1.0→1.1)가 web `^1.0.0` 범위 *안에* 머물게 해서 위 옵션이 web을 안 건드리게. **보완 fix** (cutover 시 실행).
 
-**배경 (F28 — 2026-06-08 코드+실측 확정)**:
-- 증상: 대기 changeset 10건에서 web 선언 = minor 2 + patch 2 (major 0)인데 `pnpm changeset status --verbose`가 `@wonik/web`을 **`2.0.0 → 3.0.0` (major)** 로 계산. 의도는 `2.1.0`.
-- 원인: `@wonik/web`은 `@wonik/tokens`를 **peerDependency `^0.3.0`**으로 선언한다(ADR-019 peer-only contract). changesets는 peer 의존이 *범위를 벗어나는* 새 버전으로 바뀌면 dependent를 **major로 승격**한다(`onlyUpdatePeerDependentsWhenOutOfRange: false` = config 기본, 키 부재 확인). **0.x caret 함정**이 방아쇠: `^0.3.0`은 `>=0.3.0 <0.4.0`이라 폭이 좁아 tokens minor(`0.4.0`) 한 번에 범위를 벗어남 → web major 강제.
-- 실측: web 자체 changeset 4건(phase-25-table=minor · post-audit-a11y=patch · post-audit-publishconfig=patch · sortable-announce=minor)이 전부 sub-major인데 web이 `3.0.0` 계산 → 소거법으로 major 출처 = tokens peer 승격 확정.
-- 즉 F28은 순수 changesets 버그가 아니라 **(peer-only 계약 ADR-019) × (tokens가 아직 0.x) × (0.x caret 좁음)** 의 구조적 상호작용. web은 이미 post-1.0(2.x)인데 tokens만 0.x에 머문 *비대칭*이 근본.
+**배경 (F28 — 2026-06-08 코드+실측+실험 3중 확정)**:
+- 증상: 대기 changeset 10건에서 web 선언 = minor 2 + patch 2 (major 0)인데 `changeset status`가 `@wonik/web`을 **`2.0.0 → 3.0.0` (major)** 로 계산. web 자체 changeset 4건이 전부 sub-major인데 web이 major = 소거법으로 출처 = tokens peer 승격.
+- **근본 원인 (실험으로 정정)**: changesets 기본 동작은 "peer 의존이 bump되면 dependent를 **range 무관 무조건 major**"다 (`onlyUpdatePeerDependentsWhenOutOfRange` **기본 false**). 이게 1순위 driver. **0.x caret 좁음은 *부차적* 요인** — tokens가 0.x인 한 minor가 caret을 벗어나 옵션을 켜도 여전히 major가 되므로, 옵션만으로는 부족하고 tokens 1.x 승격이 동반돼야 한다.
+- **실측 실험 (post-cutover 시뮬레이션, git checkout으로 복원)**:
+
+| 시나리오 | tokens | web | 판정 |
+|---|---|---|---|
+| **TEST 1**: tokens 1.0.0, web peer `^1.0.0`, in-range minor, **기본 config** | 1.1.0 (minor) | **2.0.0 (MAJOR)** | ❌ 1.x여도 major — 옵션 false면 range 무관 승격 입증 |
+| **TEST 2**: 동일 + `onlyUpdatePeerDependentsWhenOutOfRange: true` | 1.1.0 (minor) | **bump 없음** | ✅ F28 종결 — web 무변경 |
+| pre-cutover (tokens 0.x) + 옵션 true | 0.4.0 (minor) | **3.0.0 (MAJOR)** | 옵션만으론 0.x에서 무효(minor가 `^0.3.0` 이탈) → tokens 1.0 필요 입증 |
+
+  → **두 조치 모두 필요**가 실험으로 확정. (애초 초안은 "tokens 1.0만"으로 잘못 적었고, 옵션을 "0.x 무효"로 기각했었음 — 실험이 그 오판을 잡음.)
 
 **이유**:
-1. **tokens는 실제로 안정** — Figma 정합(ADR-021~025) 흡수 완료, 14 trial 누적, *재료 창고*가 동결 상태. 1.0 선언은 aspirational이 아니라 evidence-backed. ADR-001 "고객 없이 추상화 금지"에 저촉 안 됨 — tokens는 이미 web 23 atom + ppt/demo 다수가 소비 중인 *실사용* 패키지.
-2. **A만이 F28을 재발 없이 닫음** — 대안 비교:
-   - (b) `onlyUpdatePeerDependentsWhenOutOfRange: true` → **0.x peer엔 무효** (`^0.3.0`은 minor에도 범위 이탈). 애초 추정과 달리 우리 케이스 못 막음.
-   - (c) frontmatter 정정 / version pin → **매 publish cycle 재발**. 땜질.
-   - (d) web major 받아들임 → tokens minor마다 web major → 버전 인플레(web이 곧 10.x), semver 신뢰 붕괴. DS에 치명.
-   - (e) web peer를 `>=0.3.0`으로 완화 → 계약 느슨, tokens breaking도 통과시켜 소비처 보호 약화.
-3. **0 real publish — 지금 승격이 무비용** — 현 committed `tokens@0.3.0`/`web@2.0.0`은 dry-run `changeset version` 잔재로 실제 registry publish 0회. tokens 0.x에 의존하는 소비처가 존재하지 않으므로 1.0 cutover에 깨질 외부 consumer 0.
-4. **web post-1.0과의 정합 회복** — web 2.x / tokens 0.x 비대칭 자체가 이상. A가 이 비대칭을 제거한다.
-
-**검증 (옵션별 F28 종결 여부)**:
-
-| 옵션 | F28 1회 회피 | F28 영구 종결 | 비용/부작용 | 채택 |
-|---|---|---|---|---|
-| A. tokens 1.0 승격 + web peer `^1.0.0` | ✅ | ✅ | ADR 1 + 1.0 안정 선언 책임 | **⭐ 채택** |
-| b. `onlyUpdate...: true` | ❌ (0.x 무효) | ❌ | — | 기각 |
-| c. frontmatter/pin | ✅ | ❌ (매 cycle 재발) | 반복 toil | 기각 |
-| d. web major 수용 | ✅ | ❌ | 버전 인플레 | 기각 |
-| e. peer `>=0.3.0` 완화 | ✅ | △ | 계약 느슨 | 기각 |
+1. **옵션 true가 1순위** — TEST 1/2가 단일 변수로 격리: 옵션이 false인 한 tokens가 어떤 식으로 bump되든(in-range여도) web은 major. 옵션 true가 이걸 "range 이탈 시에만"으로 바꾸는 *유일한* 레버.
+2. **tokens 1.0이 보완(필수)** — 옵션 true만으론 tokens 0.x minor가 `^0.3.0`을 이탈해 여전히 major. tokens 1.x + web `^1.0.0`이라야 minor가 range 안에 머물러 옵션이 실효. 둘은 AND 조건.
+3. **tokens 1.0 선언 자체가 정당** — Figma 정합(ADR-021~025) 흡수, 14 trial, *재료 창고* 동결. ADR-001 "고객 없이 추상화 금지"에 저촉 안 됨(이미 web 23 atom + ppt/demo가 실소비). 0 real publish라 1.0 reset 비용 0.
+4. **other 대안 기각**: frontmatter/version pin = 매 cycle 재발(땜질) · web major 수용 = tokens minor마다 web major = 버전 인플레(DS 신뢰 붕괴) · peer `>=0.3.0` 완화 = 계약 느슨(tokens breaking도 통과).
 
 **트레이드오프**:
-1. **1.0 = 더 강한 semver 약속** — 1.0부터 tokens의 모든 breaking 변경 = major. 이 마찰은 의도적이며 CLAUDE.md CRITICAL(토큰 추가/이름변경/삭제 = ADR + minor↑)과 정합. 안정 선언의 책임은 1인 메인테이너가 짐 — 단 14 trial + Figma 정합으로 *증거 기반*이라 무름이 아님.
-2. **cutover publish 자체가 web을 1회 더 끊는다** — tokens `0.3→1.0`(major) + web peer `^0.3.0→^1.0.0`(소비처엔 breaking peer 변경)이라 cutover에서 web도 major/baseline 재설정 1회 발생. 이건 *마지막* 강제 끊김이며 의도된 clean break. 이후로는 tokens minor가 web을 안 깸.
-3. **web baseline 하위결정 1건 미결 (← 비준 필요)**:
-   - **A안 (추천)**: tokens 1.0.0과 함께 web도 깨끗한 `1.0.0`으로 reset → "둘 다 stable 1.0으로 사내 첫 공개" 일관 서사. 0 publish라 reset 비용 0.
-   - **B안**: web의 누적 2.x 유지(dry-run CHANGELOG 이력 존중) → cutover에서 `2.0.0 → 3.0.0` major로 진행, 이후 안정.
-   - 본 ADR은 A안을 추천하되 **사용자 비준 항목으로 남김** (사내 첫 publish 직전 확정).
+1. **옵션이 experimental** — `___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH`는 이름 그대로 changesets patch 릴리스에서 바뀔 수 있는 불안정 API. 완화: freshness ritual의 dep audit이 changesets 업글 시 본 옵션 재검증을 포함(후속 항목). 단 이게 changesets#1011 류의 *표준* 커뮤니티 해법이라 위험 대비 실익이 큼.
+2. **1.0 = 더 강한 semver 약속** — 1.0부터 tokens의 모든 breaking 변경 = major. 의도적 마찰이며 CLAUDE.md CRITICAL(토큰 추가/이름변경/삭제 = ADR + minor↑)과 정합. 14 trial + Figma 정합으로 증거 기반.
+3. **cutover가 web을 1회 끊음** — web baseline을 A안(1.0.0 reset)으로 비준 → cutover에서 web `2.x → 1.0.0`으로 reset(0 publish라 비용 0). 이게 *마지막* 강제 재설정, 이후 tokens minor가 web 안 건드림(TEST 2 입증).
 
-**제약 / 범위**: 본 ADR은 *결정 기록*(docs). 실제 실행 = `packages/tokens/package.json` version `1.0.0` + `packages/web/package.json` peerDep `^1.0.0` + 대응 changeset(tokens major) + 첫 publish — 전부 **사내 진입 후** (ROADMAP_LAYER_B §B0.3/B2). 본 문서 작성 시점엔 코드·버전 변경 0, Changeset 0. value drift bump(ADR-024 §정책후속)·토큰 추가 관문(ADR-034)과는 별개 영역 — 본 ADR은 *버전 baseline* 결정.
+**제약 / 범위**: 1순위 옵션은 **지금 적용+commit**(현재 tokens 0.x라 inert — `changeset status` 계산 불변 확인). version cutover(tokens 1.0.0/web 1.0.0/peer `^1.0.0` + 10 changeset 정리 + CHANGELOG 1.0.0)는 **사내 첫 publish 시 atomic 실행** (ROADMAP_LAYER_B §B2 recipe). value drift bump(ADR-024 §정책후속)·토큰 추가 관문(ADR-034)과는 별개.
 
-**reference**: ADR-018(Layer B registry)·ADR-019(peer-only contract = 본 coupling의 출처)·ADR-001(speculative 추상화 금지 = "1.0 시기상조?" 반론 처리)·ADR-020(DTCG 토큰 구조 룰)·ROADMAP_LAYER_B.md §3(F28 4옵션, 본 ADR이 옵션 A를 비준)·dogfood-trial-12.md(F28 최초 관측 F28)·Knowledge-Gaps `Tooling/Changesets major 점프 버그 (F28).md`(메타인지).
+**reference**: ADR-018(Layer B registry)·ADR-019(peer-only contract = 본 coupling의 출처)·ADR-001(speculative 추상화 금지)·ADR-020(DTCG 토큰 구조 룰)·ROADMAP_LAYER_B.md §3(F28 진단·recipe)·dogfood-trial-12.md(F28 최초 관측)·changesets#1011(peer major 커뮤니티 이슈)·Knowledge-Gaps `Tooling/Changesets major 점프 버그 (F28).md`(메타인지).
 
 **후속 변경 항목**:
-- [x] 본 ADR 초안 작성 (2026-06-08).
-- [ ] **사용자 비준** — 옵션 A 확정 + web baseline 하위결정(A안 reset 1.0.0 vs B안 keep 2.x).
-- [ ] (사내 진입 시 실행) tokens `1.0.0` + web peer `^1.0.0` + changeset(tokens major) + 첫 publish.
-- [ ] (비준 시) 상태를 🟡 제안 → ✅ 채택으로, ROADMAP_LAYER_B §3.2 옵션 A를 "ADR-035 비준"으로 갱신.
+- [x] 본 ADR 작성 + 실험 정정 (2026-06-08).
+- [x] **1순위 fix 적용** — `.changeset/config.json` 옵션 추가 + pre-cutover inert 검증 (2026-06-08).
+- [x] **web baseline 비준** — A안(1.0.0 reset) 확정 (2026-06-08).
+- [ ] (사내 진입 시 실행) version cutover — ROADMAP_LAYER_B §B2 recipe: tokens 1.0.0 + web 1.0.0 + peer `^1.0.0` + 10 changeset → CHANGELOG 1.0.0 + 첫 publish.
 - [ ] (실행 시) CLAUDE.md 토큰 CRITICAL 규칙에 "tokens 1.0 baseline" reference 1줄.
+- [ ] changesets 업글 시마다 옵션 키 유효성 재확인 (experimental API drift 가드).
