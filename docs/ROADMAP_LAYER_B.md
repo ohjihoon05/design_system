@@ -13,6 +13,7 @@
 - **남은 본질 의존 = 사내 registry URL 한 가지.** 나머지는 집에서 검증 끝.
 - ✅ **F28 mechanism 종결** (2026-06-08, 집) — config 옵션 + tokens·web 1.0.0 cutover 실행·검증(tokens patch → web 무변경). **publish(네트워크)만 사내에 남음.** ADR-035 채택.
 - **진입 신호 수신 ✅ (2026-06-08)** "사내 진입 시작하자" → B1 진입. **단 현재 집 PC = 사내 registry 미접근** → 지금은 IT 협의 agenda + 집-prep 단계. URL/token/publish는 사내 PC.
+- ✅ **테스트 PC 리허설 Stage 1·2 통과 (2026-06-08)** — 별도 회사 테스트 PC에서 Stage 1(localhost 전체 사이클) + Stage 2(회사망 LAN 너머 install·방화벽 14873 통과) 둘 다 green. **self-host 경로 기술 검증 끝** → 남은 본질 = production registry **결정**(always-on self-host[검증됨] vs IT 공식) + 실제 인증. 키트 `tools/registry-rehearsal/` (§ "테스트 PC 리허설").
 
 ---
 
@@ -65,6 +66,19 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | B1.1 | ✅ **진입 신호 수신 (2026-06-08)** — "사내 진입 시작하자" | 현재 집 PC = 사내 registry 미접근 → IT agenda + 집-prep 단계 |
 | B1.2 | **Step 0 audit 5축** — (a) token rotation (b) **supply-chain ✅(집, 2026-06-08)** (c) consumer (d) SSO scope (e) registry vendor confirm | (b) 완료: 배포물=@dnd-kit MIT만. **a·c·d·e = IT 협의 필요** |
 | B1.3 | **registry 옵션 reaffirm** — A(사내 npm) 1순위 유지 or B(GitHub Packages) fallback | ADR-018 |
+
+### 테스트 PC 리허설 — B2·B3 cross-machine 예행 (✅ 2026-06-08)
+
+별도 회사 테스트 PC(회사망)에서 publish→install 사이클을 **실머신으로** 예행. 집 PC(회사망 밖)는 직접 못 닿아 회사 PC 수동 runbook/paste-block으로 진행. 키트: `tools/registry-rehearsal/`.
+
+| Stage | 무엇 | 결과 |
+|---|---|---|
+| **Stage 1** | 테스트 PC 안에서 전부 localhost — Verdaccio publish(tokens·web 1.0.0) + consumer-smoke install/SSR 렌더 | ✅ green — 깨끗한 머신에서 패키지 자립 확인(workspace 링크 가림 없음) |
+| **Stage 2** | 테스트 PC=창고(`10.249.34.85:14873`), 별도 **회사 PC**가 LAN 너머 `@wonik/web`·`tokens` install + Button SSR 렌더 | ✅ green — 방화벽 14873 inbound 허용(`New-NetFirewallRule`) 후 통과 |
+
+- **de-risk됨**: B2 mechanics(publish/install) + B3 cross-machine 채택 + 회사망 방화벽/포트 현실을 실머신으로 입증. `@dnd-kit`도 공용 npm에서 정상 resolve.
+- **아직 "진짜" 아님**: (1) 테스트 PC=throwaway → production은 always-on 머신 (2) 익명 publish(`$all`)로 테스트 → 실제는 **인증** 필요 (3) publish-over-network는 install과 동일 TCP 경로라 사실상 덮였으나 literal 미실행 (4) dual-direction(B3.3)은 cross-machine 미실행.
+- **남은 결정**: production registry = always-on 머신 self-host(검증됨) vs IT 공식.
 
 ### Phase B2 — 첫 진짜 publish (gated)
 
