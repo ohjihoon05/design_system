@@ -227,6 +227,8 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 ## ▷ Layer B 진입 준비 (집 시뮬레이션 ✅, 사내 URL만 대기)
 
+> **📋 상세 실행 runbook**: [`ROADMAP_LAYER_B.md`](./ROADMAP_LAYER_B.md) (2026-06-08) — Phase B0~B4 순서 + F28 근본 진단·결정 4옵션 + 완료 정의. 본 표는 요약.
+
 집에서 Verdaccio(`localhost:14873`)로 전체 cycle 시뮬레이션 완료 (trial 12). ADR-018에 결정 누적.
 
 | step | 작업 | 집 dry run 상태 | 사내 진입 시 |
