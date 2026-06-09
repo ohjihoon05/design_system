@@ -86,8 +86,11 @@ Stage 1·2는 **익명**(아무나 publish) 상태로 검증함. production 가�
 지금까진 `stage3-1` 창을 띄워놔야만 창고가 돔. production은 **재부팅·로그아웃 후에도 저절로** 떠야 함. Windows 작업 스케줄러에 "부팅 시 자동 시작 + 로그온 무관" 작업으로 등록한다.
 
 1. **`stage3-1` 창고 창을 Ctrl+C로 닫기** (포트 14873을 스케줄러에 넘겨주기 위해).
-2. **`stage3-4-자동시작-등록.bat`** 더블클릭 → 안내대로 진행. **Windows 로그인 비밀번호**를 한 번 입력(숨김). 작업 등록 + 즉시 1회 시작.
-   - 내부적으로 `stage3-4-service-launcher.bat`(창 없는 알맹이)을 부팅마다 백그라운드 실행. 로그는 `verdaccio-service.log`.
+2. **`stage3-4-자동시작-등록.bat`** 더블클릭 → 안내대로 진행. **보안 비번 대화상자**가 뜨면 이 계정 **Windows 로그인 비밀번호** 입력. 작업 등록(LogonType=Password=로그오프에도 실행) + 즉시 1회 시작.
+   - 내부적으로 `stage3-4-register.ps1`이 등록하고, 부팅마다 `stage3-4-service-launcher.bat`(창 없는 알맹이)을 백그라운드 실행. 로그는 `verdaccio-service.log`.
+   - ⚠️ 이 단계에서 밟은 함정 2개(production 머신에도 동일 주의):
+     - **launcher는 `npx --yes`** 필수 — 안 그러면 스케줄러 무인 세션에서 npx가 `Ok to proceed? (y)`로 **멈춤**(포트 안 잡힘).
+     - 비번 없이 `schtasks /ru`로 만들면 **`LogonType=Interactive`(로그인 시에만)** 로 잡혀 재부팅 무인 실행이 안 됨 → 비번 저장(`LogonType=Password`)이라야 로그오프/부팅 전에도 실행.
 3. **CHECK 1 (지금)**: 10초 후 브라우저 `http://localhost:14873/` → 창고 보이면 자동시작 OK.
 4. **CHECK 2 (진짜 검증)**: 테스트 PC **재부팅** → 아무 창도 안 열고 → **회사 PC에서** `http://10.249.34.85:14873/` 응답하면 **PASS** (로그인 화면 상태에서 응답하면 가장 확실).
 5. 되돌리려면 **`stage3-4-자동시작-해제.bat`** (작업만 삭제, storage·토큰 보존).
