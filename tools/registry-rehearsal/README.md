@@ -76,9 +76,22 @@ Stage 1·2는 **익명**(아무나 publish) 상태로 검증함. production 가�
 2. **`stage3-1-인증창고-시작.bat`** 더블클릭 → storage 비우고 인증 창고 시작 (이 창 켜두기).
 3. **`stage3-2-로그인없이-올리기.bat`** 더블클릭 → 익명 publish 시도.
    - **실패(`ENEEDAUTH`/401/403)면 정상** = 익명 차단 작동 ✅
-4. **`stage3-2b-로그인.bat`** 더블클릭 → 창고에 계정(`deployer`) 생성 + 토큰을 `~/.npmrc`에 자동 저장 (대화형 입력 없음). **`OK`** 뜨면 성공.
+4. **`stage3-2b-로그인.bat`** 더블클릭 → 창고에 계정(매 실행 랜덤 `wonik####`) 생성 + 토큰을 `~/.npmrc`에 자동 저장 (대화형 입력 없음). **`OK`** 뜨면 성공.
 5. **`stage3-3-로그인후-올리기.bat`** 더블클릭 → 이번엔 publish **성공**해야 정상 ✅
 
-→ **3-2 막힘 + 3-3 성공 = 3.1 인증 통과.**
+→ **3-2 막힘 + 3-3 성공 = 3.1 인증 통과.** ✅ (2026-06-09 통과)
 
-(다음: 3.2 publish-over-network = 회사 PC에서 authed로 올리기 · 3.3 dual-direction · 3.4 always-on 영속. 상세: `docs/ROADMAP_LAYER_B.md` § Stage 3.)
+### 3.4 항상-켜짐/영속 — 사람 없이 도는 창고
+
+지금까진 `stage3-1` 창을 띄워놔야만 창고가 돔. production은 **재부팅·로그아웃 후에도 저절로** 떠야 함. Windows 작업 스케줄러에 "부팅 시 자동 시작 + 로그온 무관" 작업으로 등록한다.
+
+1. **`stage3-1` 창고 창을 Ctrl+C로 닫기** (포트 14873을 스케줄러에 넘겨주기 위해).
+2. **`stage3-4-자동시작-등록.bat`** 더블클릭 → 안내대로 진행. **Windows 로그인 비밀번호**를 한 번 입력(숨김). 작업 등록 + 즉시 1회 시작.
+   - 내부적으로 `stage3-4-service-launcher.bat`(창 없는 알맹이)을 부팅마다 백그라운드 실행. 로그는 `verdaccio-service.log`.
+3. **CHECK 1 (지금)**: 10초 후 브라우저 `http://localhost:14873/` → 창고 보이면 자동시작 OK.
+4. **CHECK 2 (진짜 검증)**: 테스트 PC **재부팅** → 아무 창도 안 열고 → **회사 PC에서** `http://10.249.34.85:14873/` 응답하면 **PASS** (로그인 화면 상태에서 응답하면 가장 확실).
+5. 되돌리려면 **`stage3-4-자동시작-해제.bat`** (작업만 삭제, storage·토큰 보존).
+
+> ⚠️ 작업 스케줄러는 "재부팅·로그아웃 생존"은 증명하지만, **크래시 시 자동 재시작**은 안 해줌(진짜 Windows 서비스 = node-windows/NSSM/pm2가 해줌). production 머신은 그 업그레이드를 검토. 리허설은 native 도구로 영속만 증명.
+
+(다음: 3.2 publish-over-network = 회사 PC에서 authed로 올리기 · 3.3 dual-direction. 상세: `docs/ROADMAP_LAYER_B.md` § Stage 3.)
