@@ -79,6 +79,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 - **de-risk됨**: B2 mechanics(publish/install) + B3 cross-machine 채택 + 회사망 방화벽/포트 현실을 실머신으로 입증. `@dnd-kit`도 공용 npm에서 정상 resolve.
 - **아직 "진짜" 아님**: (1) 테스트 PC=throwaway → production은 always-on 머신 (2) 익명 publish(`$all`)로 테스트 → 실제는 **인증** 필요 (3) publish-over-network는 install과 동일 TCP 경로라 사실상 덮였으나 literal 미실행 (4) dual-direction(B3.3)은 cross-machine 미실행.
 - **방향 (2026-06-08 사용자)**: self-host(①)로 기울되 **production 베팅 전 충분히 검증**(아래 Stage 3). IT 공식(②)은 self-host 검증 미달·IT 정책 충돌 시 fallback.
+- **방향 갱신 (2026-06-09 사용자)**: "**지금 셋팅된 이 테스트 PC에서 충분히 검증하고 정식으로 한다.**" → 이 PC를 throwaway 취급 X, **검증 무대이자 정식 production 후보 머신**으로 본다(머신부터 갈아타지 않음). 3.1·3.4 통과 후, "충분히"는 기능(3.2 남음)에 더해 **production-grade 하드닝**까지 포함: ① 크래시 자동재시작(작업 스케줄러 한계 → NSSM/pm2 진짜 서비스화) ② 보안 잠금(`max_users:-1`, 필요시 access도 `$authenticated`) ③ storage 백업 ④ 사내 정책 sanction. 통과 후 Phase B2.
 
 ### Stage 3 — self-host 충분히 검증 (production 결정 전 · 3.1·3.4 ✅ 통과 / 🔜 3.2)
 
