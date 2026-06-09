@@ -23,9 +23,8 @@ echo   위에서 'ENEEDAUTH' / 'authorization required' / 401 / 403 으로
 echo   *실패*했으면  =>  인증 정상! 익명 차단 OK (3-2 통과)
 echo   *성공*해서 올라갔으면  =>  인증 안 걸림 (config 확인 필요)
 echo.
-echo  다음: 명령창에서
-echo    npm adduser --registry http://127.0.0.1:14873/ --auth-type=legacy
-echo    (아무 id / pw / email 입력 = 로그인 토큰 발급)
-echo  그 후 stage3-3-로그인후-올리기.bat 더블클릭
+echo  다음: stage3-2b-로그인.bat 더블클릭 (계정 생성 + 토큰 자동 저장)
+echo    그 후 stage3-3-로그인후-올리기.bat 더블클릭
+echo    ( npm adduser 는 쓰지 마세요 - 토큰을 ~/.npmrc 에 안 넣어줘서 ENEEDAUTH 함정 )
 echo ===========================================
 pause

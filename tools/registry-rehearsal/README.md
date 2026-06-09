@@ -51,7 +51,8 @@ repo **바깥** 폴더(`%USERPROFILE%\wonik-smoke-test`)로 작은 소비자 프
 | 증상 | 해결 |
 |---|---|
 | `ECONNREFUSED` (3·4번) | 2번 창고 창이 켜져 있는지 확인 |
-| `ENEEDAUTH` / 인증 에러 (3번) | 명령창에서 `npm adduser --registry http://127.0.0.1:14873/` (아무 id/pw/email) 후 3번 재실행 |
+| `ENEEDAUTH` / 인증 에러 (3번, Stage 1 익명 키트) | Stage 1은 가짜 토큰으로 익명 publish 전제 — 3번 .bat이 `.npmrc`를 자동 생성하므로 보통 안 뜸. 뜨면 2번 창고 창이 켜져 있는지 확인 |
+| `ENEEDAUTH` (Stage 3 인증 키트) | `npm adduser` 쓰지 말 것 (토큰을 `~/.npmrc`에 안 넣어줌). `stage3-2b-로그인.bat` 더블클릭 → `OK` 확인 후 `stage3-3` 재실행 |
 | `404` / `NO_MATCHING_VERSION` (4번) | 3번(올리기)이 성공했는지 먼저 확인 |
 | `@dnd-kit` 관련 에러 (4번) | 인터넷 연결 확인 (공용 npm에서 받아야 함) |
 | 한글이 깨져 보임 | .bat은 UTF-8 + `chcp 65001` 기준. Windows 11이면 정상 |
