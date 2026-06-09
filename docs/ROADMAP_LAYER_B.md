@@ -80,7 +80,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 - **아직 "진짜" 아님**: (1) 테스트 PC=throwaway → production은 always-on 머신 (2) 익명 publish(`$all`)로 테스트 → 실제는 **인증** 필요 (3) publish-over-network는 install과 동일 TCP 경로라 사실상 덮였으나 literal 미실행 (4) dual-direction(B3.3)은 cross-machine 미실행.
 - **방향 (2026-06-08 사용자)**: self-host(①)로 기울되 **production 베팅 전 충분히 검증**(아래 Stage 3). IT 공식(②)은 self-host 검증 미달·IT 정책 충돌 시 fallback.
 
-### Stage 3 — self-host 충분히 검증 (production 결정 전 · 3.1 ✅ 통과 / 🔜 3.2~3.4)
+### Stage 3 — self-host 충분히 검증 (production 결정 전 · 3.1·3.4 ✅ 통과 / 🔜 3.2)
 
 > 사용자 방향(2026-06-08): self-host로 가되 always-on 머신에 베팅하기 전에 "진짜 production처럼" 검증. Stage 1·2가 남긴 4개 갭을 닫는다. **3.1~3.3은 한 세션 chain**(인증 켜기 → 회사 PC authed publish=3.2 → patch 재publish로 host 흡수=3.3), 3.4는 별도. 전부 회사 머신 작업이라 집 PC는 수동 runbook 제공만.
 
@@ -89,7 +89,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | 3.1 ⭐ | **인증(auth)** ✅ **통과 (2026-06-09, 테스트 PC)** | Verdaccio htpasswd 사용자 — 로그인 안 하면 publish 차단(아무나 못 올림), install(읽기)은 동료 OK | 익명 `$all` 졸업. `@wonik/*` publish: `$authenticated`. **증거: 3-2 익명 publish=`E401` 차단 + 3-3 로그인 publish=성공(tokens·web 1.0.0)**. config `verdaccio-config-auth.yaml`, 로그인은 `stage3-login.ps1`(매 실행 랜덤 user→409 회피, 토큰을 `~/.npmrc`에 저장) |
 | 3.2 | **publish-over-network** | 회사 PC에서 창고로 진짜 올리기(authed) | 지금까진 cross-machine은 받기만. 회사 PC에 repo+build 필요 |
 | 3.3 | **dual-direction** | DS patch publish → host `pnpm update` 자동 흡수 (B3.3 cross-machine) | trial 12 localhost 입증분의 실머신 재현 |
-| 3.4 | **항상-켜짐/영속** | 재부팅·로그아웃 후에도 창고 생존 + storage 영속 (Windows 서비스/작업 스케줄러 자동시작) | always-on 머신의 핵심. throwaway 테스트 PC와 다른 점 |
+| 3.4 | **항상-켜짐/영속** ✅ **통과 (2026-06-09, 테스트 PC)** | 재부팅·로그아웃 후에도 창고 생존 + storage 영속 (Windows 작업 스케줄러 자동시작) | always-on 머신의 핵심. **증거: 재부팅 후 사람 개입 없이 자동 기동 + 다른 PC에서 접속 + `npm view @wonik/web`이 manifest·tarball·integrity 정상 제공(`published 15 min ago` 패키지가 재부팅 생존).** recipe: 작업 스케줄러 `WonikVerdaccio`(AtStartup·LogonType=Password=로그오프에도 실행) → `stage3-4-service-launcher.bat`(`npx --yes` 필수, storage 안 비움). 함정 2개(npx 대화형 멈춤·Interactive 로그온)는 README 기록. ※웹 UI `no read data found`는 README 부재 표시일 뿐 무해. ※크래시 자동재시작은 작업스케줄러 미보장 → production은 NSSM/pm2 검토 |
 
 통과 시 → production registry = always-on self-host 확정 → Phase B2(2곳 URL 교체 + real publish)로.
 
