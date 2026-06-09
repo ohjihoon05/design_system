@@ -2,7 +2,9 @@
 
 원익IPS 사내 web service에서 `@wonik/tokens` + `@wonik/web`를 설치해 사용하는 방법.
 
-> ⚠️ **현재 상태**: publish-ready 0.1.0이지만 **사내 npm registry는 IT 협의 후 URL 확정 예정** (Phase 17 / ADR-018). 본 문서의 `<사내-registry-URL>`은 결정 후 실제 URL로 갱신됨.
+> ⚠️ **현재 상태 (2026-06-09)**: 패키지는 **1.0.0**(stable, 24 atoms). 단 **사내 npm registry는 동결** — office-hours 결정상 병목이 배급이 아니라 채택이라(`docs/registry-decision-2026-06-09.md`), registry production화를 보류했다. 따라서 본 문서의 registry-install(아래)은 **registry가 해동된 미래 상태용**이다.
+>
+> **지금 실제 배급 경로**: ① 첫 dogfood ppt = workspace-link. ② 테스터 = 메인테이너 제공 tarball(`pnpm pack`). 테스터에게 줄 AI 컨텍스트·설치 안내는 `docs/tester-kit/` 참조. `<사내-registry-URL>`은 registry 해동 시 실제 URL로 갱신된다.
 
 ## 1. 인증 (`.npmrc` 설정)
 
@@ -35,7 +37,7 @@ pnpm add @wonik/web @wonik/tokens
 
 > ⚠️ **두 패키지 모두 host에서 직접 install 필수** (ADR-019 peer-only contract). `@wonik/web`만 install해도 `@wonik/tokens`는 자동으로 따라오지 **않습니다** — peer 의존성이라 host가 명시해야 함. 이는 토스 TDS / Material UI / Radix UI 등이 채택한 표준 패턴.
 
-`@wonik/web`는 `@wonik/tokens`를 peer 의존성으로 명시한다(`^0.1.0`). host가 토큰 CSS를 import해 cascade 기본값을 활성화하기 위해서도 host install이 필요.
+`@wonik/web`는 `@wonik/tokens`를 peer 의존성으로 명시한다(`^1.0.0`). host가 토큰 CSS를 import해 cascade 기본값을 활성화하기 위해서도 host install이 필요.
 
 React 18·19 dual peer 지원. host product의 React 버전 그대로 사용 (별도 dedupe 불필요).
 
@@ -89,7 +91,7 @@ host product가 자체 색을 갖고 있다면, `--color-*` CSS 변수를 정의
 A. light/dark dual 지원 (ADR-009). host가 `<html data-theme="dark">` 또는 그 외 토글 메커니즘으로 전환. 우리는 `prefers-color-scheme`을 *override 하지 않음* — host가 결정.
 
 **Q. 컴포넌트가 더 필요한데?**
-A. 1단계는 14 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge / Alert)로 종료. 추가 컴포넌트는 host product의 *실제 needs* 누적 3회 이상 evidence 후 layer A 2차 채움으로 검토. 사내 슬랙 또는 GitHub issue로 요청.
+A. 1단계는 **24 atoms** (Button / IconButton / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge / Alert / FilterChip / Avatar / ProgressBar / Toast / Modal / Tooltip / InlineEditableText / SortableList / Table) + `ThemeProvider`. 전체 카탈로그·prop은 `docs/tester-kit/wonik-ds-ai-context.md` 참조. 추가 컴포넌트는 host product의 *실제 needs* 누적 3회 이상 evidence 후 검토. 사내 슬랙 또는 GitHub issue로 요청.
 
 **Q. SSR(Next.js)에서 작동하나?**
 A. 모든 module-scope CSS 1회-inject는 `typeof document === 'undefined'` 가드 적용 (ADR-011). hydration mismatch 없음.
