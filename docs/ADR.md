@@ -1551,3 +1551,35 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 - [ ] **(사내 PC) `pnpm changeset publish`** — 둘 다 1.0.0 발행 + git tag + publish 후 dual-direction 재확인.
 - [ ] (실행 시) CLAUDE.md 토큰 CRITICAL 규칙에 "tokens 1.0 baseline" reference 1줄.
 - [ ] changesets 업글 시마다 옵션 키 유효성 재확인 (experimental API drift 가드).
+
+---
+
+### ADR-036: 필드 단위 인라인 에러 텍스트 — 패턴 부재 확인 + 보류 (Alert+invalid status quo 유지)
+
+> **상태**: 🟡 **검토 / 보류 (status quo 유지)**. 테스터 키트 dry-run #1(2026-06-09, `docs/tester-kit/DRYRUN-2026-06-09.md`)의 **proxy 신호**로 갭을 식별했으나, **실소비처(테스터) evidence 0** → ADR-001·ADR-031에 따라 1단계 신규 채택 보류. 현재 sanctioned 패턴을 명문화하는 것이 본 ADR의 결정.
+
+**맥락**:
+
+- 키트 dry-run에서 blind 에이전트(키트만 읽은 "테스터 AI")가 폼 필드 검증 메시지를 표시하려다 막혔다. `invalid` prop은 border를 alarm 색으로 + `aria-invalid`만 설정하고, **필드 밑 빨강 안내 *문구***를 줄 수단이 없다. 에이전트는 `<Text color="brand">`(= WONIK BLUE 파랑)로 흉내 → **의미상 틀린 색**.
+- 근본: `Text`의 color union에 alarm/error/danger가 **없다**(`primary|secondary|dim|dark|onDark*|brand`). 에러 표면은 ADR-017이 이미 **Alert(블록 단위 error 요약, role=alert, statusTokens.alarm)**로 결정. **필드 단위(인라인) 에러 텍스트는 별개로 미정의** 상태였다.
+- ⚠️ 이건 **proxy 신호**다 — 합성 화면이지 실빌더가 막힌 게 아니다(확신도 **낮음~중**). office-hours success 기준상 카운트되는 신호는 retention/real-ship뿐이며, dry-run은 그 전 단계 키트 hardening 용도.
+
+**결정 (보류 — status quo가 현재 sanctioned 패턴)**:
+
+폼 에러는 두 수단으로만 표현한다:
+1. **필드**: `invalid` prop — border alarm 색 + `aria-invalid` 자동.
+2. **요약**: `<Alert>` (ADR-017) — `role="alert"` + `statusTokens.alarm`.
+
+→ 키트 v1.1 §3가 이미 이 패턴을 명시. **필드 밑 인라인 빨강 문구는 1단계 비채택.** `Text color="brand"`로 에러색 흉내 **금지**(파랑이라 의미 충돌).
+
+**대안 (실 evidence 부상 시 ADR-031 rubric로 재검토)**:
+
+1. **Input/Textarea에 `errorText` slot 추가** — prop signature 변경 = **major bump**(CLAUDE.md). 우회 cost가 evidence threshold를 넘을 때만.
+2. **`Text`에 `alarm` color 추가** — Text API + 토큰 노출. **ADR-034 관문**(비준 디자인 소스 + ΔE) 충족 필요. `statusTokens.alarm.text`는 이미 존재하나 `Text` prop으론 안 뚫린다.
+3. **status quo 유지** — 현 채택. Alert가 a11y(`role="alert"`)상 더 강하고, ADR-016(Badge 2-variant)·ADR-017(Alert error-only)의 strict-YAGNI 선례와 정합.
+
+**재검토 trigger**: 실테스터/실화면에서 "필드 단위 인라인 에러"가 **누적 evidence**(ADR-031 기준)로 부상하면, 위 1/2를 **우회 cost · 시각 정체성 · a11y impact** 3축으로 판정한다.
+
+**관계**: ADR-017(Alert error-only — 본 갭의 상위 결정)·ADR-001(고객 없이 추상화 금지)·ADR-031(evidence trigger rubric 3축)·ADR-034(토큰 추가 관문)·ADR-016(Badge 2-variant YAGNI 선례). reference: `docs/tester-kit/DRYRUN-2026-06-09.md`.
+
+**범위 밖 (같은 dry-run의 sibling backlog — 본 ADR 미포함, 동일 보류 논리)**: Badge 상태 팔레트 2개 한계 · 레이아웃 width 토큰/prop 부재 · DS 아이콘 미제공. 모두 `DRYRUN-2026-06-09.md`에 기록, 실 evidence 부상 시 개별 ADR.
