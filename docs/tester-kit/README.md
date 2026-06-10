@@ -12,7 +12,18 @@
 | 파일 | 무엇 | 누가 읽나 |
 |---|---|---|
 | `wonik-ds-ai-context.md` | drop-in AI 컨텍스트 — 설치·색 규칙·24 컴포넌트 카탈로그·슬롭 금지·정상 예시 | **테스터의 코딩 AI** (Claude Code `CLAUDE.md` / Cursor `.cursorrules`) |
+| `MANUAL_WALKTHROUGH.md` | 수동(손코딩) 검증 트랙 — AI 없이 복붙+치환으로 템플릿 화면을 완성하는 따라하기 가이드. 빈 PC 풀 셋업은 부록 B | **테스터(사람)** |
 | `README.md` (이 파일) | 메인테이너 운영 가이드 — 어떻게 건네고 뭘 관찰하나 | **너(메인테이너)** |
+| `DRYRUN-*.md` | 출시 전 검증 paper trail (blind dry-run 갭 + fresh-clone 실PC 발견) | 메인테이너 |
+
+### 더블클릭 런처 2개 (repo 안, 용도 분리)
+
+| 런처 | 포트 | 용도 |
+|---|---|---|
+| `apps\web-sandbox\start-sandbox.bat` | 5174 | **테스터 캔버스** — MANUAL_WALKTHROUGH의 무대. 테스터가 `MyScreen.tsx`로 자기 화면을 그림 |
+| `apps\storybook\start-storybook.bat` | 6006 | **DS 카탈로그** — 부품 25개 variant별 구경. 수용성 타진 대화·그룹장 데모 때 띄우는 쪽 (테스터 동선엔 안 씀) |
+
+둘 다 dist가 없으면(첫 실행) 자동으로 `pnpm build` 후 기동. 바탕화면 바로가기: 파일 우클릭 → [보내기 → 바탕 화면에 바로 가기 만들기] → 이름 변경("DS 화면 시작" / "DS 카탈로그 보기").
 
 ## 테스터에게 건네는 법
 
