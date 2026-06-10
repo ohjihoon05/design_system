@@ -34,6 +34,15 @@
 | 8 | ⑤·⑥ 불일치 = 에러 없는 silent 실패 | §5 표에 "배지가 파랗지 않음" 행 추가 |
 | 9 | §4 줄 추가 위치 모호 (`];` 아래에 붙이면 깨짐) | "`];` 보다는 위에" 명시 |
 
+## 2.5. Fresh-clone 실PC 검증 발견 (2026-06-11, 사용자 직접)
+
+집 PC가 아닌 새 환경(fresh clone)에서 사용자가 직접 돌리다 잡은 갭 2건 — blind dry-run(문서만 검증)으로는 못 잡는 종류:
+
+| # | 발견 | 반영 |
+|---|---|---|
+| 10 | `pnpm install`만으로는 dev 실패 — `@wonik/web` exports가 전부 `dist/`인데 fresh clone엔 빌드 산출물이 없어 `Failed to resolve entry for package "@wonik/web"` (집 PC는 dist가 이미 있어서 은폐됨) | 부록 B-5에 `pnpm build` 단계 추가 + §5 표에 증상 행 추가 + **bat이 dist 부재 시 자동 빌드** (first-run guard) |
+| 11 | 포트 불일치 — vite.config는 `5174`(ppt의 5173과 충돌 회피용)인데 bat·§0 안내는 `5173`을 가리킴 → 브라우저가 빈 페이지로 열림 | bat·§0 모두 `5174`로 수정 |
+
 ## 3. 남은 리스크 (사내 실행 시 확인)
 
 - 테스트 PC에서 `start-sandbox.bat` 실제 1회 구동 확인 (pnpm PATH, 방화벽)

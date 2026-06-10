@@ -1,5 +1,11 @@
 @echo off
 rem WONIK DS sandbox launcher - for non-developer testers (double-click to start)
 cd /d "%~dp0"
-start "" cmd /c "timeout /t 5 >nul & start http://localhost:5173/"
+if not exist "..\..\packages\web\dist\index.mjs" (
+  echo First run: building design system packages, please wait 1-2 minutes...
+  pushd ..\..
+  call pnpm build
+  popd
+)
+start "" cmd /c "timeout /t 5 >nul & start http://localhost:5174/"
 pnpm dev
