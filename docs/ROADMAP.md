@@ -136,7 +136,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 |---|---|---|---|
 | **🏢 1호 테스터 플레이** | 인벤토리 질문으로 1호 식별 → 수용성 타진 + 설치(tarball or repo+런처)를 1대화로 압축 → 수동/AI키트 트랙 플레이 → `PLAY-LOG.md` 1줄 + 막힘 메모 수집 | 1대화~ | **사내 진입 첫 거리** (키트 준비 끝, 추가 키트 작업 동결) |
 | ~~cleanup #1~~ | ~~ppt `frontend/vendor/wonik-{tokens,web}-0.0.0.tgz` 삭제~~ | ~~5분~~ | ✅ 2026-05-29 확인 — **이미 없음** (no-op). trial 7 이후 0.1.0 교체로 제거됨 |
-| cleanup #2 | `pkg-out/wonik-{tokens,web}-0.0.0.tgz` 삭제 (디스크 잔재) | 5분 | 낮음 — **gitignored** (git 추적 X, 디스크만). pkg-out엔 dogfood 스크린샷도 함께 있어 통째 삭제 금지 |
+| ~~cleanup #2~~ | ~~`pkg-out/wonik-{tokens,web}-0.0.0.tgz` 삭제 (디스크 잔재)~~ | ~~5분~~ | ✅ 2026-06-11 — tgz 2개 + `extract/`(0.0.0 압축 해제본도 같은 잔재) 삭제, 스크린샷 12장 보존. gitignored라 디스크만 정리 |
 | cleanup #3 | trial-N narrative 주석 제거 (`{/* trial 10: ... */}` 등) | 30분 | 낮음 — **ppt repo 소속** (Presentation/Home/OutlineCard.tsx). design_system 아님 = cross-repo 작업 (별도 repo 진입 필요) |
 | ~~doc #1~~ | ~~QUICKSTART "host inline px 대신 Stack gap" (F23)~~ | ~~10분~~ | ✅ 완료 — QUICKSTART.md:112 (M2 표와 중복 등록이었음) |
 | ~~doc #2~~ | ~~AI semantic purple `#7C3AED` 의미를 ADR-007에 추가 (F19)~~ | ~~15분~~ | ✅ 완료 — ADR.md:63 (trial 11 F19 보강) |
