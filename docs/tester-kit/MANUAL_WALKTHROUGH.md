@@ -17,7 +17,7 @@
 - [ ] `pnpm -F web-sandbox dev`가 정상 기동되는지 1회 확인 (repo **최상위 폴더**에서, `web-sandbox`는 **띄어쓰기 없이** 한 덩어리 — `web -sandbox`로 끊어 치면 `No "dev" script` 에러)
 - [ ] `apps\web-sandbox\start-sandbox.bat`의 **바탕화면 바로가기**를 "DS 화면 시작" 이름으로 생성
 - [ ] **바로가기를 1회 미리 실행**해 SmartScreen·방화벽 허용 팝업을 먼저 통과시켜 둠 (테스터가 첫 화면부터 보안 경고를 만나지 않게)
-- [ ] VS Code 설치 + 바탕화면에 repo 폴더 바로가기 + **repo 폴더를 VS Code로 1회 열어 신뢰(Trust) 팝업에 Yes 해둠**
+- [ ] VS Code 설치 + **바탕화면에서 repo 폴더로 들어가는 입구** 마련 — repo 폴더 우클릭 → [보내기 → 바탕 화면에 바로 가기 만들기] (부록 B의 ZIP 경로처럼 폴더 자체가 이미 바탕화면에 있으면 불필요) + **repo 폴더를 VS Code로 1회 열어 신뢰(Trust) 팝업에 Yes 해둠**
 - [ ] **이 문서를 코드 복사 버튼이 보이는 형태로 열어둔 채 인계** — VS Code에서 이 파일을 열고 미리보기(`Ctrl+Shift+V`), 또는 브라우저 렌더 뷰
 - [ ] `apps/web-sandbox/src/MyScreen.tsx`가 **없는** 상태인지 확인 (있으면 삭제 — 테스터가 직접 만들어야 함)
 - [ ] 끝난 뒤 원복: `git checkout apps/web-sandbox/src/main.tsx` + `MyScreen.tsx` 삭제 (ZIP으로 받은 PC라 git이 없으면 **부록 B-8**의 원본 블록으로 재교체)
@@ -42,7 +42,7 @@
 
 이제 코드 편집 프로그램(VS Code)에서 파일 하나를 새로 만듭니다.
 
-1. 바탕화면의 **repo 폴더 바로가기**를 우클릭 → **"Code(으)로 열기"**.
+1. 바탕화면의 **repo 폴더**(또는 그 바로가기)를 우클릭 → **"Code(으)로 열기"**.
    - 우클릭 메뉴에 없으면 맨 아래 **"추가 옵션 표시"** 안에 숨어 있을 수 있습니다. 그래도 없으면: VS Code를 먼저 열고 → 위 메뉴 **File → Open Folder(폴더 열기)** → 그 폴더 선택.
    - 영어 팝업("Do you trust the authors...?")이 뜨면 **Yes**를 누르세요. 정상입니다.
 2. 왼쪽 파일 목록에서 `apps` → `web-sandbox` → `src` 폴더를 차례로 펼칩니다.
