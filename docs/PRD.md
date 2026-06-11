@@ -12,7 +12,7 @@
 | Layer | 의미 | 1단계 적용 여부 |
 |---|---|---|
 | **A. 디자인 시스템** (`@wonik/tokens` + `@wonik/web`) | 토큰·컴포넌트·시각 언어 일관성 | ✓ 1단계 핵심 |
-| **B. 사내 패키지 배포** | 사내 npm registry / GitHub Packages — `pnpm add @wonik/web` 한 줄로 설치 | 1단계 후반 검토 |
+| **B. 사내 패키지 배포** | 사내 npm registry / GitHub Packages — `pnpm add @wonik/web` 한 줄로 설치 | 기술검증 ✅ 후 **🧊 동결** (2026-06-09) — 병목은 배급 아닌 채택. 해동 = 실소비처 + 채택 명령 |
 | **C. 프로젝트 시작 템플릿** (`npx create-wonik-app` 류) | 새 사내 프로젝트가 디자인 시스템·tooling 갖춘 상태로 즉시 시작 | 1단계 외 |
 | **D. 사내 SSO 통합** | 사내 인증·권한이 한 줄 import으로 적용 | 1단계 외 |
 | **E. Observability hook** | 로깅·에러 리포팅·analytics가 default로 wired | 1단계 외 |
@@ -40,7 +40,7 @@ WARP 시안은 토큰·시각 언어의 reference로 보존.
 ## 핵심 기능
 1. **디자인 토큰 패키지 (`@wonik/tokens`)** — 색·타이포·spacing·radius·border 토큰을 CSS 변수와 TypeScript 정의로 export. WARP 시안에서 추출한 base + 공식 CI brand color (WONIK BLUE/GRAY).
 2. **Web 컴포넌트 (`@wonik/web`)** — Web service용 컴포넌트. 1단계는 Button부터 차근차근 시작 → ppt에서 검증 → 점진 확장. 최종 목표 컴포넌트 셋: Button, Input·Textarea, Card, Modal, Toast, Spinner·Skeleton, Tabs, Dropdown·Select + ppt에서 도출되는 SortableList, InlineEditableText.
-3. **사내 배포** — 사내 npm 레지스트리 또는 GitHub Packages를 통해 `npm install @wonik/web` 형태로 설치 가능 (인프라는 1단계 후반에 결정).
+3. **사내 배포** — 사내 npm 레지스트리 또는 GitHub Packages를 통해 `npm install @wonik/web` 형태로 설치 가능. *(2026-06-09 갱신: self-host registry 기술검증 완료 후 동결 — 진짜 소비처 착륙 시 가장 싼 통로 순서로 ① IT-managed 사내 registry > ② git dependency > ③ self-host 최후. 그 전까지 배급은 workspace-link/tarball로 충분.)*
 
 ## MVP 제외 사항
 - 토스 TDS급 150+ 컴포넌트 라이브러리 — 1단계는 `@wonik/web` Button부터 차근차근. 단계별 점진 확장.
@@ -97,7 +97,17 @@ Phase 17에서 publish-ready 인프라까지 완료. layer B 본격 진입 흐�
 - Trial 10: Outline 통째 재dogfood — Alert/Badge/Card 첫 적용, evidence-driven cycle 한 바퀴 closure
 - Trial 11: Presentation 미완 청소 + Alert/Input/Textarea + 보라 anti-pattern 제거, dashed 격하 reaffirm
 
-→ **Layer A 1차 사이클 마감 (host 3 페이지 적용 + 시각 정체성 통일 + evidence cycle 입증)**. 다음은 Layer B 본격 진입 — 회사 PC + IT 협의 의존, ROADMAP에서 신호 대기 중.
+→ **Layer A 1차 사이클 마감 (host 3 페이지 적용 + 시각 정체성 통일 + evidence cycle 입증)**. 이후 atom 23(+Table provisional, trial 14)까지 확장 — 현재 위치는 ROADMAP.md.
+
+## 전략 갱신 (2026-06-09) — registry 동결 + 채택 피벗
+
+Layer B(배포 인프라)는 **기술검증을 끝내고 동결**했다 (office-hours APPROVED, `docs/registry-decision-2026-06-09.md`):
+
+- **검증된 것**: 집 Verdaccio dry run(trial 12) + 회사 테스트 PC 리허설(localhost 사이클 / LAN 너머 install / 인증 publish / 재부팅 생존 always-on) + F28 changesets major-jump 종결(ADR-035, tokens·web 1.0.0 cutover).
+- **동결 이유**: 오늘 수요 0 (첫 dogfood ppt는 workspace-link로 충분, 다른 소비처 미등장). registry는 배급 파이프일 뿐 채택을 만들지 않는다 — **병목은 배급이 아니라 채택**. 솔로 메인테이너가 소비처 0인 production 인프라를 떠안는 것은 ADR-001(speculative 인프라 금지) 위반.
+- **피벗**: 에너지를 채택 forcing-function으로 — **A(top-down)** 리더십 명령 제조(센터장 피치 초안 = 내년 보관 자산) + **C(bottom-up)** 테스터의 AI 컨텍스트에 DS 주입(`docs/tester-kit/`). 두 다리가 서로 강화한다.
+- **타임라인**: **올해 = 실사용 기반 polish** — 실빌더 포함 테스터 섭외, 성공 카운트는 retention·real-ship만. **내년 = 완성형 launch** + 센터장 피치 발사. "완성"의 끝선 = `@wonik/web`로 ship된 실제 사내 화면 ≥1 (소비처 없으면 스코프 무한 발산 — ADR-001·034).
+- **해동 트리거**: "별도 repo에 있고 workspace-link로 못 받는 실재 소비처 + 채택 명령"이 동시에 성립할 때.
 
 ## 디자인
 - **Web (1단계)** — 산업용 baseline 정신은 유지하되 일반 사용자(사내 팀원)에게 더 friendly한 톤. 본격적인 visual language는 ppt 적용 단계에서 본인 디자인 감각으로 결정. Tailwind CSS v4 기반.

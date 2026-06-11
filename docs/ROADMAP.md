@@ -3,8 +3,8 @@
 > **목적**: 다음 step + 미해결 결정 + 위치를 한 페이지에 모음. 매 작업 시작 전에 본다.
 > **갱신 주기**: trial/phase 완료 시 즉시. ADR 신설/supersede 시 즉시.
 
-**최종 갱신**: 2026-06-04 (**trial 14 — demo-tracker (사내 CRUD shape) dogfood**: 새 host `apps/demo-tracker` 이슈 트래커로 Table atom 첫 dogfood(atom 24 provisional) + frozen 후보(FormField/Select/RadioGroup) gap 실증 + Badge tone 신규 finding + Tabs 동결 reaffirm. build+render+console 0 검증. 직전 2026-05-29 plan-eng-review T1~T8d closure)
-> **이전 갱신**: 2026-05-29 (**다크 모드 전수 검증 ship** — Phase 1-5: 16 dark variants + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) + Phase 2 contrast 7 violations findings 문서화 + web-sandbox cascade override section. commit `26ed34b` + `ad8d141`. 직전 2026-05-27 Figma P3·P4 보류 reaffirm + Phase 25 Table atom 완료)
+**최종 갱신**: 2026-06-11 (**registry 동결 + 채택 피벗 반영** — office-hours 6/9 APPROVED(`registry-decision-2026-06-09.md`): 병목은 배급이 아니라 **채택**. Layer B self-host는 기술검증(집 dry run + 테스트 PC Stage 1·2·3.1·3.4) 후 🧊 동결. 타임라인 = 올해 테스터 기반 polish · 내년 완성형 launch. C 다리 산출물 = `docs/tester-kit/`(AI 컨텍스트 + 수동 트랙) + M0 셀프 완주(6/11, PLAY-LOG). F28은 ADR-035로 mechanism 종결(6/8, tokens·web 1.0.0 cutover 집 완료). ADR-033~037 누적)
+> **이전 갱신**: 2026-06-04 (**trial 14 — demo-tracker (사내 CRUD shape) dogfood**: 새 host `apps/demo-tracker` 이슈 트래커로 Table atom 첫 dogfood(atom 24 provisional) + frozen 후보(FormField/Select/RadioGroup) gap 실증 + Badge tone 신규 finding + Tabs 동결 reaffirm. build+render+console 0 검증)
 
 ---
 
@@ -12,13 +12,15 @@
 
 > **🏁 Layer A 1차 사이클 마감 (2026-05-15)** — atom 14개 × ppt 3 main 페이지 적용 + 시각 정체성 통일 + evidence-driven cycle 한 바퀴 입증. 11 trial 누적.
 >
-> **다음 큰 단계**: **Layer B (publish & adopt 인프라)** — 집 시뮬레이션 한 바퀴 ✅ (trial 12, Verdaccio 14873). 사내 진입 시 *URL 2 곳만 교체*하면 즉시 작동 상태. ADR-018에 결정 누적.
+> **다음 큰 단계**: **채택 (adopt)** — Layer B registry는 기술검증 완료 후 **🧊 동결** (office-hours 2026-06-09 APPROVED, [`registry-decision-2026-06-09.md`](./registry-decision-2026-06-09.md)). 진단: 오늘 수요 0(ppt는 workspace-link, 다른 소비처 미등장) — registry는 배급 파이프지 채택 장치가 아님. 에너지는 **A(top-down: 리더십 명령 제조 — 센터장 피치는 내년 보관 자산)** + **C(bottom-up: 테스터 AI 컨텍스트 침투 — `docs/tester-kit/`)** 병행으로 이동.
 >
-> **병행 트랙 (2026-05-21~)**: **Figma 정합** — 사용자 Figma "UI/UX Standardization 2.0"을 토큰 single source of truth로 흡수. Layer A/B(컴포넌트·배포)와 직교. 1단계 색 토큰 적용 완료 (ADR-021~025). 아래 §🎨 참조.
+> **타임라인 (2026-06-09 확정)**: **올해 = 실사용 기반 polish** — 실빌더 포함 테스터 섭외, **retention·real-ship만 카운트** (만족도는 신호 아님). **내년 = 완성형 launch** + 센터장 피치 발사. "완성"의 끝선 = `@wonik/web`로 ship된 실제 사내 화면 ≥1.
 >
-> **🌙 직전 ship (2026-05-29)**: **다크 모드 전수 검증** — Phase 1-5 (16 dark variants × 17 active stories + addon-a11y preview spread 함정 해결 + Phase 2 contrast 7 violations 문서화 + cascade override section). commit `26ed34b` + `ad8d141`. §✅ 품질 게이트 참조.
+> **병행 트랙 (2026-05-21~)**: **Figma 정합** — 사용자 Figma "UI/UX Standardization 2.0"을 토큰 single source of truth로 흡수. Layer A/B(컴포넌트·배포)와 직교. 1단계 색 토큰 적용 완료 (ADR-021~025). 아래 §🎨 참조. **+ ADR-037 (2026-06-11 제안)**: HMI 색 사용 원칙 — 무채색 베이스 + 신호색 예약, "찐하게" 논쟁은 실기기 대비율 측정으로 전환 (Standardization 2.0 신·구 디자인 paper trail).
 >
-> **집에서 가능한 작은 호흡**: cleanup 거리 + doc 갱신 + (선택) sub-component dogfood. 자세한 건 §4.
+> **🎒 직전 ship (2026-06-11)**: **테스터 enable 키트 운영 시작** — M0(본인) 수동 트랙 셀프 완주 + PLAY-LOG 신설 + fresh-clone 갭 2건(빌드 누락·포트) 수정 + 더블클릭 런처 2개(`start-sandbox.bat` 5174 / `start-storybook.bat` 6006, 첫 실행 시 pnpm install까지 흡수) + `setup-desktop.bat` 바탕화면 바로가기. 키트 작업은 동결 — 다음은 사내 실테스터.
+>
+> **사내 진입 시 첫 액션**: ① **1호 테스터 식별 (인벤토리 질문)** → 수용성 타진 + 설치를 1대화로 압축 ② Table atom 24 organic dogfood 자리.
 
 | 영역 | 진행 |
 |---|---|
@@ -28,8 +30,10 @@
 | Layer A — 2차 채움 evidence cycle | ✅ 한 바퀴 입증 (Phase 14 Badge → trial 10 적용 + dashed 격하 reaffirm) |
 | Layer A — 2차 사이클 마감 (atom 23 closure) | ✅ trial 13 — atom 23 × ppt 4자리 (Phase 23 → OutlineCard / Phase 24 → Presentation, 같은 사이클 내 closure) |
 | Layer A — 마지막 폴리시 패스 | ✅ 2026-05-19 — 인디고 잔재 제거(History.tsx) + trial-N 주석 22→0 + ADR-007 F19 / ADR-018 F29·F30 doc 정착 + atom 후보 4종 동결 |
-| ▷ Layer B — publish & adopt | 🟢 dry run ✅ (trial 12·13 재현) — **Layer A 완벽 도달, 사내 URL 결정만 대기** |
-| ▷ 다른 host product 발굴 | ⏸️ Layer B 진입 후 |
+| ▷ Layer B — registry (배급) | 🧊 **동결 (2026-06-09 office-hours)** — 기술검증은 끝 (집 dry run trial 12 + 테스트 PC Stage 1·2 + 3.1 인증 + 3.4 항상-켜짐). 해동 트리거 = "workspace-link로 못 받는 실재 소비처 + 채택 명령" 동시 성립. F28은 ADR-035로 종결 (tokens·web 1.0.0 cutover 집 완료, publish만 미실행) |
+| ▷ **채택 트랙 (C 다리)** — tester kit | 🟢 키트 v1.1 (`docs/tester-kit/` — AI 컨텍스트 + 수동 MANUAL_WALKTHROUGH + 런처 2개) + blind dry-run 2회 + **M0 셀프 완주 (6/11)**. 키트 작업 동결 — 사내 1호 테스터 대기. ship 기준 = 타인 사용 ≥1 |
+| ▷ 채택 트랙 (A 다리) — 리더십 명령 | 📦 센터장 피치 초안 보관 (`center-lead-pitch-2026-06-09.md`) — **내년 발사** (ship된 실화면 1개 레퍼런스 확보 후) |
+| ▷ 다른 host product 발굴 | ⏸️ 채택 트랙과 병합 — 1호 테스터의 실화면이 곧 다른 host |
 | ▷ Figma 정합 트랙 (2026-05-21 등록) | 🟢 1단계 색 토큰 적용 완료 (ADR-021~025). **P3·P4 보류 reaffirm (5/27, HMI 나중)** — §🎨 참조 |
 | ▷ Phase 25 Table atom (2026-05-27) | 🟢 코드 + 16 tests + 6 Storybook stories 완료 (집). ADR-029 (B1: plain HTML + tableTokens, props 4개). atom 카운트 23 유지 — **사내 dogfood 1자리 도달 시 atom 24 closure 표기** |
 | ▷ **다크 모드 전수 검증** (2026-05-29) | ✅ Phase 1-5 ship — 16 dark variants × 17 active stories (Phase 1·4) + addon-a11y preview spread 함정 해결 (Storybook dark toggle 회귀) (Phase 3) + Phase 2 contrast 7 violations findings 문서화 (hex 조정 후속 ADR + minor bump 보류) + web-sandbox cascade override section (Phase 5). commit `26ed34b` + `ad8d141` |
@@ -126,10 +130,11 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 ## 🛣️ 다음 호흡
 
-**큰 흐름은 Layer B 진입 대기 (사내 registry URL 결정만 남음 — dry run trial 12로 모든 cycle 검증 완료).** 집에서 할 수 있는 작은 호흡:
+**큰 흐름은 채택 트랙 (registry는 🧊 동결 — §▷ Layer B).** 사내 진입 시 첫 거리 = 1호 테스터. 집에서 할 수 있는 작은 호흡:
 
 | 후보 | 내용 | 시간 | 우선도 |
 |---|---|---|---|
+| **🏢 1호 테스터 플레이** | 인벤토리 질문으로 1호 식별 → 수용성 타진 + 설치(tarball or repo+런처)를 1대화로 압축 → 수동/AI키트 트랙 플레이 → `PLAY-LOG.md` 1줄 + 막힘 메모 수집 | 1대화~ | **사내 진입 첫 거리** (키트 준비 끝, 추가 키트 작업 동결) |
 | ~~cleanup #1~~ | ~~ppt `frontend/vendor/wonik-{tokens,web}-0.0.0.tgz` 삭제~~ | ~~5분~~ | ✅ 2026-05-29 확인 — **이미 없음** (no-op). trial 7 이후 0.1.0 교체로 제거됨 |
 | cleanup #2 | `pkg-out/wonik-{tokens,web}-0.0.0.tgz` 삭제 (디스크 잔재) | 5분 | 낮음 — **gitignored** (git 추적 X, 디스크만). pkg-out엔 dogfood 스크린샷도 함께 있어 통째 삭제 금지 |
 | cleanup #3 | trial-N narrative 주석 제거 (`{/* trial 10: ... */}` 등) | 30분 | 낮음 — **ppt repo 소속** (Presentation/Home/OutlineCard.tsx). design_system 아님 = cross-repo 작업 (별도 repo 진입 필요) |
@@ -138,7 +143,7 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | (선택) sub-component dogfood | PromptRefineChat / AiChatPanel — ToggleGroup 추가 evidence 가능성 | 30분~ | 낮음 (Layer A 이미 마감) |
 | (선택) ppt branch merge to main | `trial-6-presentation` branch에 누적된 trial 7~11 commit을 main으로 정리 | 사용자 판단 | 낮음 |
 | ~~polish #1~~ | ~~`SortableList` announcement override prop~~ | ~~30분~~ | ✅ 2026-05-20 closure — `announceItem?: (id) => string` prop 추가, web 331 tests passing, changeset minor 대기 (사내 진입 시 web 2.1.0 publish) |
-| **🏢 사내 Phase 25 dogfood** | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 closure 표기 + commit | 30분~1h | 사내 진입 첫 거리 |
+| 🏢 사내 Phase 25 dogfood | 사내 단순 조회 table 자리 1~2개 식별 → `Table` atom 적용 → atom 24 **organic** closure 표기 + commit | 30분~1h | 사내 진입 시 — 1호 테스터 플레이와 병행 가능 (테스터 실화면에 table 있으면 한 번에) |
 | ~~T5~~ (plan-eng-review 5/29) | ~~ADR-024 후속: token bump 정책 — value drift = patch 조건~~ | ~~30분~~ | ✅ 2026-05-29 closure — ADR-024 본문에 "정책 후속" sub-section 추가 (3축 조건 + ΔE ≤ 5 threshold + ADR-020/품질 게이트와의 관계 명시). docs only, Changeset 불필요 |
 | ~~T6~~ (plan-eng-review 5/29) | ~~ADR 신설: atom closure 조건~~ | ~~40분~~ | ✅ 2026-05-29 closure — **ADR-030** 신설 (first dogfood evidence 1곳 통일 + Phase 18~25 retro labeling + evidence-driven ↔ Figma-derived rule transition + Phase 25 retroactive 인정). docs only |
 | ~~T7~~ (plan-eng-review 5/29) | ~~ADR 신설: evidence trigger 후 결정 rubric~~ | ~~30분~~ | ✅ 2026-05-29 closure — **ADR-031** 신설 (3축 rubric: 우회 cost / 시각 정체성 / a11y impact + 결정 매트릭스 + Phase 18~25 retro 검증: **Tabs 재평가 trigger** 발견). docs only |
@@ -225,9 +230,11 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 
 ---
 
-## ▷ Layer B 진입 준비 (집 시뮬레이션 ✅, 사내 URL만 대기)
+## ▷ Layer B (기술검증 ✅ → 🧊 동결 2026-06-09)
 
-> **📋 상세 실행 runbook**: [`ROADMAP_LAYER_B.md`](./ROADMAP_LAYER_B.md) (2026-06-08) — Phase B0~B4 순서 + F28 근본 진단·결정 4옵션 + 완료 정의. 본 표는 요약.
+> **🧊 동결 (office-hours 2026-06-09 APPROVED)**: registry production화는 보류 — 오늘 수요 0 (ppt = workspace-link, 다른 소비처 미등장), 병목은 배급이 아니라 채택. 솔로 메인테이너가 책상 PC를 production 단일장애점으로 떠안는 비용 > 가치. **해동 트리거 = "별도 repo에 있고 workspace-link로 못 받는 실재 소비처 + 채택 명령" 동시 성립.** 리허설 결과는 폐기 아님 — "검증필 옵션"으로 보존. 진짜 소비처 착륙 시 통로 우선순위: ① IT-managed 사내 registry 사설 scope > ② git dependency > ③ self-host always-on은 **최후**. 상세: [`registry-decision-2026-06-09.md`](./registry-decision-2026-06-09.md).
+>
+> **📋 상세 실행 runbook**: [`ROADMAP_LAYER_B.md`](./ROADMAP_LAYER_B.md) — Phase B0~B4 순서 + F28 진단·종결 + 테스트 PC 리허설 Stage 1~3 기록 + 완료 정의. 본 표는 요약.
 
 집에서 Verdaccio(`localhost:14873`)로 전체 cycle 시뮬레이션 완료 (trial 12). ADR-018에 결정 누적.
 
@@ -241,9 +248,9 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 | 5 | host product `pnpm install` (vendor → registry) → dual-direction patch | ✅ ppt 3.7초 install + 1.5초 update | 동일 흐름 |
 | 6 | (선택) CI 자동 publish workflow | 보류 | GitHub Actions 추가 |
 
-> **⚠️ 진입 전 집에서 닫을 것 (2026-06-05 실측 — F28 reproduction confirmed)**: `pnpm changeset status` 기준 대기 changeset 10건이 `@wonik/web`을 **`2.0.0 → 3.0.0` (major)**로 계산. 선언된 major 0건(minor 2 + patch 2)이라 **의도는 `2.1.0` (minor)** — changesets#1011 "누적 minor → major 승격" 버그(F28) 재현. 사내 첫 publish 전 `.changeset/*.md` frontmatter 정정 또는 version pin으로 `2.1.0` 확정 필요 (trial 13 F30 publish-prep 규칙). **곁가지 결정**: 현재 committed `tokens@0.3.0`/`web@2.0.0`은 dry-run `changeset version` 잔재(실제 registry publish 0회) → 첫 진짜 publish를 이어갈지/리셋할지 F28 닫으며 동시 결정. `@wonik/tokens` 0.3.0→0.4.0 (minor)는 의도대로 정상.
+> **✅ F28 종결 (2026-06-08, ADR-035)**: 근본 원인 = changesets 기본 옵션(`onlyUpdatePeerDependentsWhenOutOfRange: false`) × peer 계약(ADR-019) × tokens 0.x caret의 상호작용. 조치 둘 다 적용 — ① config 옵션 true ② **tokens·web 1.0.0 cutover** (peer `^1.0.0`, changeset 10건 fold, build green + test 347 + tokens patch→web 무변경 proof). **publish(네트워크)만 미실행** — 동결 해제 후 첫 publish 시 §3.4-7 재확인.
 
-> **진입 신호**: 사용자가 사내 환경 진입 알릴 때까지 ROADMAP에서 push 안 함. dry run 결과 commit은 집에서 가능. **진입 신호 정의 + 무기한 대기 fallback** = 아래 §🔄 freshness ritual.
+> **진입 신호 이력**: 2026-06-08 수신("사내 진입 시작") → B0 집-prep 완료 + 테스트 PC 리허설 Stage 1·2·3.1·3.4 통과 → **2026-06-09 office-hours에서 production화 동결 + 채택 피벗**. 이후 Layer B는 해동 트리거 성립까지 WAIT. freshness ritual(분기 점검)은 유지 — 아래 §🔄.
 
 ---
 
@@ -271,6 +278,8 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 ### "사내 진입 신호" 정의
 
 사용자가 **명시적 alert**로 "사내 환경 진입 시작"이라고 알릴 때. 외부 시스템 이벤트(IT 티켓 / SSO 발급 / 사내 commit 등) 자동 감지 X. 신호 부재 시 ROADMAP에서 Layer B는 default WAIT.
+
+> **2026-06-09 이후 보충**: 진입 신호는 한 번 수신됐고(6/8) 기술검증까지 완료 — 이제 Layer B의 게이트는 진입 신호가 아니라 **해동 트리거**(실소비처 + 채택 명령, §▷ Layer B)다. 본 ritual의 분기 점검 4축은 동결 중에도 그대로 유지 (특히 changesets experimental 옵션 재검증 — ADR-035).
 
 ### 분기 ritual checklist
 
@@ -331,10 +340,11 @@ ADR-021~025 대응 changeset 5건(`.changeset/figma-*`) 누적 — primitives/da
 - 1단계 큰 그림: [`PRD.md`](./PRD.md)
 - 결정 누적: [`ADR.md`](./ADR.md)
   - 핵심 ADR: **010** (cascade override) · **011** (module-scope CSS) · **019** (peer-only contract)
-  - Layer B 결정: **018** (지금 시야 외, 마지막 phase에 다시 진입)
+  - Layer B 결정: **018** (registry 옵션) · **035** (F28 종결 — config 옵션 + 1.0.0 cutover)
+- 채택 트랙: [`registry-decision-2026-06-09.md`](./registry-decision-2026-06-09.md) (동결+피벗 결정) · [`tester-kit/`](./tester-kit/README.md) (C 다리 키트 + PLAY-LOG) · [`center-lead-pitch-2026-06-09.md`](./center-lead-pitch-2026-06-09.md) (A 다리, 내년 보관)
 - host 사용 가이드: [`QUICKSTART.md`](./QUICKSTART.md)
 - 외부 install 가이드: [`INSTALL.md`](./INSTALL.md)
-- dogfood 사이클: `dogfood-trial-1.md` ~ `dogfood-trial-13.md` (+ trial-3-recapture)
+- dogfood 사이클: `dogfood-trial-1.md` ~ `dogfood-trial-14.md` (+ trial-3-recapture)
 - 옵시디언 메타인지 노트: `Knowledge-Gaps/Design-System/`
 
 ---

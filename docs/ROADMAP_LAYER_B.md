@@ -3,6 +3,8 @@
 > **목적**: Layer B(사내 npm registry 배포 + host 채택)를 *어떤 순서로 진행하느냐*의 실행 runbook.
 > 상위 한-페이지 상태표는 [`ROADMAP.md`](./ROADMAP.md) §▷ Layer B. 본 문서는 그 섹션의 **상세 실행본**.
 > **최초 작성**: 2026-06-08.
+>
+> **🧊 동결 (2026-06-09 office-hours APPROVED — 본 runbook 전체에 우선)**: registry production화 보류. 병목은 배급이 아니라 채택 — 오늘 수요 0 (ppt는 workspace-link). Stage 3.2·3.3 잔여 검증 포함 **추가 하드닝 작업 금지** (소비처+명령 없이 push 금지). 리허설 결과는 "검증필 옵션"으로 보존. **해동 트리거 = "workspace-link로 못 받는 실재 소비처 + 채택 명령" 동시 성립** → 그때 통로 우선순위 ① IT-managed 사내 registry > ② git dependency > ③ self-host 최후. 상세: [`registry-decision-2026-06-09.md`](./registry-decision-2026-06-09.md). 에너지는 채택 트랙([`tester-kit/`](./tester-kit/README.md))으로 이동.
 
 ---
 
@@ -80,8 +82,9 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 - **아직 "진짜" 아님**: (1) 테스트 PC=throwaway → production은 always-on 머신 (2) 익명 publish(`$all`)로 테스트 → 실제는 **인증** 필요 (3) publish-over-network는 install과 동일 TCP 경로라 사실상 덮였으나 literal 미실행 (4) dual-direction(B3.3)은 cross-machine 미실행.
 - **방향 (2026-06-08 사용자)**: self-host(①)로 기울되 **production 베팅 전 충분히 검증**(아래 Stage 3). IT 공식(②)은 self-host 검증 미달·IT 정책 충돌 시 fallback.
 - **방향 갱신 (2026-06-09 사용자)**: "**지금 셋팅된 이 테스트 PC에서 충분히 검증하고 정식으로 한다.**" → 이 PC를 throwaway 취급 X, **검증 무대이자 정식 production 후보 머신**으로 본다(머신부터 갈아타지 않음). 3.1·3.4 통과 후, "충분히"는 기능(3.2 남음)에 더해 **production-grade 하드닝**까지 포함: ① 크래시 자동재시작(작업 스케줄러 한계 → NSSM/pm2 진짜 서비스화) ② 보안 잠금(`max_users:-1`, 필요시 access도 `$authenticated`) ③ storage 백업 ④ 사내 정책 sanction. 통과 후 Phase B2.
+- **🧊 방향 재갱신 (2026-06-09 같은 날, office-hours — 위를 supersede)**: production화 **동결**. 위 하드닝 4종은 실행하지 않는다 — 소비처 0인 상태에서 책상 PC를 production 단일장애점으로 떠안는 것은 순서가 거꾸로 (ADR-001). Stage 3.2·3.3도 동결 대기. 문서 상단 동결 배너 참조.
 
-### Stage 3 — self-host 충분히 검증 (production 결정 전 · 3.1·3.4 ✅ 통과 / 🔜 3.2)
+### Stage 3 — self-host 충분히 검증 (3.1·3.4 ✅ 통과 / 3.2·3.3 🧊 동결 대기)
 
 > 사용자 방향(2026-06-08): self-host로 가되 always-on 머신에 베팅하기 전에 "진짜 production처럼" 검증. Stage 1·2가 남긴 4개 갭을 닫는다. **3.1~3.3은 한 세션 chain**(인증 켜기 → 회사 PC authed publish=3.2 → patch 재publish로 host 흡수=3.3), 3.4는 별도. 전부 회사 머신 작업이라 집 PC는 수동 runbook 제공만.
 
@@ -92,7 +95,7 @@ B0 (집, 지금)  →  [진입 신호]  →  B1 (IT 협의)  →  B2 (첫 publis
 | 3.3 | **dual-direction** | DS patch publish → host `pnpm update` 자동 흡수 (B3.3 cross-machine) | trial 12 localhost 입증분의 실머신 재현 |
 | 3.4 | **항상-켜짐/영속** ✅ **통과 (2026-06-09, 테스트 PC)** | 재부팅·로그아웃 후에도 창고 생존 + storage 영속 (Windows 작업 스케줄러 자동시작) | always-on 머신의 핵심. **증거: 재부팅 후 사람 개입 없이 자동 기동 + 다른 PC에서 접속 + `npm view @wonik/web`이 manifest·tarball·integrity 정상 제공(`published 15 min ago` 패키지가 재부팅 생존).** recipe: 작업 스케줄러 `WonikVerdaccio`(AtStartup·LogonType=Password=로그오프에도 실행) → `stage3-4-service-launcher.bat`(`npx --yes` 필수, storage 안 비움). 함정 2개(npx 대화형 멈춤·Interactive 로그온)는 README 기록. ※웹 UI `no read data found`는 README 부재 표시일 뿐 무해. ※크래시 자동재시작은 작업스케줄러 미보장 → production은 NSSM/pm2 검토 |
 
-통과 시 → production registry = always-on self-host 확정 → Phase B2(2곳 URL 교체 + real publish)로.
+~~통과 시 → production registry = always-on self-host 확정 → Phase B2(2곳 URL 교체 + real publish)로.~~ → **동결 (6/9)**: 해동 시에도 self-host는 최후 통로 — IT-managed registry · git dependency 먼저 검토.
 
 ### Phase B2 — 첫 진짜 publish (gated)
 
