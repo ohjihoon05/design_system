@@ -23,7 +23,7 @@
 | `apps\web-sandbox\start-sandbox.bat` | 5174 | **테스터 캔버스** — MANUAL_WALKTHROUGH의 무대. 테스터가 `MyScreen.tsx`로 자기 화면을 그림 |
 | `apps\storybook\start-storybook.bat` | 6006 | **DS 카탈로그** — 부품 25개 variant별 구경. 수용성 타진 대화·그룹장 데모 때 띄우는 쪽 (테스터 동선엔 안 씀) |
 
-둘 다 dist가 없으면(첫 실행) 자동으로 `pnpm build` 후 기동. 바탕화면 바로가기는 repo 최상위 **`setup-desktop.bat` 더블클릭 1회**로 자동 생성("DS 화면 시작"/"DS 카탈로그 보기" — 한글 이름은 UTF-8 BOM `setup-desktop.ps1`이 처리, bat 한글 깨짐 회피). PC마다 1회 필요(바로가기는 git에 안 담김).
+둘 다 첫 실행 시 `node_modules`/`dist`가 없으면 자동으로 `pnpm install`/`pnpm build` 후 기동 — repo와 Node/pnpm만 있으면 더블클릭 한 번이 전부. 바탕화면 바로가기는 repo 최상위 **`setup-desktop.bat` 더블클릭 1회**로 자동 생성("DS 화면 시작"/"DS 카탈로그 보기" — 한글 이름은 UTF-8 BOM `setup-desktop.ps1`이 처리, bat 한글 깨짐 회피). PC마다 1회 필요(바로가기는 git에 안 담김).
 
 ## 테스터에게 건네는 법
 
