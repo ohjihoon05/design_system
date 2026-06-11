@@ -18,7 +18,7 @@
 - [ ] `apps\web-sandbox\start-sandbox.bat`의 **바탕화면 바로가기**를 "DS 화면 시작" 이름으로 생성
 - [ ] **바로가기를 1회 미리 실행**해 SmartScreen·방화벽 허용 팝업을 먼저 통과시켜 둠 (테스터가 첫 화면부터 보안 경고를 만나지 않게)
 - [ ] VS Code 설치 + **바탕화면에서 repo 폴더로 들어가는 입구** 마련 — repo 폴더 우클릭 → [보내기 → 바탕 화면에 바로 가기 만들기] (부록 B의 ZIP 경로처럼 폴더 자체가 이미 바탕화면에 있으면 불필요) + **repo 폴더를 VS Code로 1회 열어 신뢰(Trust) 팝업에 Yes 해둠**
-- [ ] **이 문서를 코드 복사 버튼이 보이는 형태로 열어둔 채 인계** — VS Code에서 이 파일을 열고 미리보기(`Ctrl+Shift+V`), 또는 브라우저 렌더 뷰
+- [ ] **인계 직전: 이 문서를 브라우저(GitHub)로 띄워둔 채 넘긴다** — `github.com/ohjihoon05/design_system` → `docs/tester-kit/MANUAL_WALKTHROUGH.md`. **왜?** 테스터의 첫 작업이 §1의 "복사 버튼으로 코드 복사"인데, 그 버튼은 GitHub처럼 문서가 *그려진* 화면에만 있다. 메모장·VS Code 편집창(원문)으로 열어주면 버튼이 없어서 드래그로 긁다가 ` ``` ` 기호까지 복사돼 첫 단계부터 깨진다. (인터넷이 안 되면 차선: VS Code에서 열고 `Ctrl+Shift+V` 미리보기 — 단, 코드 상자에 마우스를 올려 복사 아이콘이 뜨는지 먼저 확인)
 - [ ] `apps/web-sandbox/src/MyScreen.tsx`가 **없는** 상태인지 확인 (있으면 삭제 — 테스터가 직접 만들어야 함)
 - [ ] 끝난 뒤 원복: `git checkout apps/web-sandbox/src/main.tsx` + `MyScreen.tsx` 삭제 (ZIP으로 받은 PC라 git이 없으면 **부록 B-8**의 원본 블록으로 재교체)
 
