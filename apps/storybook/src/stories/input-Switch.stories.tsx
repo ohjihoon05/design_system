@@ -3,14 +3,13 @@ import type { StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { Switch, Stack, Text } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'input/Switch', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'input/Switch' };
 
 export const Basic = () => {
   const [on, setOn] = useState(true);
   return (
     <Stack direction="row" align="center" gap={2}>
-      <Switch checked={on} onChange={(e) => setOn(e.target.checked)} />
+      <Switch checked={on} onChange={(e) => setOn(e.target.checked)} aria-label="스위치" />
       <Text variant="label" color="dark">{on ? 'On' : 'Off'}</Text>
     </Stack>
   );
@@ -20,7 +19,7 @@ export const Sizes = () => (
   <Stack gap={3}>
     {(['sm', 'md', 'lg'] as const).map((s) => (
       <Stack key={s} direction="row" align="center" gap={2}>
-        <Switch size={s} defaultChecked />
+        <Switch size={s} defaultChecked aria-label={`스위치 size="${s}"`} />
         <Text variant="labelSm" color="dim">size="{s}"</Text>
       </Stack>
     ))}
@@ -30,19 +29,19 @@ export const Sizes = () => (
 export const States = () => (
   <Stack gap={3}>
     <Stack direction="row" align="center" gap={2}>
-      <Switch />
+      <Switch aria-label="off 스위치" />
       <Text variant="labelSm" color="dim">off</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Switch defaultChecked />
+      <Switch defaultChecked aria-label="on 스위치" />
       <Text variant="labelSm" color="dim">on</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Switch disabled />
+      <Switch disabled aria-label="disabled off 스위치" />
       <Text variant="labelSm" color="dim">disabled off</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Switch defaultChecked disabled />
+      <Switch defaultChecked disabled aria-label="disabled on 스위치" />
       <Text variant="labelSm" color="dim">disabled on</Text>
     </Stack>
   </Stack>

@@ -2,8 +2,7 @@ import type { StoryObj } from '@storybook/react-vite';
 import { expect } from 'storybook/test';
 import { Button, Stack, Text } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'action/Button', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'action/Button' };
 
 export const Variants = () => (
   <Stack direction="row" gap={3}>

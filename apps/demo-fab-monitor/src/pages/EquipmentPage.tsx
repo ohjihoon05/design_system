@@ -94,9 +94,8 @@ export function EquipmentPage({ equipment, selectedId, onSelect }: EquipmentPage
                 </FilterChip>
               ))}
             </Stack>
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control -- Checkbox renders its own native <input>; <label> wraps it implicitly per HTML5 label-implicit-control pattern. See ADR-027. */}
-            <label className="demo-equip-check-label">
-              <Checkbox size="sm" checked={onlyAlarming} onChange={(e) => setOnlyAlarming(e.target.checked)} />
+            <label htmlFor="equip-alarming-only" className="demo-equip-check-label">
+              <Checkbox id="equip-alarming-only" size="sm" checked={onlyAlarming} onChange={(e) => setOnlyAlarming(e.target.checked)} />
               <span>Alarming only</span>
             </label>
           </Stack>

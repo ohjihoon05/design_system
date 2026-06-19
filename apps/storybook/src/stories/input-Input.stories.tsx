@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Input, Stack, Text } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'input/Input', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'input/Input' };
 
 export const Basic = () => {
   const [v, setV] = useState('');
@@ -28,8 +27,8 @@ export const Sizes = () => (
 
 export const Disabled = () => (
   <Stack gap={3} style={{ maxWidth: 320 }}>
-    <Input disabled placeholder="disabled empty" />
-    <Input disabled value="disabled with value" readOnly />
+    <Input disabled placeholder="disabled empty" aria-label="disabled empty 입력란" />
+    <Input disabled value="disabled with value" readOnly aria-label="disabled with value 입력란" />
   </Stack>
 );
 

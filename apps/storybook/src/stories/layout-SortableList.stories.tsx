@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { SortableList, Stack, Text, Card, Badge, InlineEditableText } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'layout/SortableList', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'layout/SortableList' };
 
 type Item = { id: string; name: string };
 const SEED: Item[] = [
@@ -41,7 +40,7 @@ export const Basic = () => {
             }}
             {...(args.dragHandleProps as object)}
           >
-            <span style={{ fontFamily: 'monospace', opacity: 0.5, marginRight: 8 }}>
+            <span style={{ fontFamily: 'monospace', color: 'var(--color-text-dim)', marginRight: 8 }}>
               {String(idx + 1).padStart(2, '0')}
             </span>
             {item.name}
@@ -209,7 +208,7 @@ export const WithAnnounceItem = () => {
             }}
             {...(args.dragHandleProps as object)}
           >
-            <span style={{ fontFamily: 'monospace', opacity: 0.4, fontSize: 11 }}>
+            <span style={{ fontFamily: 'monospace', color: 'var(--color-text-dim)', fontSize: 11 }}>
               {item.id}
             </span>
             <span>{item.name}</span>
@@ -291,7 +290,7 @@ export const RealisticOutlineCard = () => {
                 >
                   ⠿
                 </button>
-                <span style={{ fontFamily: 'monospace', opacity: 0.5 }}>
+                <span style={{ fontFamily: 'monospace', color: 'var(--color-text-dim)' }}>
                   {String(idx + 1).padStart(2, '0')}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>

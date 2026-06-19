@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Radio, Stack, Text } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'input/Radio', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'input/Radio' };
 
 export const Group = () => {
   const [v, setV] = useState('a');
@@ -22,7 +21,7 @@ export const Sizes = () => (
   <Stack gap={3}>
     {(['sm', 'md', 'lg'] as const).map((s) => (
       <Stack key={s} direction="row" align="center" gap={2}>
-        <Radio size={s} name={`sz-${s}`} defaultChecked />
+        <Radio size={s} name={`sz-${s}`} defaultChecked aria-label={`라디오 size="${s}"`} />
         <Text variant="labelSm" color="dim">size="{s}"</Text>
       </Stack>
     ))}
@@ -32,19 +31,19 @@ export const Sizes = () => (
 export const States = () => (
   <Stack gap={3}>
     <Stack direction="row" align="center" gap={2}>
-      <Radio name="st" />
+      <Radio name="st" aria-label="unchecked 라디오" />
       <Text variant="labelSm" color="dim">unchecked</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Radio name="st2" defaultChecked />
+      <Radio name="st2" defaultChecked aria-label="checked 라디오" />
       <Text variant="labelSm" color="dim">checked</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Radio name="st3" disabled />
+      <Radio name="st3" disabled aria-label="disabled 라디오" />
       <Text variant="labelSm" color="dim">disabled</Text>
     </Stack>
     <Stack direction="row" align="center" gap={2}>
-      <Radio name="st4" defaultChecked disabled />
+      <Radio name="st4" defaultChecked disabled aria-label="disabled checked 라디오" />
       <Text variant="labelSm" color="dim">disabled checked</Text>
     </Stack>
   </Stack>

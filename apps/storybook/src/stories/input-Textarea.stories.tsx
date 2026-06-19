@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Textarea, Stack, Text } from '@wonik/web';
 
-// ADR-027 backlog: pre-existing a11y violations — `a11y.test: 'todo'`. See TODOS.md.
-export default { title: 'input/Textarea', parameters: { a11y: { test: 'todo' } } };
+export default { title: 'input/Textarea' };
 
 export const Basic = () => {
   const [v, setV] = useState('');
@@ -22,6 +21,6 @@ export const Sizes = () => (
 
 export const Disabled = () => (
   <Stack style={{ maxWidth: 360 }}>
-    <Textarea disabled value="disabled state" readOnly rows={3} />
+    <Textarea disabled value="disabled state" readOnly rows={3} aria-label="disabled 텍스트영역" />
   </Stack>
 );

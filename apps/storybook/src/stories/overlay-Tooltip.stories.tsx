@@ -81,4 +81,11 @@ export const PlacementsDark = () => (
   </Stack>
 );
 PlacementsDark.globals = { theme: 'dark' };
+// seal 유지 (TOKEN-LEVEL + axe 사각지대 → story-level 수정 불가).
+// 근본 원인: outline Button의 text+border = interfaceColors.primary → dark cascade →
+//   primaryDark.base #4A65B8 (canvas 위 2.28:1, finding #7, 미수정).
+// axe는 (a) 투명 배경 outline 버튼의 effective bg를 확정 못 해 color-contrast를 incomplete 처리하고
+//   (b) border 대비(SC 1.4.11)는 검사 규칙 자체가 없음 → 위반 throw 안 함(green=false negative).
+//   → 거짓 통과 방지 위해 seal 유지. unseal 조건 = T8c(primaryDark.base 협의 + ADR + Changesets minor).
+//   detail: docs/PHASE2_DARK_CONTRAST_FINDINGS.md #7.
 PlacementsDark.parameters = { a11y: { test: 'todo' } };
