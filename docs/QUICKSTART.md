@@ -55,11 +55,11 @@ import { Button, Card, Alert, Badge, Stack, Text, Input } from '@wonik/web';
 export function MyNewPage() {
   return (
     <Stack gap={6} padding={6}>
-      <Text variant="titleLg" weight="bold">새 페이지</Text>
+      <Text as="h1" variant="h1">새 페이지</Text>
 
       <Card variant="elevated" padding="md">
         <Stack gap={4}>
-          <Text>설명 텍스트.</Text>
+          <Text variant="body">설명 텍스트.</Text>
           <Input placeholder="이름을 입력하세요" />
           <Stack direction="row" gap={3} justify="end">
             <Button variant="outline">취소</Button>
@@ -102,12 +102,14 @@ pnpm dev
 | **Alert** | `onDismiss?` (있으면 × 버튼 표시), role="alert" 자동 | `<Alert onDismiss={() => setOpen(false)}>오류가 발생했습니다.</Alert>` |
 | **Badge** | `variant`: `neutral` / `primary` | `<Badge variant="primary">NEW</Badge>` |
 | **Stack** | `direction`: `row` / `column`<br>`gap`: 1~8 (4px / 6px / 8px / 10px / 12px / 16px / 22px / 32px)<br>`padding`: 1~8 (같음)<br>`align` / `justify` | `<Stack direction="row" gap={3} justify="between">...</Stack>` |
-| **Text** | `variant`: `body` / `titleSm` / `titleLg` / `label` 등<br>`weight`: `regular` / `medium` / `bold`<br>`color` | `<Text variant="titleLg" weight="bold">제목</Text>` |
+| **Text** | `variant` (dense): `micro` / `labelSm` / `label` / `titleSm` (8~14px)<br>`variant` (web): `body`(14) / `h3`(20) / `h2`(28) / `h1`(40)<br>`weight`: `regular` / `medium` (bold 미사용)<br>`as`: `h1`~`h6` / `p` / `span` 등 (의미 태그)<br>`color` | `<Text as="h1" variant="h1">제목</Text>` |
 | **Spinner** | `size`: `sm` / `md` / `lg` | `<Spinner size="md" />` |
 | **Skeleton** | `width` / `height` / `radius` | `<Skeleton width="100%" height={20} />` |
 | **Checkbox / Radio / Switch** | `checked` / `onChange` / `disabled` | `<Switch checked={on} onChange={setOn} />` |
 
 **Stack의 gap/padding은 숫자 index**라는 게 핵심 함정. `gap="md"`가 아니라 `gap={6}` (= 16px).
+
+> 💡 **Text 스케일** (ADR-040): dense(`micro`/`labelSm`/`label`/`titleSm`, 8~14px, line-height 1) + web(`body` 14 / `h3` 20 / `h2` 28 / `h1` 40, 본문·헤딩 line-height 1.5). 의미 태그는 `as="h1"`, 시각 크기는 `variant`로 분리 (예: `as="h1" variant="h2"` = h1 의미 + 28px). **Bold(700)는 미사용** — 강조는 `weight="medium"` + 크기/색 (UI_GUIDE Brand Foundation). `micro`(8px)는 HMI 잔재라 web 본문엔 부적합.
 
 > 💡 **host 측 spacing 가이드**: row 정렬 시 자식에 `style={{ marginRight: N }}`/`marginLeft` 박지 말고 `<Stack direction="row" gap={N}>`로 wrap하는 게 더 이상적. dogfood F7+F23(trial 8+11) 4회 누적 evidence — host inline px가 반복되면 wrap 후보.
 
@@ -215,7 +217,7 @@ A. `<html data-theme="dark">` 토글 (또는 클래스 / state로 host가 결정
 A. workspace link면 보통 자동 반영. 가끔 안 되면 design_system에서 `pnpm -F @wonik/web build` 한 번 + ppt dev 재시작.
 
 **Q. 컴포넌트 어떤 종류가 있는지 한 번에 보고 싶음**
-A. `apps/web-sandbox/` 실행 — `pnpm -F web-sandbox dev`. 14개 atoms가 한 페이지에 시각화돼있음.
+A. 전체 **24 atoms** 카탈로그(variant·a11y 포함)는 **Storybook** — `pnpm -F storybook-app dev`. 빠른 미리보기는 `apps/web-sandbox/` (`pnpm -F web-sandbox dev`) — Layer A 1차 14개 atoms를 한 페이지에 시각화(전체는 아님).
 
 **Q. SSR(Next.js)에서 작동?**
 A. 모든 module-scope CSS injection에 SSR 가드 들어있음 (ADR-011). hydration mismatch 0.

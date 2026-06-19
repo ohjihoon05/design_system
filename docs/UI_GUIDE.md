@@ -158,14 +158,14 @@ Brand Foundation의 폰트 family와 weights는 그대로 사용. Scale은 일�
 |------|------|------|
 | `--font-size-label-sm` | 10px | 보조 라벨, badge text (Brand 공통) |
 | `--font-size-label` | 12px | 기본 라벨, 값 (Brand 공통) |
-| `--font-size-body` | 14px (TBD) | Web 본문 |
-| `--font-size-h3` | 20px (TBD) | 카드·섹션 제목 |
-| `--font-size-h2` | 28px (TBD) | 페이지 제목 |
-| `--font-size-h1` | 40px (TBD) | hero/landing |
+| `--font-size-body` | 14px | Web 본문 (line-height 1.5) |
+| `--font-size-h3` | 20px | 카드·섹션 제목 |
+| `--font-size-h2` | 28px | 페이지 제목 |
+| `--font-size-h1` | 40px | hero/landing |
 
-TBD 항목들은 첫 ppt 적용 시 본인 디자인 감각으로 확정.
+위 web 스케일은 **ADR-040으로 비준·토큰화 완료** (2026-06-18). `Text` variant `body`/`h3`/`h2`/`h1`로 노출되며, `body`/`h1`~`h3`는 line-height 1.5(`--line-height-normal`) 자동 적용.
 
-**Line height**: 본문 1.5, 라벨/값 1 (TBD).
+**Line height**: 본문 1.5 (`--line-height-normal`), 라벨/값 1 (`--line-height`) — ADR-040.
 
 ## Web 컴포넌트
 

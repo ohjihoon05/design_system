@@ -2,7 +2,7 @@
 
 원익IPS 사내 web service 전체에서 사용하는 디자인 시스템 모노레포. WARP HMI 시안에서 추출한 토큰을 base로 한 `@wonik/tokens` + `@wonik/web` 두 패키지.
 
-> **상태**: Phase 1 — Layer A atoms 23개 완료 (Button, Input, Card, Alert, Switch, Modal 외). React 18/19 dual peer. 사내 npm registry 결정 전(IT 협의 진행 중) — 현재는 monorepo workspace + vendor tarball만 지원. 외부 publish는 ADR-018 이후.
+> **상태**: Phase 1 — Layer A atoms 24개 완료 (Button, Input, Card, Alert, Switch, Modal, Table 외). React 18/19 dual peer. 사내 npm registry 결정 전(IT 협의 진행 중) — 현재는 monorepo workspace + vendor tarball만 지원. 외부 publish는 ADR-018 이후.
 
 ---
 
@@ -82,7 +82,7 @@ export function MyView() {
 |---|---|
 | **설치하고 싶다** | [`docs/INSTALL.md`](docs/INSTALL.md) — `.npmrc`, 사내 registry, scope 분리 |
 | **매일 사용하고 싶다** | [`docs/QUICKSTART.md`](docs/QUICKSTART.md) — 5단계 매번 루틴 + cheat sheet + FAQ |
-| **컴포넌트 시각 확인** | Storybook ([`apps/storybook`](apps/storybook)) — `pnpm -F @wonik/storybook dev` |
+| **컴포넌트 시각 확인** | Storybook ([`apps/storybook`](apps/storybook)) — `pnpm -F storybook-app dev` |
 | **왜 이 결정을 했는지** | [`docs/ADR.md`](docs/ADR.md) — 27개 ADR, 토큰·아키텍처·cascade·React 19 결정 |
 | **product 사양·전체 그림** | [`docs/PRD.md`](docs/PRD.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | **시각 언어 가이드** | [`docs/UI_GUIDE.md`](docs/UI_GUIDE.md) — anti-pattern 9개 + brand tone |
@@ -92,22 +92,22 @@ export function MyView() {
 
 ---
 
-## 제공 컴포넌트 (`@wonik/web` v2.0.0)
+## 제공 컴포넌트 (`@wonik/web` v1.0.0)
 
-24 atoms. 모두 `interfaceColors.*` cascade로 host theme override 지원 (ADR-010).
+24 atoms (+ `ThemeProvider`). 모두 `interfaceColors.*` cascade로 host theme override 지원 (ADR-010).
 
 - **Layout**: `Box`, `Stack`, `Card`
 - **Typography**: `Text`, `InlineEditableText`
 - **Form**: `Button`, `IconButton`, `Input`, `Textarea`, `Checkbox`, `Switch`, `Radio`, `FilterChip`
 - **Feedback**: `Alert`, `Toast` (+ `ToastProvider`, `useToast`), `Spinner`, `Skeleton`, `ProgressBar`
 - **Overlay**: `Modal`, `Tooltip`
-- **Data display**: `Badge`, `Avatar`
+- **Data display**: `Badge`, `Avatar`, `Table`
 - **Interaction**: `SortableList`
 - **Theme**: `ThemeProvider`, `useTheme`
 
 전체 props는 IDE 자동완성 또는 `packages/web/src/{Component}/types.ts`.
 
-## 제공 토큰 (`@wonik/tokens` v0.3.0)
+## 제공 토큰 (`@wonik/tokens` v1.0.0)
 
 `colors` / `typography` / `spacing` / `radius` / `status` named export. CSS 변수도 함께 (`@wonik/tokens/tokens.css`). DTCG 1:1 호환 (ADR-020).
 
@@ -161,7 +161,7 @@ pnpm -F @wonik/web build              # web 빌드 (tokens build 후)
 pnpm build                            # 전체
 
 pnpm -F @wonik/web test               # 테스트
-pnpm -F @wonik/storybook dev          # Storybook 시각 확인 (localhost:6006)
+pnpm -F storybook-app dev             # Storybook 시각 확인 (localhost:6006)
 
 pnpm lint                             # ESLint
 pnpm changeset                        # 변경 항목 추가 (publish 전 필수)

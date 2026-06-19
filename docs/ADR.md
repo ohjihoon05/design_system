@@ -1610,3 +1610,99 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 **트레이드오프**: (1) 신규안 신호색 보정 작업 발생 (ABORT·알람 배지 재강조). (2) 측정 장비/시간 비용 — 단 1회 측정이 이후 모든 "뇌피셜" 논쟁을 차단하므로 회수됨. (3) ⚠️ 본 ADR의 E95·ISA 인용은 위키 요약 수준 — **원문 조항 번호 미확인** (P0 "표준 3종 1페이지 요약" 산출 시 조항 번호로 보강할 것).
 
 **관계**: ADR-007(WONIK BLUE CI — 신호색 아닌 brand 영역)·ADR-012(status 색 도메인)·ADR-022~025(Standardization 2.0 토큰 정합 선례). 외부 근거: SEMI E95 · ISA-101 · ISA-18.2 · High-Performance HMI(PAS) · WCAG 1.4.3. Figma: 구 `node-id=90-83` / 신 `node-id=241-6897` (file `NQn6za8JrkYNi8hJj3lvwM`).
+
+### ADR-039: 폼 컨트롤 최소 타깃 크기 — 시각은 슬림 유지, 클릭 영역은 24×24px 보장
+
+> **상태**: 🟡 **제안**. `/wonik.a11y-audit`를 WCAG 2.1→2.2로 올린 뒤 폼 컨트롤 sweep(2026-06-17)에서 검출된 systemic 갭의 결정. 실레이아웃 간격 측정 후 확정으로 갱신.
+> (참고: ADR-038 번호는 챔버 배치도 외곽선 결정에 예약 — Figma 근거 카드 존재, 원문 보류.)
+
+**맥락**:
+
+- a11y-audit를 2.2로 bump한 뒤 폼 컨트롤 sweep: **Switch(클릭영역 높이 sm 14 / md 18 / lg 22px) · Checkbox·Radio(sm 16 / md 20px)가 WCAG 2.2 SC 2.5.8 최소 24×24px에 전부 미달**. 반면 IconButton·Button·Input은 sm=24px라 통과 → **시스템 내부 불일치**.
+- WCAG 2.2(2023-10 · ISO/IEC 40500:2025)가 신설한 **2.5.8 Target Size (Minimum, AA)**: 포인터 타깃 최소 24×24px.
+- 반대 입장: Switch는 "토스 SLASH 스타일 가로:세로 1.7:1 슬림" 의도(코드 주석). 토글을 24px로 키우면 그 미감이 깨진다.
+
+**결정**:
+
+1. **시각 크기와 클릭(터치) 영역을 분리한다.** 보이는 컨트롤은 지금처럼 슬림하게 두되, **실제 클릭 가능한 영역은 최소 24×24px를 보장**한다 — "작게 보임"과 "누르기 어려움"은 다른 문제.
+2. **구현 = 투명 hit-area.** 컨트롤 둘레에 투명 padding(또는 더 큰 클릭 wrapper)을 둬 시각 모양은 불변, 클릭 영역만 24×24 이상으로. → IconButton·Button·Input과 같은 24px 라인에 합류, 미감 손해 0.
+3. **"슬림 vs 24px"는 측정으로 판정.** 실사용 레이아웃에서 ① 클릭영역 px 실측 + 인접 간격(2.5.8 Spacing 예외 해당 여부) ② "작은 토글 10개 연속 켜기" 오터치 횟수·소요시간을 슬림안 vs 24px안 비교. 취향 아닌 오터치 숫자로 종결.
+
+**검증 계획 (Before/After 증거)**:
+
+- 각 컨트롤 클릭영역 px 측정표 (현재 vs 24px 보장안) + 인접 간격으로 Spacing 예외 충족 여부.
+- 오터치 과제: 동일 폼을 슬림안/24px안으로 제시, 오터치 횟수·완료 시간 비교 (장갑 착용 fab operator 시나리오 포함 권장).
+
+**트레이드오프**: (1) hit area가 시각보다 커지면 인접 컨트롤과 클릭영역 겹침 주의 — 촘촘한 폼은 간격 조정 필요. (2) ⚠️ 확신도: 2.5.8엔 **Spacing 예외**(타깃 중심 24px 원이 인접과 안 겹치면 구제)가 있어 일부 레이아웃은 현재 크기로도 이미 충족일 수 있음 — 측정 전 "전부 위반" 단정 금지. (3) 코드 변경은 컴포넌트 3종 한정, prop signature 불변(투명 padding 추가)이라 patch~minor.
+
+**관계**: ADR-011(폼 컨트롤 focus inject 패턴 — 같은 Switch·Checkbox·Radio). ADR-037과 동일 철학(취향 논쟁을 측정으로 종결). 외부 근거: **WCAG 2.2 SC 2.5.8 Target Size (Minimum, AA)** · ISO/IEC 40500:2025. 추적: 운영 두뇌 `reference_external_standards`(WCAG 2.2 매핑) · paper trail `docs/a11y-audit-2026-06-17.md`. 근거 카드: Figma `🧭 Design Rationale` 페이지(file `NQn6za8JrkYNi8hJj3lvwM`).
+
+### ADR-040: Web 타입 스케일 + 본문 line-height 토큰화
+
+> **상태**: ✅ **채택** (2026-06-18). `/plan-design-review` typography 심층 검토에서 비준. (번호 주의: ADR-038은 챔버 배치도 외곽선용 예약, ADR-039는 폼 타깃 크기 — 본 결정은 별개로 040.)
+
+**맥락**:
+
+- 기존 `fontSize`는 WARP HMI dense 스케일(8/10/12/14px)만. `Text`는 `as`(h1~h6)로 의미 태그는 이미 지원하나 **시각 크기 토큰이 14px에서 끝나** desktop web(1280px+) 사내 사용자에게 제목·본문 위계를 못 줬다.
+- `lineHeight`는 `tight:1`뿐이었고 `Text`가 **본문 포함 모든 텍스트에 1.0을 강제** → 다줄 문단이 붙어 가독성 붕괴. UI_GUIDE는 본문 1.5를 약속했으나 토큰 부재.
+- QUICKSTART가 존재하지 않는 `variant="titleLg"`/`weight="bold"`를 예시로 가르쳐 복붙 시 깨졌다(별건 doc 수정 동시 처리).
+- UI_GUIDE "Web Typography Scale"의 body14/h3 20/h2 28/h1 40은 TBD 상태 → ADR-034 speculative 관문에 걸려 있었음.
+
+**결정**:
+
+1. `fontSize`에 web leaf 추가: **body 14 / h3 20 / h2 28 / h1 40 (px)**. 기존 4 leaf 유지. `titleSm`(14)과 `body`(14)는 값이 같아도 의미·line-height가 다른 별개 leaf.
+2. `lineHeight`에 **`normal: 1.5`** 추가(기존 `tight: 1` 유지).
+3. `Text`가 variant별로 line-height 자동 선택 — `body/h1/h2/h3` → normal(1.5), 그 외(dense/label) → tight(1).
+4. CSS 변수 parity: `--font-size-{body,h1,h2,h3}` · `--line-height-normal`(+ 기존 `--line-height` 별칭 유지) emit.
+
+**ADR-034 관문 충족 근거**: (a) 값이 *비준* 디자인 소스에 존재 — UI_GUIDE의 TBD 값을 디자이너가 본 ADR로 비준. (b) 새 컴포넌트 불요 — `Text`/`as`가 이미 존재, 토큰만 추가. → speculative abstraction 아님.
+
+**DTCG (ADR-020)**: 신규 leaf 전부 1:1 — fontSize는 dimension(`$value` 1개), lineHeight는 unitless number. shorthand·template 합성 없음. typography DTCG PASS 유지.
+
+**버전 (CLAUDE.md)**: 토큰 추가 + `TextVariant` union 하위호환 확장(기존 값 불변) = **Changesets minor** (@wonik/tokens · @wonik/web). prop signature 불변이라 major 아님.
+
+**트레이드오프 / 미결**: (1) body(14)와 titleSm(14) 값 중복 — 의미·line-height로 구분되나 소비처 혼동 가능 → cheat sheet 용도 명시로 완화. (2) 8px `micro`는 여전히 web `Text`에 노출(HMI 잔재) — 본 ADR 범위 밖, 후속(타입 narrowing 시 minor). (3) **헤딩도 body와 동일하게 1.5 line-height 공유 — 의도적 보류 (2026-06-19 `/plan-design-review` 재검에서 확정).** 타이포 정석은 디스플레이급(h1 40·h2 28)에 더 좁은 leading(≈1.2)이나, 현재 web 헤딩 소비처가 0 → 소비처 없는 line-height 토큰 추가는 ADR-034 speculative 관문 + over-tokenize. **트리거: 첫 "다줄로 줄바꿈되는 web 헤딩" 소비처가 등장하면** `lineHeight.heading`(≈1.2) 신설 + 별도 ADR + minor bump. 그 전까지는 1.5 유지 — 단일 줄 제목엔 line-height가 inter-line 간격에 영향을 주지 않아 실피해 0. (재검 근거: h1 40px×1.5 = 60px 줄높이가 줄바꿈 시에만 느슨; 줄바꿈 사례 evidence 0이라 YAGNI.)
+
+**관계**: ADR-020(DTCG), ADR-034(speculative 관문 — 본 결정이 통과 사례), ADR-008(React dual peer — `Text`는 공통 API만), UI_GUIDE "Web Typography Scale"(TBD → 비준). 검출 출처: `/plan-design-review` 2026-06-18 typography AI 심층 검토(finding F1~F8).
+
+### ADR-041: 토큰 색 대비(WCAG) 정합 — 검증 결과 + 교정 계획
+
+> **상태**: 🟡 **제안 (부분 구현)**. `/plan-design-review` 2026-06-18에서 토큰 전 색쌍 자동 대비 측정(83쌍 중 20 FAIL) 후 도출. **§A·§B 2026-06-18 구현 완료** (§A: status text/dot을 WCAG AA로 darken·hue 보존; §B: `Text` 기본 color `dark`). §C·D·E·F는 owner/Figma/architecture 대기 — hex 변경은 **ADR-024 value-drift 게이트(Figma 합의 + ΔE≤5 + 대조 스크린샷) 통과분만** 자동 적용 X. 측정 도구: `packages/tokens/scripts/contrast-audit.ts`.
+
+**맥락**: 토큰 색은 대부분 Figma "Standardization 2.0" source-of-truth(status/surface/text=ADR-022·024, button=ADR-023, table=ADR-025). a11y 검증이 그동안 컴포넌트 단위로만 됐고 토큰 팔레트 전수 대비 검증은 없었음. 본 review에서 처음 전수 측정.
+
+**검출 (FAIL 20 / 83, 분류)**:
+
+- **A. Status text/bg (Text 4.5 미달)** ✅ **구현(2026-06-18)** — idle 4.42 · ready 2.82 · processEnd 3.68 · warning 2.35 · abort 4.08; warning dot 1.95(<3:1)였음. → 6쌍 text/dot을 **hue 보존하며 AA로 darken**(idle/ready/processEnd/warning/abort + warning dot). hue 불변이라 **ADR-037(무채색 베이스+신호색) reconciliation과 orthogonal** — ADR-037은 더 넓은 팔레트 비전으로 별도 진행 가능(이후 `contrast-audit.ts`로 AA 가드).
+- **B. 기본 텍스트색(text.primary `#71717B`)이 어두운 light surface에서 AA 미달** — canvas 3.90 · surfaceSubtle 4.42 · surfaceInset 4.43 · surfaceMid 4.17. `Text` 기본 `color="primary"`가 페이지 canvas에서 미달이라 **영향 가장 큼(기본값)**.
+- **C. Button default text/bg** — `#7F7F88` on `#FBFBFB` 3.83 (enabled 라벨).
+- **D. Table empty text/bg** — light 2.22 · dark 2.99 (empty 슬롯 placeholder, 저강도).
+- **E. 보더 non-text(SC 1.4.11, 3:1 미달)** — (light) border.mid `#D4D4D8`가 모든 light surface에서 1.20~1.48. "border-only elevation" Brand 원칙 ↔ 1.4.11 충돌. (dark) `primaryDark.base #4A65B8` border가 canvas/active-bg에서 2.21~2.28 → FilterChip `ActiveDark`·Tooltip `PlacementsDark` seal 원인(= `PHASE2_DARK_CONTRAST_FINDINGS.md` #7, brand 협의 T8c 게이트). ⚠️ axe-core엔 SC 1.4.11 rule이 없어 이 보더 실패는 `scripts/contrast-audit.ts`로만 검출됨(a11y 게이트는 false-negative green).
+- **F. Graph pass label** — `#16A34A` on `#DCFCE7` 3.00 (graph 토큰, 현재 미소비).
+
+**결정(제안)**:
+
+1. **A** ✅ **구현**: status text/dot을 hue 보존 darken으로 AA 통과(value drift, minor). ADR-037 무채색 비전은 orthogonal·별도 진행. **C/D** (button/table Figma 텍스트): 각 bg에서 AA 통과하는 최소 darken 값을 **Figma에서 재선정 후** 토큰 갱신(owner). 정확값은 Figma + ΔE 측정으로.
+2. **B** (가장 큰 건) ✅ **구현(2026-06-18)**: (b) `Text` 기본 `color`를 `primary`→`dark`로 변경(minor, 테스트 추가). bare `<Text>`가 canvas에서 AA 통과. (a) text.primary 토큰 darken은 secondary(#5C5C66)와 text 사다리 붕괴라 **기각**. **`color="primary"` 적용 범위 정정 (2026-06-19 재검 실측):** text.primary(#71717B)는 **surfaceWhite/surface(#FEFEFE·#FFFFFF)에서만 AA 통과** — canvas(3.90)/surfaceSubtle(4.42)/surfaceInset(4.43)/surfaceMid(4.17) 4개 surface에서는 본문급 4.5:1 **미달**. 즉 `primary`는 흰색급 surface 위 muted 라벨 전용이며, **subtle/inset/mid/canvas 위 본문급 텍스트엔 `dark`를 써야 한다.** (이 4쌍은 `contrast-audit.ts` FAIL로 상시 노출 = 회귀 가드 존재. 기본값→dark 전환이 bare `<Text>`는 보호하지만 명시적 `color="primary"`는 호출자 책임.)
+3. **E** (owner/architecture): 폼 컨트롤(Input/Textarea/Switch)은 공유 `--color-border`(#E1E1E4)를 사용 → 3:1로 만들려면 (i) 전역 보더 darken(모든 카드/패널/테이블 medium-gray화 = "border-only subtle elevation" Brand 원칙 훼손) 또는 (ii) 전용 control-border interface 변수 신설(7-var cascade 계약 변경, ADR-010/011). 둘 다 architecture/brand 결정이라 **자동 적용 X**. 장식 카드 보더는 1.4.11 "식별 필수" 예외 여지. dark `primaryDark` 보더는 ADR-037 brand 협의에 합류.
+4. **F**: graph canon은 코드(graph token canon). pass.label만 4.5로 미세 darken, 미소비라 우선순위 낮음.
+
+**트레이드오프 / 확신도**: ⚠️ 일부는 WCAG 예외 여지 — (D) empty placeholder는 disabled-유사라 SC 1.4.3 예외 가능, (E) 장식 카드 보더는 "required to identify" 아닐 수 있음. **측정·맥락 없이 "전부 위반" 단정 금지.** 변경은 ADR-024 게이트 통과분만.
+
+**관계**: ADR-022/023/024/025(Figma source), ADR-032(dark 대비 교정 선례), ADR-037(status 무채색 reconciliation — A 흡수), graph token canon. 회귀 가드: `scripts/contrast-audit.ts` 재실행.
+
+### ADR-042: 토큰 레이어 소비 정합 — primitives/componentSize/graph 미소비 공개 export
+
+> **상태**: ✅ **채택 — option 1** (2026-06-18). 권장안(보존 + `@internal` 문서화) **구현 완료**: `primitives`·`componentSize`·`graphTokens`에 `@internal` JSDoc 부착(소비 0이 정상임을 명시). prune(option 3)은 ADR-021 위배라 채택 안 함. semantic 재배선(option 2)은 향후 evidence 시 별도 ADR.
+
+**맥락**: `@wonik/tokens` named export 중 **`primitives`(127색) · `componentSize`(7) · `graphTokens`(13)이 `@wonik/web` 컴포넌트·앱 JS에서 0회 소비**. CSS 변수로는 emit되나 JS export는 dead. `theme-light`/`theme-dark`는 raw hex를 직접 들고 있어 `primitives`를 참조하지 않음 — ADR-021이 의도한 "semantic이 primitive를 참조"가 실제로는 미실현(의도-현실 갭).
+
+**결정(제안) — owner 택1**:
+
+1. **(보존 + 문서, 권장)** primitives를 Figma 1:1 sync reference로 명시 유지하되 JSDoc `@internal` + 문서에서 "소비 대상 아님" 라벨. componentSize/graph도 HMI·host-chart 용도 라벨. → Figma sync 가치(ADR-021) 보존, 혼동만 제거. tree-shaking으로 런타임 영향은 이미 0(named export + web `sideEffects:false`).
+2. **(semantic 재배선)** theme-light/dark raw hex를 primitives 참조로 교체 → ADR-021 의도 실현·단일 source. 단 대규모 + drift 위험(ADR-024).
+3. **(prune)** 미소비 leaf 제거 → 표면 축소, 단 **Figma sync 깨짐(ADR-021 위배)** → 비권장.
+
+**트레이드오프**: 미소비 export는 유지보수 잡음·소비처 혼동. 그러나 Figma 1:1 sync(ADR-021)가 우선이라 권장은 1(보존+문서). 
+
+**관계**: ADR-021(primitives Figma mirror), ADR-013/014(graph), spacing `componentSize`(HMI 치수). 검출: `/plan-design-review` 2026-06-18 소비 분석.
