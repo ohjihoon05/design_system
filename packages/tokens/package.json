@@ -14,9 +14,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./tokens.css": "./dist/tokens.css"
   },
@@ -30,7 +35,7 @@
     "access": "restricted"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts && node ../../scripts/check-dts.mjs",
     "test": "echo 'no tests yet'",
     "lint": "eslint src",
     "preflight:publish": "node -e \"if(!process.env.WONIK_REGISTRY_OK){console.error('Set WONIK_REGISTRY_OK=1 to publish');process.exit(1)}\"",

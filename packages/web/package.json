@@ -1,7 +1,7 @@
 {
   "name": "@wonik/web",
   "version": "1.0.0",
-  "description": "WONIK IPS Design System — Web 컴포넌트 (Button / Input / Card / Badge / Alert 외 14 atoms). React 18·19 dual peer. interface variable cascade 지원.",
+  "description": "WONIK IPS Design System — Web 컴포넌트 (Button / Input / Card / Badge / Alert / Table 외 24 atoms + ThemeProvider). React 18·19 dual peer. interface variable cascade 지원.",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
@@ -14,9 +14,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "sideEffects": false,
@@ -27,7 +32,7 @@
     "access": "restricted"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node ../../scripts/check-dts.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src",
