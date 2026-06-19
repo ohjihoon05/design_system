@@ -33,6 +33,15 @@ export type TextAs =
 export interface TextOwnProps {
   variant?: TextVariant;
   weight?: TextWeight;
+  /**
+   * Text color token. Defaults to `dark` (passes WCAG AA on every light surface).
+   *
+   * ⚠️ `primary` (#71717B) only meets AA (4.5:1) on white-ish surfaces
+   * (surfaceWhite/surface, #FEFEFE·#FFFFFF). On canvas/surfaceSubtle/
+   * surfaceInset/surfaceMid it falls below 4.5:1 — use `dark` for body-grade
+   * text there, reserve `primary` for muted labels on white surfaces.
+   * (ADR-041 §B; guarded by tokens/scripts/contrast-audit.ts.)
+   */
   color?: TextColor;
   align?: TextAlign;
   as?: TextAs;

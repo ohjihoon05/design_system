@@ -135,7 +135,10 @@ const staticVarLines = (): string[] => {
   for (const [key, value] of Object.entries(fontWeight)) {
     push(`--font-weight-${camelToKebab(key)}`, value);
   }
-  push('--line-height', lineHeight.tight);
+  for (const [key, value] of Object.entries(lineHeight)) {
+    push(`--line-height-${camelToKebab(key)}`, value);
+  }
+  push('--line-height', lineHeight.tight); // legacy alias (= tight) — back-compat
 
   // Spacing
   section('Spacing');
