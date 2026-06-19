@@ -1706,3 +1706,36 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 **트레이드오프**: 미소비 export는 유지보수 잡음·소비처 혼동. 그러나 Figma 1:1 sync(ADR-021)가 우선이라 권장은 1(보존+문서). 
 
 **관계**: ADR-021(primitives Figma mirror), ADR-013/014(graph), spacing `componentSize`(HMI 치수). 검출: `/plan-design-review` 2026-06-18 소비 분석.
+
+### ADR-043: 컨시어지 단일-HTML 납품 파이프라인 — 대표 소비자 + 게이트 + 더블클릭 러너
+
+> **상태**: ✅ **채택·구현** (2026-06-19). `/deep-interview`(R2 봉합)로 범위 확정 후 구현. eng-review 2026-06-17 Issue-2A(게이트=T2)가 잠근 안전망의 나머지(T1 소비자·T3 재현 러너)를 닫음. T4(pre-pack guard)·별도 ACCEPTANCE 문서는 **명시적 보류**(아래 §보류).
+
+**맥락**:
+
+- 컨시어지 채택 플레이(메모리: kept&used 0→1)의 납품 매체는 **자가포함 HTML 1개** — 비개발자가 더블클릭으로 여는 형태. 그런데 `@wonik/tokens`의 모든 color는 `var(--color-X)` 참조라, 빌드 때 `tokens.css :root` 시트가 인라인 안 되면 **모든 색이 에러 없이 조용히 붕괴**(배경 투명·글자 검정). 사람 눈검사로 놓치는 silent 실패.
+- T2 게이트(`tools/singlefile-gate/gate.mjs`, 커밋 `4a95b41`)는 그 실패를 file://에서 rgb로 확정 검출하나, **게이트가 돌릴 실제 산출물(대표 소비자)과 재현 경로(누가 어떻게 다시 돌리나)가 부재** → orphaned gate.
+
+**결정**:
+
+1. **대표 소비자 = `apps/singlefile-spike/`** (workspace-link로 `@wonik/web`·`@wonik/tokens` 소비). 최소 픽스처가 아니라 **대표 atom 셋**(Button primary/danger + Input + Card + SortableList[dnd-kit] + Modal[portal] + Toast) — heavy dep·portal·file://를 실제로 자극해 게이트의 size 체크(check #1)와 "진짜 화면이 file://에서 산다"를 동시에 입증. `src/main.tsx`의 `import '@wonik/tokens/tokens.css'`가 인라인의 트리거(이 줄 제거=게이트 self-test 실패 조건).
+2. **빌드 = `vite-plugin-singlefile`** — JS·CSS(토큰 :root 포함)를 단일 `dist/index.html`로 인라인. (검증: 270KB, 게이트 7/7 PASS, 외부 자원 0.)
+3. **재현 러너 = `run-singlefile-spike.bat`**(레포 루트, 더블클릭 + 바탕화면 바로가기). 빌드+게이트를 한 방에 돌리고 PASS/FAIL을 사람 말로 보고.
+4. **Chromium 경계(Round 2 결정 A)**: 게이트는 playwright Chromium 필요. README의 "설치 불필요"는 fresh 환경에선 사실 아님(pnpm postinstall 차단). bat은 **캐시된 Chromium 가정**(빌드 PC에 있음) — 없으면 cryptic crash 대신 `npx playwright install chromium` 1줄 hint 후 exit. 자동 install은 채택 안 함(회사 PC SSL inspection이 다운로드 차단 전례, poc-result 2026-05-14).
+
+**"납품 됐다" 정의(C4 흡수, 별도 문서 X)**: 아티팩트 레벨에서 **게이트 7/7 PASS = done**. 즉 단일 HTML이 (a) <1MB (b) #root 마운트 (c) primary=WONIK BLUE(토큰 해결) (d) status 실색 (e) focus 링 file:// 주입 (f) 외부 자원 0. "실제 사람에게 전달"은 컨시어지 C 플레이(사내-환경)로 본 ADR 범위 밖.
+
+**Recipe (임의의 `@wonik/web` 화면 → 검증된 단일 HTML)**:
+
+1. `apps/singlefile-spike/src/App.tsx`를 납품할 화면으로 교체 (primary Button에 `id="primary-btn"` 유지 — 게이트 앵커).
+2. 루트의 `run-singlefile-spike.bat` 더블클릭 (또는 `pnpm -F singlefile-spike build` + `node tools/singlefile-gate/gate.mjs apps/singlefile-spike/dist/index.html`).
+3. PASS면 `apps/singlefile-spike/dist/index.html` 파일 하나를 그대로 전달 — 더블클릭으로 열림, 오프라인 안전.
+
+**보류(명시적)**:
+
+- **T4 / pre-pack `tokens.css` 존재 guard** — 현재 경로는 workspace-link라 `tokens.css`가 항상 fresh 빌드됨 → silent 실패 거의 0(TODOS H.2 동일 근거). **트리거: tarball/registry로 단일-HTML을 만드는 경로가 등장**하면 그때 pack 경계 guard 추가.
+- **별도 ACCEPTANCE 문서(C4)** — done 정의가 게이트 7-check에 이미 박혀 있어 산문 문서는 중복. 본 ADR §정의로 충분.
+
+**DTCG/버전**: 토큰·컴포넌트 public API 변경 0(소비 앱 + 도구 + 문서만) → **Changesets 불필요**.
+
+**관계**: 게이트 README `tools/singlefile-gate/README.md`(자기검증 절차), ADR-007(WONIK BLUE=게이트 기대색), ADR-011(ensureCssInjected=게이트 check #5), ADR-020/021(토큰 CSS var 구조=silent 실패의 근원), Phase 17 distribution(tarball 경로=별개·T4 트리거). 검출/범위확정: eng-review 2026-06-17 · `/deep-interview` 2026-06-19. 메모리: 컨시어지 C 채택 플레이 · GUI launcher 선호.
