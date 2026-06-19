@@ -1,0 +1,6 @@
+/* 최소 reset — 토큰 var()는 @wonik/tokens/tokens.css(:root)에서 온다. */
+body {
+  margin: 0;
+  background: var(--color-bg, #ffffff);
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
