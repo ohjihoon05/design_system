@@ -52,16 +52,19 @@ export const textLight = {
 
 // Status semantic tokens — same hex set used by both light and dark for now.
 // Primary-derived states (run, accessReady) MUST use WONIK BLUE #273E82 (ADR-007).
+// ADR-041 §A (2026-06-18): text/dot 색을 WCAG AA(text 4.5:1, dot 3:1)로 darken —
+// 각 hue는 보존(신호색 정체성 유지), 가독성만 확보. ADR-037 무채색 베이스 reconciliation
+// (더 넓은 팔레트 비전)은 별개로 owner/Figma 대기. 값 drift라 minor (ADR-024).
 export const statusTokensLight = {
-  idle: { bg: '#F4F5F5', border: '#D4D4D8', text: '#71717B' },
+  idle: { bg: '#F4F5F5', border: '#D4D4D8', text: '#6A6A73' },
   init: { bg: '#FFFFAC', border: '#D4C800', text: '#7A6E00' },
-  ready: { bg: '#E6FAF4', dot: '#07895E', text: '#00A876' },
+  ready: { bg: '#E6FAF4', dot: '#07895E', text: '#007A52' },
   run: { bg: '#EEF0F8', border: '#A8B4D8', dot: '#273E82', text: '#273E82' },
-  processEnd: { bg: '#D6F0E6', text: '#07895E' },
+  processEnd: { bg: '#D6F0E6', text: '#04603F' },
   accessReady: { bg: '#EEF0F8', text: '#273E82' },
-  warning: { bg: '#FFF4DC', dot: '#FE9A00', text: '#D09804' },
+  warning: { bg: '#FFF4DC', dot: '#A06800', text: '#7C5A00' },
   alarm: { bg: '#FFE2E2', border: '#FFCACA', text: '#CC0000' },
-  abort: { bg: '#FFCACA', border: '#FFCACA', text: '#CC0000' },
+  abort: { bg: '#FFCACA', border: '#FFCACA', text: '#A60000' },
   processed: { bg: '#F3E8FF', border: '#E9D1FF', text: '#7C3AED' },
   ok: { dot: '#07895E', text: '#00D492' },
 } as const;
