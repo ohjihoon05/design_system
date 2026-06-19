@@ -15,6 +15,10 @@ export const radius = {
   full: '50%',
 } as const;
 
+/**
+ * @internal HMI 치수 reference (WARP 시안). web 컴포넌트는 미소비 — CSS 변수로만
+ * emit (`--toolbar-h` 등). 진짜 HMI product 등장 시 형태 결정 (ADR-001/042).
+ */
 export const componentSize = {
   panelPaddingX: '13px',
   panelHeaderH: '40px',

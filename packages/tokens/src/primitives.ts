@@ -11,6 +11,11 @@
 // DTCG note (ADR-020): one leaf = one $value, every group is `color` $type,
 // single-mode so there is no light/dark split at the primitive layer.
 
+/**
+ * @internal Figma 1:1 sync reference layer (ADR-021). NOT a consumption API —
+ * 컴포넌트/앱은 semantic 토큰(`colors`/`interfaceColors`/`status*` 등)을 쓴다.
+ * 소비 0건이 정상 (ADR-042). prune 금지(Figma sync 깨짐), 보존 + 미소비.
+ */
 export const primitives = {
   white: {
     '50': '#FFFFFF',

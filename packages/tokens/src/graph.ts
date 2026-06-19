@@ -23,6 +23,11 @@
 //   annotation fg      → text.dark
 //   annotation surface → surfaces.surfaceWhite
 
+/**
+ * @internal Host chart/plot 용 semantic 색 (ADR-013/014). 현재 `@wonik/web`엔
+ * chart atom 없음 → JS 미소비, CSS 변수(`--color-graph-*`)로만 노출 (ADR-042).
+ * graph hex canon은 코드 토큰(Figma를 토큰에 맞춤).
+ */
 export const graphTokens = {
   limitUpper: {
     line: 'var(--color-graph-limit-upper-line)',
