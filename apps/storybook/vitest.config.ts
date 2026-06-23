@@ -36,11 +36,13 @@ export default defineConfig({
         test: {
           name: 'storybook',
           setupFiles: ['./.storybook/vitest.setup.ts'],
-          // ADR-027 backlog: overlay-Toast stories fail with a decorator runtime issue
-          // (useToast outside ToastProvider) that is unrelated to a11y — defer per
-          // backlog decision B until the decorator-in-vitest scoping is fixed.
-          // See TODOS.md "[a11y-gate-backlog]" section.
-          exclude: ['**/overlay-Toast.stories.tsx'],
+          // Browser-mode(chromium) 스토리 테스트는 머신 부하(예: 다른 Chrome 다수)
+          // 하에서 render가 기본 5s/15s timeout을 넘겨 비결정적으로 실패한다(전부
+          // "Test timed out", assertion 실패 아님). 부하 없을 땐 빠르므로 헤드룸은
+          // 공짜이고, 실제 a11y 위반은 결정적이라 retry로 숨겨지지 않는다.
+          testTimeout: 60000,
+          hookTimeout: 60000,
+          retry: 1,
           browser: {
             enabled: true,
             headless: true,
