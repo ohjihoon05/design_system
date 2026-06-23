@@ -6,7 +6,9 @@
 >
 > **지금 실제 배급 경로**: ① 첫 dogfood ppt = workspace-link. ② 테스터 = 메인테이너 제공 tarball(`pnpm pack`). 테스터에게 줄 AI 컨텍스트·설치 안내는 `docs/tester-kit/` 참조. `<사내-registry-URL>`은 registry 해동 시 실제 URL로 갱신된다.
 
-## 1. 인증 (`.npmrc` 설정)
+## 1. 인증 (`.npmrc` 설정) — *registry 해동 후 경로*
+
+> 📌 본 절(§1~§2 registry-install)은 **사내 npm registry가 해동된 미래 상태용**이다. **지금 실제 배급**은 상단 ⚠️ 참조 — 첫 dogfood(ppt)는 workspace-link, 테스터는 메인테이너 tarball(`pnpm pack`). tarball install 절차 본문은 첫 실테스터 발생 시 **실검증 후** 작성한다(미검증 단계 날조 금지 — `docs/tester-kit/README.md` 결정). registry가 살아있지 않은 현재 `pnpm add @wonik/web`은 실패하므로, 본 절을 그대로 따라가지 말 것.
 
 host product repo 루트에 `.npmrc` 파일을 만든다. token은 사내 IT가 발급한 값을 사용 (또는 GitHub Packages 사용 시 PAT).
 
