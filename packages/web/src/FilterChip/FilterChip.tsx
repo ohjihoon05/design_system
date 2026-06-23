@@ -10,6 +10,7 @@ import {
   primary,
 } from '@wonik/tokens';
 import type { FilterChipProps } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 const FILTERCHIP_CSS = `
 .wonik-filterchip:hover:not(:disabled) {
@@ -23,16 +24,6 @@ const FILTERCHIP_CSS = `
   outline-offset: 2px;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-filterchip', 'true');
-  style.textContent = FILTERCHIP_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const baseStyle: CSSProperties = {
   display: 'inline-flex',
@@ -68,7 +59,7 @@ export function FilterChip({
   type = 'button',
   ...rest
 }: FilterChipProps) {
-  ensureCssInjected();
+  ensureCssInjected('filterchip', FILTERCHIP_CSS);
   const composed: CSSProperties = {
     ...baseStyle,
     ...(active ? activeStyle : inactiveStyle),

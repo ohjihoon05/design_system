@@ -11,6 +11,7 @@ import {
   interfaceColors,
 } from '@wonik/tokens';
 import type { TextareaProps, TextareaSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :focus-visible, :hover, ::placeholder는 inline style로 못 풀어서 1회-inject CSS.
 const TEXTAREA_CSS = `
@@ -26,16 +27,6 @@ const TEXTAREA_CSS = `
   opacity: 1;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-textarea', 'true');
-  style.textContent = TEXTAREA_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const SIZE_FONT: Record<TextareaSize, string> = {
   sm: fontSize.labelSm,
@@ -89,7 +80,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
   },
   ref
 ) {
-  ensureCssInjected();
+  ensureCssInjected('textarea', TEXTAREA_CSS);
   const composed: CSSProperties = {
     ...BASE_STYLE,
     fontSize: SIZE_FONT[size],

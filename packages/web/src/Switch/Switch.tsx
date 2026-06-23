@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import { surfaces, statusTokens, interfaceColors } from '@wonik/tokens';
 import type { SwitchProps, SwitchSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 interface SizeSpec {
   trackW: string;
@@ -52,21 +53,11 @@ const SWITCH_CSS = `
 }
 `;
 
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-switch', 'true');
-  style.textContent = SWITCH_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
-
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
   { size = 'md', invalid = false, disabled, className, onChange, ...rest },
   ref,
 ) {
-  ensureCssInjected();
+  ensureCssInjected('switch', SWITCH_CSS);
   const spec = SIZE_SPEC[size];
 
   const labelStyle: CSSProperties = {

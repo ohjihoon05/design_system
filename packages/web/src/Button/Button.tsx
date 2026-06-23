@@ -10,6 +10,7 @@ import {
   interfaceColors,
 } from '@wonik/tokens';
 import type { ButtonProps, ButtonVariant, ButtonSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: keyboard focus indicator. inline style로 pseudo-class 못 풀어서 1회-inject CSS.
 const BUTTON_CSS = `
@@ -18,16 +19,6 @@ const BUTTON_CSS = `
   outline-offset: 2px;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-button', 'true');
-  style.textContent = BUTTON_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
@@ -95,7 +86,7 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  ensureCssInjected();
+  ensureCssInjected('button', BUTTON_CSS);
   const composed: CSSProperties = {
     ...baseStyle,
     ...variantStyles[variant],

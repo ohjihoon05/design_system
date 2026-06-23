@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { interfaceColors, radius } from '@wonik/tokens';
 import type { IconButtonProps, IconButtonVariant, IconButtonSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :hover / :focus-visible — inline style로 못 풀어서 module-scope CSS 1회-inject.
 const ICONBUTTON_CSS = `
@@ -12,16 +13,6 @@ const ICONBUTTON_CSS = `
   outline-offset: 2px;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-iconbutton', 'true');
-  style.textContent = ICONBUTTON_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const variantStyles: Record<IconButtonVariant, CSSProperties> = {
   outline: {
@@ -68,7 +59,7 @@ export function IconButton({
   type = 'button',
   ...rest
 }: IconButtonProps) {
-  ensureCssInjected();
+  ensureCssInjected('iconbutton', ICONBUTTON_CSS);
   const composed: CSSProperties = {
     ...baseStyle,
     ...variantStyles[variant],

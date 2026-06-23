@@ -52,9 +52,12 @@ Post-audit + ADR-027 burndown. 우선순위순.
 
 `ensureCssInjected`(module-scope `<style>` 1회 주입 + SSR 가드 + dedup)가 web 컴포넌트마다 재구현됨 + demo 앱에 복제본 존재. 공통 helper 1개로 통합.
 
-- [ ] `packages/web/src/utils/ensureCssInjected.ts` 신규 — `(id: string, css: string)` 시그니처, `typeof document === 'undefined'` 가드 + `Set` dedup. (참조 현황: `packages/web/src/Button/Button.tsx:23`, Switch/Card 등 + `apps/demo-fab-monitor/src/lib/injectCss.ts:7` 복제본)
-- [ ] 컴포넌트 1개(Button) 먼저 migrate해 증명 → 나머지 web 아톰 일괄 → demo 복제본 제거
-- [ ] Changesets patch 항목 (내부 리팩터, prop signature 불변)
+> **web-internal 통합 완료 (2026-06-23)**: web 패키지 14개 아톰 triplication 제거. `pnpm -F @wonik/web test` 355 green(신규 util 3 포함) + lint clean + build green. demo 복제본 제거만 별건으로 defer(아래).
+
+- [x] `packages/web/src/utils/ensureCssInjected.ts` 신규 — `(id: string, css: string)` 시그니처, `typeof document === 'undefined'` 가드 + `Set` dedup. `<style data-wonik-{id}="true">` 규약 보존(DOM 바이트 동일). 계약은 `ensureCssInjected.test.ts`(주입·dedup·다중 id)로 가드.
+- [x] 컴포넌트 1개(Button) 먼저 migrate해 증명 → 나머지 web 아톰 일괄(13개, 정규식 변환). 14개 전부 자체 구현 삭제 후 공통 helper 호출.
+- [ ] **demo 복제본 제거 — defer**: `apps/demo-fab-monitor/src/lib/injectCss.ts`를 web helper로 치환하려면 `ensureCssInjected`를 `@wonik/web` **public export**로 승격해야 함(현재 internal). demo는 발행 소비처 아니고, 그 파일은 demo 전용 `FOCUS_RING` 합성 export도 겸함 → 공개 API 확장(minor)을 단일 내부 demo 중복 제거에 쓰는 건 scope 과함(ADR-001 speculative 경계). web-publish가 이 helper를 공개하기로 결정될 때 합류.
+- [x] Changesets patch 항목 (내부 리팩터, prop signature 불변) — `.changeset/dry-ensure-css-injected.md`
 
 make-the-change-easy-then-easy-change 리팩터. **이번 컨시어지 단일-HTML 스파이크와 무관** — 스파이크는 기존 컴포넌트를 tarball로 소비할 뿐 이 패턴을 건드리지 않음(scope creep 방지로 defer).
 

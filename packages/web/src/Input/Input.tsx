@@ -11,6 +11,7 @@ import {
   interfaceColors,
 } from '@wonik/tokens';
 import type { InputProps, InputSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :focus-visible, :hover, ::placeholder는 inline style로 못 풀어서 1회-inject CSS.
 const INPUT_CSS = `
@@ -26,16 +27,6 @@ const INPUT_CSS = `
   opacity: 1;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-input', 'true');
-  style.textContent = INPUT_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const SIZE_STYLES: Record<InputSize, CSSProperties> = {
   sm: { height: '24px', padding: `0 ${space[3]}`, fontSize: fontSize.labelSm },
@@ -81,7 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   },
   ref
 ) {
-  ensureCssInjected();
+  ensureCssInjected('input', INPUT_CSS);
   const inputStyle: CSSProperties = {
     ...BASE_STYLE,
     ...SIZE_STYLES[size],

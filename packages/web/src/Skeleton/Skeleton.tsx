@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import { surfaces } from '@wonik/tokens';
 import type { SkeletonProps, SkeletonVariant } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 interface VariantSpec {
   width?: string;
@@ -23,16 +24,6 @@ const SKELETON_CSS = `
 }
 `;
 
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-skeleton', 'true');
-  style.textContent = SKELETON_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
-
 function toLength(value: string | number | undefined): string | undefined {
   if (value === undefined) return undefined;
   return typeof value === 'number' ? `${value}px` : value;
@@ -42,7 +33,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skele
   { variant = 'text', width, height, style, ...rest },
   ref,
 ) {
-  ensureCssInjected();
+  ensureCssInjected('skeleton', SKELETON_CSS);
   const spec = VARIANT_SPEC[variant];
 
   const composed: CSSProperties = {

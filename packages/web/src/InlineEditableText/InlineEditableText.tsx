@@ -6,6 +6,7 @@ import type {
 import { interfaceColors, fontSize, fontFamily, fontWeight } from '@wonik/tokens';
 import { Input } from '../Input';
 import type { InlineEditableTextProps } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :hover and :focus-visible cannot be expressed inline; inject once.
 const INLINE_EDITABLE_CSS = `
@@ -32,16 +33,6 @@ const INLINE_EDITABLE_CSS = `
 }
 `;
 
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-inline-editable', 'true');
-  style.textContent = INLINE_EDITABLE_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
-
 const SIZE_TO_FONT: Record<NonNullable<InlineEditableTextProps['size']>, string> = {
   sm: fontSize.labelSm,
   md: fontSize.label,
@@ -62,7 +53,7 @@ export function InlineEditableText({
   className,
   style,
 }: InlineEditableTextProps) {
-  ensureCssInjected();
+  ensureCssInjected('inline-editable', INLINE_EDITABLE_CSS);
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);

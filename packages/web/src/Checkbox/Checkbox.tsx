@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import { statusTokens, interfaceColors } from '@wonik/tokens';
 import type { CheckboxProps, CheckboxSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: keyboard focus indicator. inline style로 pseudo-class 못 풀어서 1회-inject CSS.
 const CHECKBOX_CSS = `
@@ -10,16 +11,6 @@ const CHECKBOX_CSS = `
   outline-offset: 2px;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-checkbox', 'true');
-  style.textContent = CHECKBOX_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const SIZE_PX: Record<CheckboxSize, string> = {
   sm: '16px',
@@ -53,7 +44,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     { size = 'md', invalid = false, disabled, className, style, onChange, ...rest },
     ref,
   ) {
-    ensureCssInjected();
+    ensureCssInjected('checkbox', CHECKBOX_CSS);
     const composed: CSSProperties = {
       ...BASE_STYLE,
       width: SIZE_PX[size],

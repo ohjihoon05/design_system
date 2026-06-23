@@ -15,6 +15,7 @@ import type {
 } from 'react';
 import { interfaceColors, radius, fontSize, fontFamily } from '@wonik/tokens';
 import type { TooltipPlacement, TooltipProps } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: module-scope CSS 1회-inject — wrapper position context + bubble layout helpers.
 const TOOLTIP_CSS = `
@@ -23,16 +24,6 @@ const TOOLTIP_CSS = `
   display: inline-block;
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-tooltip', 'true');
-  style.textContent = TOOLTIP_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 const placementOffset = '6px';
 const placementStyle: Record<TooltipPlacement, CSSProperties> = {
@@ -86,7 +77,7 @@ export function Tooltip({
   id,
   disabled = false,
 }: TooltipProps) {
-  ensureCssInjected();
+  ensureCssInjected('tooltip', TOOLTIP_CSS);
   const reactId = useId();
   const tooltipId = id ?? `wonik-tooltip-${reactId}`;
   const [open, setOpen] = useState(false);

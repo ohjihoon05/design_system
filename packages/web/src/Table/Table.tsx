@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { tableTokens, space, interfaceColors } from '@wonik/tokens';
 import type { Column, TableProps } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // nth-child selector는 inline style로 못 풀어서 module-scope CSS 1회 inject
 // (ADR-011 패턴, Card/Switch와 동일). zebra 옵션 켤 때만 적용되는 .wonik-table-zebra scope.
@@ -9,16 +10,6 @@ const TABLE_CSS = `
   background: ${tableTokens.surface.titleBg};
 }
 `;
-
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-table', 'true');
-  style.textContent = TABLE_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
 
 function getValue<T>(row: T, accessor: Column<T>['accessor']): unknown {
   if (typeof accessor === 'function') return accessor(row);
@@ -37,7 +28,7 @@ export function Table<T>({
   style,
   ...rest
 }: TableProps<T>) {
-  ensureCssInjected();
+  ensureCssInjected('table', TABLE_CSS);
 
   const classes = ['wonik-table'];
   if (zebra) classes.push('wonik-table-zebra');

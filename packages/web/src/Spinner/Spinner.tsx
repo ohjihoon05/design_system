@@ -2,6 +2,7 @@ import { forwardRef } from 'react';
 import type { CSSProperties } from 'react';
 import { interfaceColors } from '@wonik/tokens';
 import type { SpinnerProps, SpinnerSize } from './types';
+import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 interface SizeSpec {
   diameter: string;
@@ -21,21 +22,11 @@ const SPINNER_CSS = `
 }
 `;
 
-let cssInjected = false;
-function ensureCssInjected() {
-  if (cssInjected || typeof document === 'undefined') return;
-  const style = document.createElement('style');
-  style.setAttribute('data-wonik-spinner', 'true');
-  style.textContent = SPINNER_CSS;
-  document.head.appendChild(style);
-  cssInjected = true;
-}
-
 export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner(
   { size = 'md', label = 'Loading', style, ...rest },
   ref,
 ) {
-  ensureCssInjected();
+  ensureCssInjected('spinner', SPINNER_CSS);
   const spec = SIZE_SPEC[size];
 
   const composed: CSSProperties = {
