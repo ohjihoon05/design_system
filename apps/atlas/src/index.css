@@ -1,0 +1,8 @@
+/* 최소 reset — 토큰 var()는 @wonik/tokens/tokens.css(:root)에서 온다.
+   ATLAS는 상시-다크 화면이라 App 루트가 100vh dark로 채운다 (body 여백 0). */
+html,
+body {
+  margin: 0;
+  background: var(--color-dark-base, #161619);
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+}
