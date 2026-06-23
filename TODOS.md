@@ -28,25 +28,23 @@ Post-audit + ADR-027 burndown. 우선순위순.
 
 남은 파일 burndown 시 해당 `parameters: { a11y: { test: 'todo' } }` 제거 (default = `'error'`).
 
-### Toast runtime decorator issue (a11y와 무관, 별건)
+### Toast runtime decorator issue — ✅ 해결 (2026-06-23)
 
-- [ ] `apps/storybook/src/stories/overlay-Toast.stories.tsx` — 4 stories가 `useToast must be used within a <ToastProvider>` 런타임 throw. `withWonikProviders` decorator가 vitest browser mode에서 적용 안 되는 듯. **vitest.config.ts test.exclude에서 일단 제외**. dev mode (storybook dev)에서는 정상 동작.
+- [x] `apps/storybook/src/stories/overlay-Toast.stories.tsx` — `useToast must be used within a <ToastProvider>` 런타임 throw **해결**. 근본 원인은 `withWonikProviders`(=ToastProvider 래퍼) 데코레이터가 vitest browser mode에 안 붙던 것 — **fix는 이미 `vitest.setup.ts`에 적용돼 있었음**(`import * as preview` namespace → `import preview from './preview'` default + `setProjectAnnotations([preview])`). 그러나 `vitest.config.ts`의 `exclude: ['**/overlay-Toast.stories.tsx']`가 **stale하게 남아** 스토리가 CI에서 빠져 있던 게 잔여 문제. exclude 제거 → `vitest run overlay-Toast` **5/5 green**(FourTones/WithAction/Persistent/StackOverflow/FourTonesDark).
+- [ ] **(optional 후속 housekeeping)**: Storybook 10.3부터 `@storybook/addon-vitest`가 preview annotations를 자동 적용 → 실행 시 "setProjectAnnotations 안전하게 제거 가능" info 출력. `vitest.setup.ts`의 수동 호출은 현재 무해(addon이 skip)하나, 제거하려면 a11y afterEach axe 스캔이 auto-provisioning으로 유지되는지 전체 스위트로 검증 필요 → 별건.
 
-조사 거리:
-1. setProjectAnnotations에 default preview export 정상 전달 확인 (현재 시도 → 효과 X)
-2. storybookTest plugin이 decorator 자체적으로 로딩하는지
-3. 필요 시 Toast story에 story-level decorator 추가
+## [jsx-a11y-disables] — ADR-027 escape-hatch 정당화 disable 모음 — ✅ burndown 종결 (2026-06-23)
 
-## [jsx-a11y-disables] — ADR-027 escape-hatch 정당화 disable 모음 (burndown 후보)
+전수 grep(`eslint-disable.*jsx-a11y`) 결과 현재 **6개**, 전부 정당화 주석 보유. 2개는 이미 수정 완료, 4개는 "정당·유지"가 정답으로 확정. **고칠 코드 없음** — stale TODOS 줄번호를 맹목 적용하지 않고 현재 코드 대조, 가짜 변경 만들지 않음.
 
-각각 `// eslint-disable-next-line jsx-a11y/<rule> -- <justification>` 패턴으로 inline-disable. 정당화 주석 필수. burndown 시점:
+- [x] `EquipmentPage.tsx` — `label-has-associated-control` **이미 수정됨**: `<label htmlFor="equip-alarming-only">` + `<Checkbox id="equip-alarming-only">` 명시 연결. disable 제거됨.
+- [x] `input-Checkbox.stories.tsx` — `label-has-associated-control` **이미 수정됨**: `htmlFor="cb-basic"` 명시 ([a11y-gate-backlog] 기록과 일치). disable 제거됨.
+- [x] `Modal.tsx:158` — `no-static-element-interactions` (backdrop): **KEEP 확정**. 기존 TODOS의 "`<button>` 해법"은 **틀림** — full-screen `<button>`이 interactive 콘텐츠(`role="dialog"` panel)를 감싸면 invalid HTML(버튼 내 interactive 중첩 금지). 현 패턴(backdrop=마우스 전용 dismiss, ESC는 inner dialog가 onKeyDown으로 처리 + focus trap)은 Radix/HeadlessUI와 동일한 표준. 정당화 주석 적정.
+- [x] `InlineEditableText.tsx:154` — `no-autofocus`: **영구 KEEP**. edit 모드 진입 = 즉시 커서 focus가 inline-edit의 UX 약속 자체. 해법 없음.
+- [x] `Radio.tsx:58` — `role-supports-aria-props`: **KEEP**. `aria-invalid`은 WAI-ARIA 1.2 §6.3 global 속성(form control 포함)이라 적법. jsx-a11y@6.10이 ARIA 1.1 기준이라 오판. (재확인 트리거: jsx-a11y v7 도입 시.)
+- [x] `web-sandbox/App.tsx:409` — `no-autofocus`: **영구 KEEP**. sandbox demo, 미배포 consumer 코드.
 
-- [ ] `packages/web/src/Modal/Modal.tsx:158` — `no-static-element-interactions` (backdrop click). 해법: `<button>` 또는 role + role-appropriate handlers
-- [ ] `packages/web/src/InlineEditableText/InlineEditableText.tsx:163` — `no-autofocus` (UX 핵심). 해법 없음. 영구 disable 적절
-- [ ] `packages/web/src/Radio/Radio.tsx:67` — `role-supports-aria-props` (jsx-a11y@6.10 ARIA 1.1 stale). 해법: jsx-a11y v7 대기 또는 우리 ARIA 사용이 진짜 적법한지 재확인
-- [ ] `apps/demo-fab-monitor/src/pages/EquipmentPage.tsx:97` — `label-has-associated-control` (implicit-control pattern). 해법: `htmlFor` 명시
-- [ ] `apps/storybook/src/stories/input-Checkbox.stories.tsx:9` — 같음
-- [ ] `apps/web-sandbox/src/App.tsx:340` — `no-autofocus` (sandbox demo). 해법 없음, 영구 disable 적절
+추적 안 됐던 정당 disable 2개(정상, 조치 불요): `demo-tracker/App.tsx:308`(label이 감싼 Switch implicit 연결, jsx-a11y가 커스텀 컴포넌트 오판), `display-Table.stories.tsx:61`(axe scrollable-region-focusable 우선). 둘 다 ADR-027 정당화 주석 보유.
 
 ## [ensureCssInjected-dry] — CSS 1회-주입 패턴 triplication 통합 (eng-review 2026-06-17 발견)
 
