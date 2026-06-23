@@ -66,7 +66,7 @@ make-the-change-easy-then-easy-change 리팩터. **이번 컨시어지 단일-HT
 - [x] **R2 (orphaned gate 봉합) — 닫힘 (2026-06-19, ADR-043, `/deep-interview`)**: T2 gate 커밋(`4a95b41`) + **T1 대표 소비자**(`apps/singlefile-spike/` — Button/Input/Card/SortableList[dnd-kit]/Modal/Toast → `vite-plugin-singlefile`로 270KB 단일 HTML, **게이트 7/7 PASS**) + **T3 재현 러너**(`run-singlefile-spike.bat` + 바탕화면 바로가기 + ADR-043 recipe). **보류(명시)**: **T4** pre-pack `tokens.css` guard = tarball 납품 경로 등장 시(현재 workspace-link라 silent 실패 거의 0, H.2 동일 근거). **C4** 별도 ACCEPTANCE 문서 = done 정의가 게이트 7-check에 박혀 중복이라 미작성. spec: `.omc/specs/deep-interview-r2-singlefile-gate.md`.
 - [ ] **R3 (= 기존 H.2와 동일 건)**: dev 모드에서 `--color-primary` 미해결 시 `console.warn`. → **[Deferred] H.2** 항목과 통합 관리, 외부 publish 직전 처리.
 - [ ] **R4**: `docs/INSTALL.md` §1이 dead path(사내 registry 동결 상태인데 `.npmrc`/registry-install로 시작)로 리드함. 실제 현재 배급 경로(tarball / workspace-link)를 §1로 끌어올리고 registry-install은 "해동 후" 하위로. (registry URL 확정은 사내 PC 작업 → [Phase C])
-- [ ] **R5 (gate polish)**: `gate.mjs`에 ① 첫 실행 Chromium 미설치 hint(pnpm postinstall 차단으로 자동 다운로드 안 됨), ② `--help`, ③ 실패 시 contract 메시지(어떤 색 assert가 깨졌는지). README의 "캐시된 Chromium 사용, 설치 불필요" 문구도 fresh install 기준 사실과 다름 → 수정.
+- [x] **R5 (gate polish) — 완료 (2026-06-23)**: `gate.mjs`에 ① Chromium 미설치 시 `pnpm exec playwright install chromium` hint + exit 2, ② `--help`/`-h` 상세 usage, ③ 색 토큰 검사 실패 시 "어떤 색이 왜 붕괴했는지" 계약 메시지(stderr). README의 "캐시된 Chromium 사용, 설치 불필요" 부정확 문구 정정(fresh install 1회 설치 필요 명시). 검증: `--help`→exit 0, no-arg→exit 2, 빌드된 spike HTML→7/7 PASS exit 0.
 - [ ] **R6 (= 기존 H.12와 동일 건)**: `CONTRIBUTING.md`. → **[Deferred] H.12** 항목과 동일, 중복 생성 말 것.
 
 진입 순서 권고: R2(안전망) → R4(현재 사실 반영) → R5(gate 신뢰성) → R3/R6은 각각 H.2/H.12 일정에 합류.

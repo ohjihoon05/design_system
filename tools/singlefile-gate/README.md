@@ -14,11 +14,13 @@
 
 ```bash
 node tools/singlefile-gate/gate.mjs <path-to/index.html> [expectedRgb]
+node tools/singlefile-gate/gate.mjs --help    # 상세 사용법
 # 기본 expectedRgb = WONIK BLUE rgb(39, 62, 130)  (#273E82, ADR-007)
 ```
 
 대상 HTML은 `id="primary-btn"`인 @wonik/web primary Button을 포함해야 한다.
-종료코드: `0`=전체 통과, `1`=HARD FAIL, `2`=사용법 오류. CI/수동 모두 사용 가능.
+종료코드: `0`=전체 통과, `1`=HARD FAIL, `2`=사용법/환경 오류. CI/수동 모두 사용 가능.
+색 토큰 검사(3·4)가 깨지면 "어떤 색이 왜 붕괴했는지" 계약 메시지를 stderr로 출력한다.
 
 ## 검사 항목 (7)
 
@@ -37,4 +39,4 @@ node tools/singlefile-gate/gate.mjs <path-to/index.html> [expectedRgb]
 
 ## 의존성
 
-`playwright`(루트 devDep) + 캐시된 Chromium 사용. 별도 설치 불필요.
+`playwright`(루트 devDep) + Chromium 브라우저. **첫 실행 전 1회** `pnpm exec playwright install chromium` 필요 — pnpm이 postinstall 자동 다운로드를 막아 fresh install엔 Chromium 캐시가 없다. 미설치 상태로 게이트를 돌리면 명확한 hint와 함께 `exit 2`. 한 번 설치되면 캐시 재사용(이후 별도 설치 불필요).

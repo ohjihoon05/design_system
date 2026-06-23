@@ -17,12 +17,29 @@ import { pathToFileURL } from 'node:url';
 import { statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+const USAGE = `singlefile-gate — 단일 자가포함 HTML file:// 검증 게이트
+
+사용법:
+  node tools/singlefile-gate/gate.mjs <path-to/index.html> [expectedRgb]
+  node tools/singlefile-gate/gate.mjs --help
+
+인자:
+  <index.html>   검사 대상 HTML. id="primary-btn" @wonik/web primary Button 포함 필수.
+  [expectedRgb]  기대 primary 배경색. 기본 rgb(39, 62, 130) (#273E82 WONIK BLUE, ADR-007).
+
+종료코드: 0=전체 통과 · 1=HARD FAIL · 2=사용법/환경 오류.
+전제: playwright Chromium 설치 필요 — 'pnpm exec playwright install chromium'.`;
+
 const htmlArg = process.argv[2];
-const expectedBg = process.argv[3] || 'rgb(39, 62, 130)';
+if (htmlArg === '--help' || htmlArg === '-h') {
+  console.log(USAGE);
+  process.exit(0);
+}
 if (!htmlArg) {
-  console.error('usage: node gate.mjs <index.html> [expectedRgb]');
+  console.error('usage: node gate.mjs <index.html> [expectedRgb]   (--help 로 상세)');
   process.exit(2);
 }
+const expectedBg = process.argv[3] || 'rgb(39, 62, 130)';
 const htmlPath = resolve(htmlArg);
 const fileUrl = pathToFileURL(htmlPath).href;
 
@@ -36,7 +53,22 @@ const check = (name, pass, detail) => {
 const sizeKB = statSync(htmlPath).size / 1024;
 check('HTML < 1MB', sizeKB < 1024, `${sizeKB.toFixed(0)} KB`);
 
-const browser = await chromium.launch();
+let browser;
+try {
+  browser = await chromium.launch();
+} catch (err) {
+  const msg = String(err && err.message);
+  if (/Executable doesn't exist|playwright install|don't have/i.test(msg)) {
+    console.error(
+      '\n환경 오류: playwright Chromium 미설치.\n' +
+        "  → 'pnpm exec playwright install chromium' 1회 실행 후 재시도.\n" +
+        '  (pnpm이 postinstall 자동 다운로드를 막아 fresh install엔 Chromium 캐시가 없음.)',
+    );
+    process.exit(2);
+  }
+  console.error('환경 오류: Chromium 실행 실패 —', msg);
+  process.exit(2);
+}
 const context = await browser.newContext();
 
 // 외부 네트워크 자원 일절 차단 — file:// 자가포함 보장. http/https 요청 = 외부 의존 = abort.
@@ -84,4 +116,19 @@ await browser.close();
 const hardFails = results.filter((r) => !r.pass && !r.name.includes('(soft)'));
 const passed = results.filter((r) => r.pass).length;
 console.log(`\n${passed}/${results.length} checks passed${hardFails.length ? ` — ${hardFails.length} HARD FAIL` : ''}`);
+
+if (hardFails.length) {
+  const colorFail = hardFails.some(
+    (r) => r.name.includes('var() 해결') || r.name.includes('status-family'),
+  );
+  if (colorFail) {
+    console.error(
+      '\n계약 위반: 색 토큰 var()가 해결되지 않음.\n' +
+        `  primary 배경 기대=${expectedBg}. 실제가 rgba(0, 0, 0, 0)(투명)이면 tokens.css\n` +
+        '  :root 시트가 단일 HTML에 인라인되지 않은 것 — 빌드의 CSS 인라인 단계\n' +
+        '  (vite-plugin-singlefile)를 확인하라. 이게 본 게이트가 막는 silent 색-붕괴\n' +
+        '  실패모드다 (README §왜 있나).',
+    );
+  }
+}
 process.exit(hardFails.length ? 1 : 0);
