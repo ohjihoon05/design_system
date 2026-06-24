@@ -1,0 +1,6 @@
+# Windows 배치 런처는 반드시 CRLF 줄바꿈이어야 cmd.exe가 올바로 파싱한다.
+# LF 단독이면 chcp 65001 적용 전에 한글 echo가 CP949로 쏟아져 깨지고,
+# 그 조각이 명령어로 오인돼 "내부/외부 명령이 아닙니다" 에러가 난다.
+# (run-atlas.bat 더블클릭 깨짐 사건의 근본 원인 — 2026-06)
+*.bat text eol=crlf
+*.cmd text eol=crlf
