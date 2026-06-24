@@ -15,8 +15,13 @@
 ```bash
 node tools/singlefile-gate/gate.mjs <path-to/index.html> [expectedRgb]
 node tools/singlefile-gate/gate.mjs --help    # 상세 사용법
-# 기본 expectedRgb = WONIK BLUE rgb(39, 62, 130)  (#273E82, ADR-007)
+# 기본 expectedRgb = WONIK BLUE rgb(39, 62, 130)  (#273E82, ADR-007 = 라이트 테마 primary)
 ```
+
+**다크 테마 딜리버러블 주의**: 화면이 `ThemeProvider theme="dark"`로 돌면 primary는
+다크 적응 WONIK BLUE `#4A65B8`(`rgb(74, 101, 184)`, theme-dark.ts)다. 그땐 기대색을
+인자로 넘겨야 검사 3이 통과한다 — 안 넘기면 라이트 기대값과 안 맞아 **false fail**.
+ATLAS는 `pnpm -F atlas verify`로 이 다크 기대색이 박제돼 있다.
 
 대상 HTML은 `id="primary-btn"`인 @wonik/web primary Button을 포함해야 한다.
 종료코드: `0`=전체 통과, `1`=HARD FAIL, `2`=사용법/환경 오류. CI/수동 모두 사용 가능.
@@ -27,7 +32,7 @@ node tools/singlefile-gate/gate.mjs --help    # 상세 사용법
 1. HTML < 1MB (dnd-kit/전체 barrel 우발 포함 검출)
 2. 렌더 (#root 마운트)
 3. **토큰 var() 해결** — primary 배경 = 기대 rgb  ← THE 검사 (silent 색-붕괴 검출)
-4. status-family var 해결 (danger 버튼 실색)
+4. **status-family var 해결** — `--color-status-warning-dot`을 probe div에 직접 주입해 해결 확인(검사 3의 primary와 다른 색-family 독립 증인). 버튼 스캔이 아니라 var 직접 주입 → status 버튼이 없는 화면(ATLAS 등)도 정직하게 검증
 5. ensureCssInjected (file://) — focus 링 `<style>` 주입
 6. focus-visible outline (soft)
 7. 외부 네트워크 자원 0 (offline 안전)

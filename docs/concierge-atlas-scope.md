@@ -78,7 +78,7 @@
 - **앱**: `apps/atlas/` — `@wonik/web`으로 만든 ATLAS 화면 단독 앱 (singlefile-spike 패턴, ADR-043).
 - **빌드**: `pnpm -F atlas build` → `apps/atlas/dist/index.html` (**224KB 자가포함**, JS·CSS·토큰 :root 시트 전부 인라인).
 - **런처**: `run-atlas.bat` 더블클릭 → 빌드 + 열기. 동료에겐 `dist/index.html` **파일 하나만 전달**(서버·설치·IT 불요, 오프라인 동작, file:// 더블클릭).
-- **검증**: 외부 네트워크 자원 0 · `[data-theme="dark"]`+`--color-*` 인라인 확인 · file:// 실제 렌더 OK(콘솔 에러 0) · singlefile-gate **검사3(토큰 var() 해결=primary색) PASS**. 게이트 검사4(status-family)는 ATLAS에 danger 버튼이 없어 **N/A**(색 붕괴 아님 — 가짜 버튼으로 통과시키지 않음).
+- **검증**: `pnpm -F atlas verify` (다크 기대색 `rgb(74,101,184)` 박제) → singlefile-gate **HARD FAIL 0**. 외부 네트워크 자원 0 · `[data-theme="dark"]`+`--color-*` 인라인 확인 · file:// 실제 렌더 OK(콘솔 에러 0) · 검사3(primary var() 해결=다크 WONIK BLUE) PASS · 검사4(status-family)는 `--color-status-warning-dot` **직접 probe로 실 PASS** — 종전 "danger 버튼 없어 N/A" 핸드웨이브를 게이트 수정(2026-06-24)으로 정직한 증인으로 승격(버튼 스캔→var 직접 주입, 딜리버러블 모양 무관).
 - **납품 형태 결정(§2)**: 반입(파일 전달) 가능 확정 → 로컬 실행 셋업 불요. 동료 PC에 두고 14일(d) 카운트 시작.
 
 실패 분기(office-hours #4): i 하드제로=demand 부재 / ii 미사용=fit 문제 / iii 작업 커밋 거부=약한 demand·wrong wedge.

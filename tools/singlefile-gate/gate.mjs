@@ -94,10 +94,21 @@ check('렌더 (#root 마운트)', mounted);
 const bg = await page.$eval('#primary-btn', (el) => getComputedStyle(el).backgroundColor).catch(() => null);
 check(`토큰 var() 해결 — primary 배경 = ${expectedBg}`, bg === expectedBg, `실제 ${bg}`);
 
-// 4) status-family var 해결 — 버튼 중 하나(danger)가 실색(투명 아님, primary와도 다름)
-const btnBgs = await page.$$eval('button', (els) => els.map((e) => getComputedStyle(e).backgroundColor));
-const statusOk = btnBgs.some((c) => c && c !== 'rgba(0, 0, 0, 0)' && c !== expectedBg);
-check('status-family var 해결 (danger 실색)', statusOk, btnBgs.join(' / '));
+// 4) status-family var 해결 — status 토큰 var를 직접 주입해 probe.
+//    primary(검사 3)와 다른 색-family가 인라인됐는지 독립 증인. 버튼 스캔 대신 var를
+//    직접 박으므로 딜리버러블 모양(danger 버튼 유무)과 무관 — ATLAS처럼 status 버튼이
+//    없는 화면도 정직하게 검증된다. var가 인라인 안 됐으면 rgba(0,0,0,0)(투명)으로 FAIL.
+//    --color-status-warning-dot: :root·dark 양쪽 #A06800(rgb(160,104,0)) — 테마 무관.
+const statusBg = await page.evaluate(() => {
+  const probe = document.createElement('div');
+  probe.style.backgroundColor = 'var(--color-status-warning-dot)';
+  document.body.appendChild(probe);
+  const c = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+  return c;
+});
+const statusOk = statusBg !== 'rgba(0, 0, 0, 0)' && statusBg !== '' && statusBg !== expectedBg;
+check('status-family var 해결 (--color-status-warning-dot 직접 probe)', statusOk, `실제 ${statusBg}`);
 
 // 5) ensureCssInjected at file:// — focus 링 <style> 주입됨 (DOM 작동 확정)
 const focusStyle = await page.$('style[data-wonik-button]');
