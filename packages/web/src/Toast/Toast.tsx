@@ -42,7 +42,7 @@ const ARIA_ROLE: Record<ToastTone, 'status' | 'alert'> = {
 
 const baseStyle: CSSProperties = {
   minWidth: 0,
-  width: 'min(420px, calc(100vw - 32px))',
+  width: `min(420px, calc(100vw - ${space[8]}))`,
   padding: `${space[5]} ${space[6]}`,
   borderRadius: radius.md,
   fontFamily: 'inherit',

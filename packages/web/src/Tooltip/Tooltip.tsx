@@ -13,7 +13,7 @@ import type {
   MouseEvent,
   ReactElement,
 } from 'react';
-import { interfaceColors, radius, fontSize, fontFamily } from '@wonik/tokens';
+import { interfaceColors, radius, fontSize, fontFamily, fontWeight, space } from '@wonik/tokens';
 import type { TooltipPlacement, TooltipProps } from './types';
 import { ensureCssInjected } from '../utils/ensureCssInjected';
 
@@ -25,7 +25,7 @@ const TOOLTIP_CSS = `
 }
 `;
 
-const placementOffset = '6px';
+const placementOffset = space[2];
 const placementStyle: Record<TooltipPlacement, CSSProperties> = {
   top: {
     bottom: `calc(100% + ${placementOffset})`,
@@ -159,11 +159,11 @@ export function Tooltip({
     position: 'absolute',
     background: interfaceColors.text,
     color: interfaceColors.surface,
-    padding: '6px 10px',
+    padding: `${space[2]} ${space[4]}`,
     borderRadius: radius.sm,
     fontSize: fontSize.label,
     fontFamily: fontFamily.base,
-    fontWeight: 400,
+    fontWeight: fontWeight.regular,
     lineHeight: 1.3,
     maxWidth: '280px',
     whiteSpace: 'normal',
