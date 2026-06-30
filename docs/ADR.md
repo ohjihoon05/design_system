@@ -1790,3 +1790,31 @@ ADR-021 L916 "코드 토큰이 canon"은 `#2B7FFF`→WONIK BLUE override에 한�
 **DTCG/버전**: 코드·토큰·컴포넌트 변경 0(판정 기록만) → **Changesets 불필요**.
 
 **관계**: ADR-044(핵심 아젠다·§순서 = 본 판정의 상위 기준), ADR-001(첫 customer 없이 추상화 X). 위키: [[Open Design — fork 가능성 (@wonik 주입)]]·[[Open Design 첫 구동 — 생성물 퀄 실측]](BUY 대상·6/8 증명). 메모리: 컨시어지 C 채택 플레이 · MVP scope discipline · HMI C++ gonogo(GO·더작게 사례와 대비). 판정: `/wonik.gonogo` 2026-06-24. 앱인토스 팩트: developers-apps-in-toss.toss.im.
+
+### ADR-046: 1단계 web 채택 증명 종결 — kept&used 0→1 달성 (증명 매체 = ppt, 계획된 ATLAS 아님)
+
+> **상태**: ✅ **채택 — 마일스톤 종결** (2026-06-24). 컨시어지 C(ADR-044 §순서의 첫 칸 = "값 증명")가 닫혔음을 기록. 단 닫은 매체는 계획했던 ATLAS 납품물이 아니라 **이미 존재하던 첫 dogfood ppt**였음 — 그 차이를 정직하게 박제. 코드 변경 0.
+
+**맥락**:
+
+- 게이트 정의(6/16 office-hours #4): *"사용자가 직접 `@wonik/web`로 사내 실사용자 1명·실화면 1개를 만들어 그 사람 업무에 남겨 쓰게 = kept&used 0→1 = web 패키지 채택 증명(P4)."* 테스터 키트 사가 내내(registry 동결→dry-run→수동 트랙→체험자 2명) 이 숫자는 **0**이었음 — 체험자 2명은 "만족뿐 real-use 0".
+- 2026-06-24 사용자 보고 + **코드 검증**으로 0→1 확정. 매체 = **ppt**(`C:\Users\ohjih\ppt`, CLAUDE.md가 정한 첫 dogfood). 검증된 사슬: `frontend/package.json` → `@wonik/web@file:vendor/wonik-web-2.0.0.tgz` 의존 / 핵심 업무 페이지(Home·Outline·Presentation·OutlineCard·Probe)가 **8~9개 컴포넌트**(Button·Card·Badge·Alert·Input·Textarea·Spinner·SortableList·InlineEditableText) 실제 import·렌더 / `Home.tsx`에 raw→@wonik/web 의도적 치환 "dogfood trial 7/8" 주석.
+
+**결정**:
+
+1. **1단계 web 패키지 채택 증명 = 종결(closed).** 게이트 4조건 전부 충족 — 실사용자 **2명**(내부 SQA 1 + 타부서 1, 요구 1명 초과)·실업무(발표자료 제작, 데모 아님)·web 실채택(코드 검증)·**kept**(14달력일 반복 사용, tried 아님).
+2. **이 종결이 license하는 것**: 컨시어지 C §순서의 첫 칸(C=값) 통과 → A(AI 생성기)·B(self-serve) 평가를 **시작할 자격**. 테스터 키트 동결의 정식 해제 자격(별도 결정 시).
+3. **license하지 않는 것**: **자동 scope 확장 X.** "이제 2단계 / 컴포넌트 더 / 다른 form factor"는 본 종결로 열리지 않음 — ADR-001(첫 customer 없이 추상화 X) 여전히 유효. 다음 수는 **별도 `/wonik.gonogo` 또는 office-hours 판정 거리**로 다룬다.
+4. **ATLAS 납품물(`apps/atlas` dist/index.html) = 보류.** ppt가 이미 0→1을 닫았으므로 ATLAS 납품은 더 이상 필수 아님. 빌드·검증(ADR-043 파이프라인·singlefile-gate 7/7)은 보존하되 추가 사내 작업 안 함. 2차 독립 증거가 필요해지면 그때 재개(빌드는 done이라 반입만 하면 됨).
+
+**정직 단서(가짜 안심 방지)**:
+
+- ⒜ **win은 계획된 ATLAS가 아닌 기존 ppt로 났음.** 지난 주 집에서 만든 ATLAS 컨시어지 기계장치(standalone HTML·singlefile-gate·.bat CRLF)는 0→1을 만든 경로가 *아님*. 즉 채택을 증명한 건 "복잡한 새 장치"가 아니라 "이미 돌아가던 실업무 도구" — 이번 사가의 "편한 일로 흘렀다" 패턴의 거울상. (학습 추출 → `/retro` 2026-06-24.)
+- ⒝ **증명 범위 = "web 패키지가 실 production 반복사용에 들어가 있다"까지.** *"사용자가 우리 컴포넌트를 좋아한다/선택했다"*는 데이터 아님 — ppt 사용 동기는 AI 발표생성 가치일 수 있고, 게이트는 애초에 선호가 아니라 *실재 소비*를 물었음(P4).
+- ⒞ **14일이 fresh window인지 기존 사용의 스냅샷인지는 미확정.** 게이트 본질(실재성)에는 무관하나, "0→1 이벤트 시점"으로 과대주장하지 않음.
+
+**트레이드오프 / 이 종결이 못 본 것**: n=2 단일 도구(ppt) 단일 매체의 증거다. "여러 앱 × 시간"에서만 보이는 DS 가치([[내 디자인 시스템 프로젝트 큰 그림]])는 1개 소비처로는 아직 미증명 — 본 종결은 *"web 패키지가 죽지 않고 실제로 소비된다"*는 생존 증명이지, *"여러 소비처에서 일관성 레버가 작동한다"*는 확장 증명이 아니다. 후자는 §순서 A·B의 몫.
+
+**DTCG/버전**: 코드·토큰·컴포넌트 변경 0(마일스톤 기록만) → **Changesets 불필요**.
+
+**관계**: ADR-044(핵심 아젠다=채택이 성공지표·§순서 C→A→B = 본 종결이 C칸을 닫음), ADR-043(컨시어지 단일-HTML 파이프라인 = 보류된 ATLAS 매체), ADR-001(첫 customer 없이 추상화 X = §결정3의 근거). 위키: [[내 디자인 시스템 프로젝트 큰 그림]]("여러 앱×시간" 미증명 부분). 메모리: 컨시어지 C 채택 플레이(0→1 박제) · MVP scope discipline · Layer B 동결(병목=채택). 검증: 사용자 보고 + ppt 코드 검증 2026-06-24. 학습 추출: `/retro` 2026-06-24.
