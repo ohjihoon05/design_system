@@ -123,3 +123,11 @@ make-the-change-easy-then-easy-change 리팩터. **이번 컨시어지 단일-HT
 ## [N/A — 조사 결과 fix 불필요]
 
 - **H.13 (stale story ID grep+fix)**: docs에 `tokens-colors--` 참조 **0건** — `/design-review` audit이 story ID를 *추측*해서 404 본 거지 실제 stale 참조는 어디에도 없었음. 2026-05-26 grep으로 확인. 본 항목 close.
+
+## [/qa 2026-07-02] — 브라우저 QA 발견 이슈 (수정 3건 완료, 보류 2건)
+
+> 수정 완료: ISSUE-001(border shorthand 혼용 React 에러) `4859377`, ISSUE-004(Input·Textarea 키보드 포커스 링 사망, WCAG 2.4.7) + ISSUE-005(Input·Textarea·FilterChip·IconButton hover 사망) `e696495`. 회귀 테스트 12개 추가. 상세: `.gstack/qa-reports/qa-report-web-sandbox-2026-07-02.md`
+
+- [ ] **ISSUE-002 (medium/process)**: 샌드박스 커버리지 갭 — Tooltip·Toast(직전 커밋 f65c0f3에서 토큰화 리팩터됨)·Modal·Table·Avatar·ProgressBar·FilterChip·IconButton·InlineEditableText·SortableList가 web-sandbox에 렌더 안 됨 → 브라우저 시각 검증 표면 없음. 실비용 증명: 이번 QA에서 FilterChip·IconButton hover 사망을 브라우저 실측 못 함. 샌드박스 phase 확장 시 Tooltip·Toast 섹션 우선 추가 권장.
+- [ ] **ISSUE-003 (low, ADR-005 범위 외)**: 모바일 375px 가로 오버플로(scrollWidth 504px) — LoadingScenario 데모 카드 고정폭 ~480px. 컴포넌트 아닌 샌드박스 데모 코드. 모바일 반응형 착수 시점에 처리.
+- [ ] **(관찰, 결정 필요)**: Button에 `:hover` 규칙 자체가 없음 — 다른 인터랙티브 아톰(IconButton·FilterChip)은 hover 있음. 의도된 미니멀리즘인지 누락인지 owner 결정 1줄이면 close.
