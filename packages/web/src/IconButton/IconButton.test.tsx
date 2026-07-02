@@ -105,20 +105,22 @@ describe('IconButton', () => {
   });
 
   it('background is transparent for both variants', () => {
+    // ISSUE-005 수정으로 base background는 inline이 아니라 주입 CSS 클래스
+    // 규칙에서 온다 (inline이면 :hover 규칙이 죽음) — computed 값으로 검증.
     const { rerender } = render(
       <IconButton aria-label="o">
         <IconStub />
       </IconButton>,
     );
     let btn = screen.getByRole('button');
-    expect(btn.style.background).toMatch(/transparent/);
+    expect(getComputedStyle(btn).backgroundColor).toMatch(/transparent|rgba\(0, 0, 0, 0\)/);
     rerender(
       <IconButton aria-label="g" variant="ghost">
         <IconStub />
       </IconButton>,
     );
     btn = screen.getByRole('button');
-    expect(btn.style.background).toMatch(/transparent/);
+    expect(getComputedStyle(btn).backgroundColor).toMatch(/transparent|rgba\(0, 0, 0, 0\)/);
   });
 
   it('attaches the wonik-iconbtn class', () => {
