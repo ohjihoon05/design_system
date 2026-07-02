@@ -39,7 +39,11 @@ const BASE_STYLE: CSSProperties = {
   fontWeight: fontWeight.regular,
   color: interfaceColors.text,
   background: interfaceColors.surface,
-  border: `1px solid ${interfaceColors.border}`,
+  // border shorthand 금지 — INVALID_STYLE의 borderColor(longhand)와 혼용 시
+  // invalid→valid 리렌더에서 React가 스타일 충돌 에러를 낸다 (ISSUE-001).
+  borderWidth: '1px',
+  borderStyle: 'solid',
+  borderColor: interfaceColors.border,
   borderRadius: radius.sm,
   outline: 'none',
   width: '100%',
