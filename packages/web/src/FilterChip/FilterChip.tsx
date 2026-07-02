@@ -12,7 +12,15 @@ import {
 import type { FilterChipProps } from './types';
 import { ensureCssInjected } from '../utils/ensureCssInjected';
 
+// background의 base 값은 클래스 규칙에 둔다 — inline에 두면 인라인이
+// 아래 :hover 규칙을 항상 이겨서 hover가 죽는다 (ISSUE-005).
 const FILTERCHIP_CSS = `
+.wonik-filterchip {
+  background: ${interfaceColors.surface};
+}
+.wonik-filterchip[data-active="true"] {
+  background: ${primary.bg};
+}
 .wonik-filterchip:hover:not(:disabled) {
   background: ${surfaces.surfaceSubtle};
 }
@@ -40,13 +48,11 @@ const baseStyle: CSSProperties = {
 };
 
 const inactiveStyle: CSSProperties = {
-  background: interfaceColors.surface,
   color: interfaceColors.text,
   border: `1px solid ${interfaceColors.border}`,
 };
 
 const activeStyle: CSSProperties = {
-  background: primary.bg,
   color: primary.selected,
   border: `1px solid ${interfaceColors.primary}`,
 };

@@ -14,7 +14,13 @@ import type { TextareaProps, TextareaSize } from './types';
 import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :focus-visible, :hover, ::placeholder는 inline style로 못 풀어서 1회-inject CSS.
+// outline·border-color의 base 값도 여기(클래스 규칙)에 둔다 — inline에 두면
+// 인라인이 아래 pseudo-class 규칙을 항상 이겨서 focus ring·hover가 죽는다 (ISSUE-004/005).
 const TEXTAREA_CSS = `
+.wonik-textarea {
+  outline: none;
+  border-color: ${interfaceColors.border};
+}
 .wonik-textarea:focus-visible {
   outline: 2px solid var(--color-focus, var(--color-primary));
   outline-offset: 0;
@@ -47,11 +53,10 @@ const BASE_STYLE: CSSProperties = {
   background: interfaceColors.surface,
   // border shorthand 금지 — INVALID_STYLE의 borderColor(longhand)와 혼용 시
   // invalid→valid 리렌더에서 React가 스타일 충돌 에러를 낸다 (ISSUE-001).
+  // base border-color·outline은 TEXTAREA_CSS 클래스 규칙에 있다 (ISSUE-004/005).
   borderWidth: '1px',
   borderStyle: 'solid',
-  borderColor: interfaceColors.border,
   borderRadius: radius.sm,
-  outline: 'none',
   width: '100%',
   boxSizing: 'border-box',
   lineHeight: 1.5,

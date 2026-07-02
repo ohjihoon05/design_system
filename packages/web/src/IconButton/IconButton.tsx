@@ -4,7 +4,12 @@ import type { IconButtonProps, IconButtonVariant, IconButtonSize } from './types
 import { ensureCssInjected } from '../utils/ensureCssInjected';
 
 // ADR-011: :hover / :focus-visible — inline style로 못 풀어서 module-scope CSS 1회-inject.
+// background의 base 값은 클래스 규칙에 둔다 — inline에 두면 인라인이
+// 아래 :hover 규칙을 항상 이겨서 hover가 죽는다 (ISSUE-005).
 const ICONBUTTON_CSS = `
+.wonik-iconbtn {
+  background: transparent;
+}
 .wonik-iconbtn:hover:not(:disabled) {
   background: var(--color-surface-subtle, transparent);
 }
@@ -16,12 +21,10 @@ const ICONBUTTON_CSS = `
 
 const variantStyles: Record<IconButtonVariant, CSSProperties> = {
   outline: {
-    background: 'transparent',
     color: interfaceColors.text,
     border: `1px solid ${interfaceColors.border}`,
   },
   ghost: {
-    background: 'transparent',
     color: interfaceColors.text,
     border: 'none',
   },
