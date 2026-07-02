@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import {
-  Button, Box, Stack, Text, Input, Textarea,
+  Button, IconButton, Box, Stack, Text, Input, Textarea,
   Checkbox, Switch, Radio,
   Spinner, Skeleton,
   Card, Badge, Alert,
+  FilterChip, Avatar, ProgressBar,
+  Tooltip, Modal,
+  ToastProvider, useToast,
+  InlineEditableText, SortableList, Table,
   useTheme,
 } from '@wonik/web';
 import type {
@@ -14,6 +18,8 @@ import type {
   SpinnerSize,
   CardVariant, CardPadding,
   BadgeVariant,
+  IconButtonVariant, IconButtonSize,
+  TooltipPlacement, ToastTone, ModalSize, Column,
 } from '@wonik/web';
 
 // Text는 base 'p' props로 정의돼 native `htmlFor`를 type에 가지지 않지만,
@@ -59,7 +65,7 @@ export function App() {
         <Stack direction="column" gap={3} style={{ flex: 1 }}>
           <Text variant="titleSm" weight="medium" as="h1">WONIK Web Sandbox</Text>
           <Text color="secondary">
-            14 atoms (Button / Box / Stack / Text / Input / Textarea / Checkbox / Switch / Radio / Spinner / Skeleton / Card / Badge / Alert) + form 합성 + light/dark 테마.
+            @wonik/web 24 atoms 전체 + form 합성 + light/dark 테마. (/qa ISSUE-002로 전 컴포넌트 시각 검증 표면 확보)
           </Text>
         </Stack>
         <ThemeToggle />
@@ -92,6 +98,18 @@ export function App() {
 
       {/* phase 16 — Alert */}
       <AlertMatrixSection />
+
+      {/* phase 18 — /qa ISSUE-002: 미렌더 10개 컴포넌트 시각 검증 표면 */}
+      <IconButtonSection />
+      <FilterChipSection />
+      <AvatarSection />
+      <ProgressBarSection />
+      <TooltipSection />
+      <ToastSection />
+      <ModalSection />
+      <TableSection />
+      <InlineEditableTextSection />
+      <SortableListSection />
 
       {/* Phase 5 회귀 가드 — cascade override dark 모드 회귀 검증 (ADR-010/011) */}
       <CascadeOverrideSection />
@@ -1082,6 +1100,287 @@ function BeforeAfterSection() {
           </Text>
         </Stack>
       </Stack>
+    </Stack>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────
+ * phase 18 — /qa ISSUE-002 (2026-07-02): 샌드박스 미렌더 10개 컴포넌트
+ * 시각 검증 표면. IconButton·FilterChip은 ISSUE-005(hover 사망) 수정의
+ * 브라우저 실측 회귀 확인도 겸한다.
+ * ──────────────────────────────────────────────────────────────── */
+
+const iconButtonVariants: IconButtonVariant[] = ['outline', 'ghost'];
+const iconButtonSizes: IconButtonSize[] = ['sm', 'md', 'lg'];
+
+function IconButtonSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">IconButton</Text>
+      <Text color="secondary">outline / ghost × sm / md / lg. hover 시 배경 subtle 전환 (ISSUE-005 회귀 확인).</Text>
+      {iconButtonVariants.map((variant) => (
+        <Stack key={variant} direction="column" gap={3}>
+          <Text variant="label" color="secondary" as="h3">{variant}</Text>
+          <Stack direction="row" align="center" gap={5}>
+            {iconButtonSizes.map((size) => (
+              <IconButton key={size} variant={variant} size={size} aria-label={variant + ' ' + size + ' 닫기'}>
+                ×
+              </IconButton>
+            ))}
+            <IconButton variant={variant} disabled aria-label={variant + ' disabled 닫기'}>×</IconButton>
+          </Stack>
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
+
+function FilterChipSection() {
+  const [activeChip, setActiveChip] = useState('전체');
+  const chips = ['전체', '가동', '알람'];
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">FilterChip</Text>
+      <Text color="secondary">클릭으로 active 전환 (aria-pressed). hover 시 배경 전환 (ISSUE-005 회귀 확인).</Text>
+      <Stack direction="row" gap={3}>
+        {chips.map((label) => (
+          <FilterChip key={label} active={activeChip === label} onClick={() => setActiveChip(label)}>
+            {label}
+          </FilterChip>
+        ))}
+        <FilterChip disabled>disabled</FilterChip>
+      </Stack>
+    </Stack>
+  );
+}
+
+function AvatarSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Avatar</Text>
+      <Text color="secondary">이름 이니셜 + 이름 기반 색. size 24 / 32 / 48.</Text>
+      <Stack direction="row" align="center" gap={5}>
+        <Avatar name="오지훈" size={24} />
+        <Avatar name="오지훈" size={32} />
+        <Avatar name="오지훈" size={48} />
+        <Avatar name="Kim Minsu" size={32} />
+        <Avatar name="WONIK IPS" size={32} />
+      </Stack>
+    </Stack>
+  );
+}
+
+const progressSamples: { tone: 'primary' | 'alarm' | 'ready'; value: number }[] = [
+  { tone: 'primary', value: 65 },
+  { tone: 'alarm', value: 30 },
+  { tone: 'ready', value: 100 },
+];
+
+function ProgressBarSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">ProgressBar</Text>
+      <Text color="secondary">tone(primary / alarm / ready) × value.</Text>
+      {progressSamples.map(({ tone, value }) => (
+        <Stack key={tone} direction="column" gap={2}>
+          <Text variant="labelSm" color="secondary">{tone} / {value}%</Text>
+          <ProgressBar tone={tone} value={value} aria-label={tone + ' 진행률'} />
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
+
+const tooltipPlacements: TooltipPlacement[] = ['top', 'right', 'bottom', 'left'];
+
+function TooltipSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Tooltip</Text>
+      <Text color="secondary">
+        hover 또는 키보드 focus로 열림. placement 4방향. (f65c0f3 토큰화 리팩터의 시각 회귀 확인)
+      </Text>
+      <Box py={7}>
+        <Stack direction="row" gap={6}>
+          {tooltipPlacements.map((placement) => (
+            <Tooltip key={placement} content={'placement: ' + placement} placement={placement}>
+              <Button variant="outline" size="sm">{placement}</Button>
+            </Tooltip>
+          ))}
+          <Tooltip content="이 툴팁은 보이면 안 됨" disabled>
+            <Button variant="text" size="sm">disabled</Button>
+          </Tooltip>
+        </Stack>
+      </Box>
+    </Stack>
+  );
+}
+
+const toastTones: ToastTone[] = ['info', 'success', 'warning', 'error'];
+
+function ToastTriggers() {
+  const toast = useToast();
+  return (
+    <Stack direction="row" gap={3} wrap>
+      {toastTones.map((tone) => (
+        <Button
+          key={tone}
+          variant="secondary"
+          size="sm"
+          onClick={() => toast.show({ tone, title: tone + ' 토스트', description: '4초 후 자동 닫힘' })}
+        >
+          {tone}
+        </Button>
+      ))}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          toast.show({
+            tone: 'info',
+            title: '레시피 저장됨',
+            description: '닫기 전까지 유지',
+            duration: null,
+            action: { label: '실행 취소', onClick: () => {} },
+          })
+        }
+      >
+        persistent + action
+      </Button>
+    </Stack>
+  );
+}
+
+function ToastSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Toast</Text>
+      <Text color="secondary">
+        useToast().show — tone 4종 + persistent/action. (f65c0f3 토큰화 리팩터의 시각 회귀 확인)
+      </Text>
+      <ToastProvider position="bottom-right">
+        <ToastTriggers />
+      </ToastProvider>
+    </Stack>
+  );
+}
+
+function ModalSection() {
+  const [modalSize, setModalSize] = useState<ModalSize | null>(null);
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Modal</Text>
+      <Text color="secondary">focus trap + ESC/backdrop 닫기. size sm / md / lg.</Text>
+      <Stack direction="row" gap={3}>
+        {(['sm', 'md', 'lg'] as ModalSize[]).map((s) => (
+          <Button key={s} variant="secondary" size="sm" onClick={() => setModalSize(s)}>
+            open {s}
+          </Button>
+        ))}
+      </Stack>
+      <Modal
+        isOpen={modalSize !== null}
+        onClose={() => setModalSize(null)}
+        title="장비 점검 확인"
+        size={modalSize ?? 'md'}
+      >
+        <Modal.Body>
+          <Text>CVD-3호기 점검을 시작하면 진행 중인 레시피가 일시 중지됩니다. 계속할까요?</Text>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModalSize(null)}>취소</Button>
+          <Button onClick={() => setModalSize(null)}>확인</Button>
+        </Modal.Footer>
+      </Modal>
+    </Stack>
+  );
+}
+
+interface EquipRow {
+  name: string;
+  chamber: string;
+  status: string;
+}
+
+const equipColumns: Column<EquipRow>[] = [
+  { id: 'name', header: '장비', accessor: 'name' },
+  { id: 'chamber', header: '챔버', accessor: 'chamber' },
+  { id: 'status', header: '상태', accessor: 'status' },
+];
+
+const equipData: EquipRow[] = [
+  { name: 'CVD-1', chamber: 'A', status: 'RUN' },
+  { name: 'CVD-2', chamber: 'B', status: 'IDLE' },
+  { name: 'ETCH-1', chamber: 'A', status: 'ALARM' },
+  { name: 'ETCH-2', chamber: 'C', status: 'RUN' },
+];
+
+function TableSection() {
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">Table</Text>
+      <Text color="secondary">zebra + caption(a11y). 빈 데이터는 emptyMessage.</Text>
+      <Table columns={equipColumns} data={equipData} zebra caption="장비 상태 목록" />
+      <Text variant="label" color="secondary" as="h3">empty state</Text>
+      <Table columns={equipColumns} data={[]} caption="빈 장비 목록" emptyMessage="등록된 장비 없음" />
+    </Stack>
+  );
+}
+
+function InlineEditableTextSection() {
+  const [equipName, setEquipName] = useState('ATM-3000');
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">InlineEditableText</Text>
+      <Text color="secondary">클릭 → 편집, Enter 저장 / Esc 취소. hover 시 primary 색 전환.</Text>
+      <Stack direction="row" align="center" gap={3}>
+        <Text variant="label" color="secondary">장비 이름:</Text>
+        <InlineEditableText value={equipName} onChange={setEquipName} ariaLabel="장비 이름 편집" />
+      </Stack>
+      <InlineEditableText
+        value=""
+        onChange={() => {}}
+        placeholder="비어 있음 — placeholder 표시"
+        ariaLabel="빈 값 편집"
+      />
+      <InlineEditableText value="편집 불가 (disabled)" onChange={() => {}} disabled ariaLabel="편집 불가" />
+    </Stack>
+  );
+}
+
+function SortableListSection() {
+  const [steps, setSteps] = useState(['가스 주입', '온도 상승', '증착', '퍼지']);
+  return (
+    <Stack direction="column" gap={5}>
+      <Text variant="titleSm" weight="medium" as="h2">SortableList</Text>
+      <Text color="secondary">drag 또는 키보드(Space 잡기 → 화살표 이동 → Space 놓기)로 레시피 스텝 순서 변경.</Text>
+      <SortableList
+        items={steps}
+        getKey={(step) => step}
+        onReorder={(from, to) => {
+          const copy = [...steps];
+          const [moved] = copy.splice(from, 1);
+          copy.splice(to, 0, moved);
+          setSteps(copy);
+        }}
+        style={{ maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+        renderItem={(step, idx, args) => (
+          <div
+            ref={args.setNodeRef}
+            {...(args.dragHandleProps as object)}
+            style={{
+              ...args.itemStyle,
+              padding: 'var(--space-4)',
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border-mid)',
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'grab',
+            }}
+          >
+            <Text variant="label">{idx + 1}. {step}</Text>
+          </div>
+        )}
+      />
     </Stack>
   );
 }
