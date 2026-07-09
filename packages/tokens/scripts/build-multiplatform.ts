@@ -10,7 +10,13 @@ import { fileURLToPath } from 'node:url';
 import StyleDictionary from 'style-dictionary';
 import type { TransformedToken } from 'style-dictionary/types';
 
-import { buildDtcgTokens, dimensionToDart, hexToFlutterColor } from './dtcg-lib';
+import {
+  buildDtcgTokens,
+  dartNumberLiteral,
+  dimensionToDart,
+  hexToFlutterColor,
+  snakeToDartCamel,
+} from './dtcg-lib';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = resolve(__dirname, '../dist');
@@ -28,15 +34,14 @@ const dartLiteral = (token: TransformedToken): string => {
   const value = token.$value ?? token.value;
   if (type === 'color') return hexToFlutterColor(value as string);
   if (type === 'dimension')
-    return `${dimensionToDart(value as { value: number; unit: 'px' | '%' })}`;
+    return dartNumberLiteral(dimensionToDart(value as { value: number; unit: 'px' | '%' }));
   if (type === 'fontFamily') return JSON.stringify((value as string[])[0]);
   return JSON.stringify(value);
 };
 
 /** SD가 못 하는 유일한 부분: DTCG → Dart 클래스 포맷 (색·치수 변환은 dtcg-lib 재사용).
- *  변수명은 name/snake transform이 붙인 t.name(full path snake_case)을 그대로 쓴다 —
- *  last-segment naming(SD 기본값)이 아니므로 color.status.run.bg vs color.button.pressed.bg
- *  같은 leaf가 충돌하지 않는다. */
+ *  name/snake transform이 붙인 t.name(full path snake_case,충돌 없는 이름 — 척추①
+ *  최초 구현 시 collision 경고로 확인됨)을 Dart 상수 관례(lowerCamelCase)로 변환해 쓴다. */
 const flutterDartFormat = ({
   dictionary,
   options,
@@ -45,7 +50,7 @@ const flutterDartFormat = ({
   options: { className: string };
 }): string => {
   const lines = dictionary.allTokens
-    .map((t) => `  static const ${t.name} = ${dartLiteral(t)};`)
+    .map((t) => `  static const ${snakeToDartCamel(t.name)} = ${dartLiteral(t)};`)
     .join('\n');
   return `// ADR-047 척추 ① — @wonik/tokens DTCG 산출물 (Style Dictionary 빌드). 수정 금지.\nimport 'package:flutter/material.dart';\n\nclass ${options.className} {\n${lines}\n}\n`;
 };

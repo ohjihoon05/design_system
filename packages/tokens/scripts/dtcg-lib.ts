@@ -28,6 +28,20 @@ export const hexToFlutterColor = (hex: string): string =>
 export const dimensionToDart = (dim: DtcgDimension): number =>
   dim.unit === '%' ? dim.value / 100 : dim.value;
 
+/** 8 → '8.0' — Dart는 정수 리터럴에서 `int`를 추론하므로, 소수점 없는 값을 그대로
+ *  문자열화하면 `BorderRadius.circular()`·`EdgeInsets.all()` 등 double 파라미터에
+ *  analyzer strict-casts 설정에서 타입 에러가 난다(실제 소비 테스트로 발견, ADR-047
+ *  trial-15). 정수값도 항상 `.0`을 붙여 Dart가 `double`로 추론하게 강제한다. */
+export const dartNumberLiteral = (n: number): string =>
+  Number.isInteger(n) ? `${n}.0` : `${n}`;
+
+/** 'color_status_run_bg' → 'colorStatusRunBg' — Dart Effective Dart 표준(lowerCamelCase
+ *  상수명). style-dictionary의 `name/snake` transform 산출물(snake_case)을 그대로 쓰면
+ *  flutter_lints(모든 Flutter 프로젝트 기본 lint)의 constant_identifier_names 위반이
+ *  상수마다 발생한다(실제 소비 테스트로 발견, ADR-047 trial-15). */
+export const snakeToDartCamel = (s: string): string =>
+  s.replace(/_([a-z0-9])/g, (_, c: string) => c.toUpperCase());
+
 type FlatGroup = Record<string, string>;
 type NestedGroup = Record<string, FlatGroup>;
 

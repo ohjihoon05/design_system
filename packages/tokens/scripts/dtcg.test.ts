@@ -4,10 +4,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildDtcgTokens,
+  dartNumberLiteral,
   dimensionToDart,
   hexToFlutterColor,
   parseDimension,
   parseFontFamily,
+  snakeToDartCamel,
 } from './dtcg-lib';
 
 type Leaf = { $value: unknown };
@@ -126,5 +128,17 @@ describe('변환 헬퍼 (Flutter 산출용)', () => {
   it('dimensionToDart — px는 double 그대로, %는 비율 double', () => {
     expect(dimensionToDart({ value: 8, unit: 'px' })).toBe(8);
     expect(dimensionToDart({ value: 50, unit: '%' })).toBe(0.5);
+  });
+
+  it('dartNumberLiteral — 정수도 항상 .0 표기 (Dart int 추론 방지, trial-15 발견)', () => {
+    expect(dartNumberLiteral(8)).toBe('8.0');
+    expect(dartNumberLiteral(0.5)).toBe('0.5');
+    expect(dartNumberLiteral(0)).toBe('0.0');
+  });
+
+  it('snakeToDartCamel — Dart 상수 명명 규칙(lowerCamelCase, trial-15 발견)', () => {
+    expect(snakeToDartCamel('color_status_run_bg')).toBe('colorStatusRunBg');
+    expect(snakeToDartCamel('dimension_radius_sm')).toBe('dimensionRadiusSm');
+    expect(snakeToDartCamel('color_primary_base')).toBe('colorPrimaryBase');
   });
 });
