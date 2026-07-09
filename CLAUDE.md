@@ -10,12 +10,12 @@
 |------|------|
 | `@wonik/tokens` | 1단계 작성 |
 | `@wonik/web` | 1단계 작성 (Button부터) |
-| 멀티플랫폼 토큰 파이프 (DTCG emit → Vue CSS·Flutter Dart) | **척추 ① 진행** (ADR-047) — `packages/tokens` 내부 산출물, 새 패키지 아님 |
-| Vue·Flutter 컴포넌트 패키지 | **금지** — 척추 ② 게이트(Button 1개 kept&used 0→1) 통과 전 신설 불가 (ADR-047) |
+| 멀티플랫폼 토큰 파이프 (DTCG emit → Vue CSS·Flutter Dart) | **완료** (ADR-047 §2, 2026-07-09) — `packages/tokens` 내부 산출물 |
+| Vue·Flutter 컴포넌트 패키지 | **허용** — 사용 증명 게이트 해제됨(ADR-047 §7 개정 이력, 2026-07-09). 착수는 별도 요청 시 |
 | 다른 form factor 패키지 (HMI 등) | **1단계 외** — 진짜 product 등장 시 결정 |
 | WARP 시안 폴더 (`WONIK IPS — WARP Design System/`) | 보존, 컴포넌트 production화 안 함 (ADR-004) |
 
-**모든 컴포넌트 작업은 web에 집중한다.** App·HMI 관련 패키지를 만들지 않는다 (ADR-001). 멀티플랫폼 확장은 토큰 파이프(척추 ①)까지만 — 게이트·후퇴선은 ADR-047 참조.
+**컴포넌트 작업은 web + (착수 시) Vue·Flutter.** HMI 관련 패키지는 만들지 않는다 (ADR-001, 미해제). 멀티플랫폼 확장의 사용 증명 게이트는 해제됐으나(ADR-047 §7) — 이는 ADR-001·044·045·046이 지켜온 "채택 증명 후 확장" 원칙의 명시적 예외임을 인지할 것. 웹 외 컴포넌트를 새로 만들 때 다크모드·터치 타겟·폰트 등 ADR-005가 제외했던 축이 열리므로 별도 결정 필요.
 
 ## 기술 스택
 
@@ -31,7 +31,7 @@
 
 ### CRITICAL — 절대 위반 금지
 
-- **CRITICAL**: 패키지는 **`@wonik/tokens` + `@wonik/web` 둘만**. `packages/app/`·`packages/warp/`·`packages/vue/`·`packages/flutter/`·`packages/{기타}/`를 만들지 마라 — Vue·Flutter 컴포넌트 패키지는 ADR-047 척추 ② 게이트(Button 1개 kept&used 0→1) 통과 후 별도 ADR로만 신설. 멀티플랫폼 토큰 산출물(DTCG JSON·Vue CSS·Flutter Dart)은 `packages/tokens` 내부에 둔다. `WONIK IPS — WARP Design System/` 폴더의 컴포넌트(.jsx/.tsx)를 import 금지 — reference로만 본다.
+- **CRITICAL**: 패키지는 **`@wonik/tokens` + `@wonik/web`**, 그리고 착수 시 `packages/vue/`·`packages/flutter/`(ADR-047 §7 개정, 사용 증명 게이트 해제 — 2026-07-09). `packages/app/`·`packages/warp/`·`packages/{기타 form factor}/`는 여전히 금지(ADR-001). Vue·Flutter 컴포넌트 패키지는 `@wonik/tokens`만 의존하고 서로 import 금지(아래 3번째 CRITICAL과 동일 원칙). 멀티플랫폼 토큰 산출물(DTCG JSON·Vue CSS·Flutter Dart)은 `packages/tokens` 내부에 둔다. `WONIK IPS — WARP Design System/` 폴더의 컴포넌트(.jsx/.tsx)를 import 금지 — reference로만 본다.
 - **CRITICAL**: 색·spacing·typography·border·radius 같은 raw 값을 컴포넌트 코드에 하드코딩 금지. 모두 `@wonik/tokens`에서 import해 사용한다 (예: `import { colors } from '@wonik/tokens'` 또는 CSS 변수 `var(--color-primary)`). hex/px 리터럴이 보이면 토큰화 대상.
 - **CRITICAL**: 컴포넌트 패키지는 `@wonik/tokens`만을 의존성으로 가진다. 향후 다른 컴포넌트 패키지가 추가되더라도 동일한 원칙(공통 base만 의존, 컴포넌트 패키지끼리 import 금지).
 - **CRITICAL**: Primary color는 **WONIK BLUE `#273E82`** (공식 CI, ADR-007). 다른 hex(`#2B7FFF`, `#273D7F` 등)로 사용 금지. Secondary는 **WONIK GRAY `#ACACAC`**.
@@ -97,8 +97,8 @@ python3 scripts/execute.py {task-name} --push # 실행 후 push
 
 ## 범위 외 (참조: PRD.md "MVP 제외 사항")
 
-- 모바일 앱·HMI 등 web 외 form factor용 컴포넌트 — 진짜 product 등장 시 그때 형태 결정 (ADR-001). 단 **토큰 소비**(DTCG 산출물 → Flutter Dart 등)는 ADR-047로 허용.
+- HMI 등 Vue·Flutter 외 form factor용 컴포넌트 — 진짜 product 등장 시 그때 형태 결정 (ADR-001, 미해제).
 - WARP 시안 폴더의 컴포넌트 production화 — 진짜 HMI product 등장 시 (ADR-004). 1단계는 시안에서 토큰·시각 언어만 추출.
 - 토스급 150+ 컴포넌트, Figma 자동 동기화, Code Connect 자동화 — 1단계 외.
-- Vue/Angular/Svelte **컴포넌트** 지원 — React 전용. Vue·Flutter **토큰 소비**는 ADR-047 척추 ①로 진행 중(컴포넌트 패키지는 척추 ② 게이트 뒤). Angular/Svelte는 여전히 전면 범위 외.
+- Vue·Flutter **컴포넌트** 지원 — 사용 증명 게이트 해제로 착수 가능(ADR-047 §7, 2026-07-09), 단 아직 미착수(별도 요청 대기). Angular/Svelte는 전면 범위 외(요청 없음).
 - 다크 모드, 모바일 반응형 — 1단계 외 (ADR-005).
