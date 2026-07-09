@@ -35,15 +35,17 @@
     "access": "restricted"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts && node ../../scripts/check-dts.mjs",
-    "test": "echo 'no tests yet'",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean && tsx scripts/build-css.ts && tsx scripts/build-multiplatform.ts && node ../../scripts/check-dts.mjs",
+    "test": "vitest run",
     "lint": "eslint src",
     "preflight:publish": "node -e \"if(!process.env.WONIK_REGISTRY_OK){console.error('Set WONIK_REGISTRY_OK=1 to publish');process.exit(1)}\"",
     "prepublishOnly": "pnpm preflight:publish && pnpm lint && pnpm build && pnpm test"
   },
   "devDependencies": {
+    "style-dictionary": "^5.5.0",
     "tsup": "^8.3.5",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
   }
 }
