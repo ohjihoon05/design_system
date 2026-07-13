@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        # 버전은 root package.json의 packageManager 필드를 따름
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (tokens + web + multiplatform emit)
+        run: pnpm build
+
+      - name: Test — @wonik/tokens
+        run: pnpm -F @wonik/tokens test
+
+      - name: Test — @wonik/web
+        run: pnpm -F @wonik/web test
+
+      - name: Install Playwright Chromium (storybook a11y tests)
+        run: pnpm -F storybook-app exec playwright install chromium --with-deps
+
+      - name: Test — storybook a11y
+        run: pnpm -F storybook-app test
+
+      - name: Lint
+        run: pnpm lint
