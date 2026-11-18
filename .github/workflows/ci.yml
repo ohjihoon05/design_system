@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest(26.04)는 Playwright 1.60이 브라우저 설치를 지원하지 않음
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
