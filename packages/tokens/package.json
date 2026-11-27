@@ -42,9 +42,9 @@
     "prepublishOnly": "pnpm preflight:publish && pnpm lint && pnpm build && pnpm test"
   },
   "devDependencies": {
-    "style-dictionary": "^5.5.0",
+    "style-dictionary": "^5.8.0",
     "tsup": "^8.3.5",
-    "tsx": "^4.19.2",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.2",
     "vitest": "^4.1.10"
   }

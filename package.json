@@ -28,15 +28,15 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.4.0",
+    "eslint": "^10.15.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.6.0",
-    "lint-staged": "^17.0.5",
-    "playwright": "1.60.0",
-    "simple-git-hooks": "^2.13.1",
+    "globals": "^17.14.0",
+    "lint-staged": "^17.6.2",
+    "playwright": "1.65.1",
+    "simple-git-hooks": "^2.14.0",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.59.4"
+    "typescript-eslint": "^8.74.0"
   },
   "packageManager": "pnpm@10.33.2"
 }
