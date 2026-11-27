@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         # 버전은 root package.json의 packageManager 필드를 따름
 
       - uses: actions/setup-node@v4
