@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-24.04  # ubuntu-latest(26.04)는 Playwright 1.60이 브라우저 설치를 지원하지 않음
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
         # 버전은 root package.json의 packageManager 필드를 따름
